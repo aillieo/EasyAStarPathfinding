@@ -10,11 +10,46 @@ public class TestGridData : ScriptableObject, IGridDataProvider
 {
     [SerializeField]
     private bool[] data;
+    [SerializeField]
+    private int rangeX;
+    [SerializeField]
+    private int rangeY;
 
-    public int rangeX;
-    public int rangeY;
+    public int RangeX => rangeX;
+    public int RangeY => rangeY;
 
-    public bool this[int x, int y]
+    public bool Passable(int x, int y)
+    {
+        return this[x, y];
+    }
+
+    public void SetPassable(int x, int y, bool passable)
+    {
+        this[x, y] = passable;
+    }
+
+    public void Resize(int newRangeX, int newRangeY)
+    {
+        if (newRangeX == rangeX && newRangeY == rangeY)
+        {
+            return;
+        }
+
+        bool[] oldData = data;
+        data = new bool[newRangeX * newRangeY];
+        for (int i = 0, xMin = Mathf.Min(newRangeX, rangeX); i < xMin; ++ i)
+        {
+            for (int j = 0, yMin = Mathf.Min(newRangeY, rangeY); j < yMin; ++j)
+            {
+                data[i + newRangeX * j] = oldData[i + rangeX * j];
+            }
+        }
+
+        rangeX = newRangeX;
+        rangeY = newRangeY;
+    }
+
+    private bool this[int x, int y]
     {
         get
         {

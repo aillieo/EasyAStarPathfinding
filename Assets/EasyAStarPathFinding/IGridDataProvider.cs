@@ -2,6 +2,6 @@ namespace AillieoUtils
 {
     public interface IGridDataProvider
     {
-        bool this[int x, int y] { get; }
+        bool Passable(int x, int y);
     }
 }

@@ -6,92 +6,100 @@ using UnityEditor;
 [CustomEditor(typeof(TestGridData))]
 public class TestGridDataEditor : Editor
 {
-    public static GUILayoutOption[] widthControl_20;
-    private SerializedProperty rangeX;
-    private SerializedProperty rangeY;
-    private SerializedProperty data;
-
+    private Vector2Int dataRange;
     private Texture2D texture;
     private Vector2 offset;
+    private GUILayoutOption widthCtrl;
+
+    private const int rangeMax = 2048;
+    private const int rangeMin = 2;
+    private const float buttonWidth = 20f;
+    private const float barWidth = 30f;
+    private const float viewWidthMax = 500f;
 
     private void OnEnable()
     {
-        rangeX = serializedObject.FindProperty("rangeX");
-        rangeY = serializedObject.FindProperty("rangeY");
-        data = serializedObject.FindProperty("data");
-        widthControl_20 = new GUILayoutOption[] { GUILayout.ExpandWidth(false), GUILayout.Width(20) };
+        TestGridData testGridData = target as TestGridData;
+        dataRange.x = testGridData.RangeX;
+        dataRange.y = testGridData.RangeY;
+
+        widthCtrl = GUILayout.MaxWidth(viewWidthMax);
     }
 
     public override void OnInspectorGUI()
     {
-        EditorGUI.BeginChangeCheck();
-        EditorGUILayout.PropertyField(rangeX);
-        EditorGUILayout.PropertyField(rangeY);
-        if(EditorGUI.EndChangeCheck())
+        serializedObject.Update();
+
+        TestGridData testGridData = target as TestGridData;
+
+        dataRange.x = EditorGUILayout.IntSlider(dataRange.x, rangeMin, rangeMax);
+        dataRange.y = EditorGUILayout.IntSlider(dataRange.y, rangeMin, rangeMax);
+        if (GUILayout.Button("Resize"))
         {
-            int newSize = rangeX.intValue * rangeY.intValue;
-            data.arraySize = newSize;
+            testGridData.Resize(dataRange.x, dataRange.y);
+            EditorUtility.SetDirty(target);
+            return;
         }
-        int width = rangeX.intValue;
-        int height = rangeY.intValue;
-        width = Mathf.Clamp(width, 2, 2048);
-        height = Mathf.Clamp(height, 2, 2048);
 
-        int displayX = Mathf.Clamp(width, 2, 10);
-        int displayY = Mathf.Clamp(height, 2, 10);
+        int width = testGridData.RangeX;
+        int height = testGridData.RangeY;
+        width = Mathf.Clamp(width, rangeMin, rangeMax);
+        height = Mathf.Clamp(height, rangeMin, rangeMax);
 
-//        offset.x = EditorGUILayout.Slider(offset.x, 0, width - displayX);
-//        offset.y = EditorGUILayout.Slider(offset.y, 0, height - displayY);
+        // float viewWidthRaw = EditorGUIUtility.currentViewWidth;
+        // viewWidthRaw = Mathf.Min(viewWidthRaw, viewWidthMax);
+        // Rect r = GUILayoutUtility.GetRect(viewWidthRaw, viewWidthRaw);
 
-//        for (int j = (int)offset.y + displayY - 1; j >= (int)offset.y; --j)
-//        {
-//            EditorGUILayout.BeginHorizontal();
-//            for (int i = (int)offset.x; i < (int)offset.x + displayX; ++i)
-//            {
-//                SerializedProperty p = data.GetArrayElementAtIndex(i + j * width);
-//                bool v = p.boolValue;
-//                if (GUILayout.Button(v ? " " : "x", widthControl_20))
-//                {
-//                    p.boolValue = !v;
-//                }
-//            }
-//            EditorGUILayout.EndHorizontal();
-//        }
+        Rect viewRect = GUILayoutUtility.GetAspectRect(1, widthCtrl);
+        float viewWidthRaw = viewRect.width;
 
+        float viewWidth = viewWidthRaw - barWidth;
 
+        float displayX = Mathf.Clamp(width, rangeMin, viewWidth / buttonWidth);
+        float displayY = Mathf.Clamp(height, rangeMin, viewWidth / buttonWidth);
 
-
-        // float w = this.Position.width;
-        float buttonWidth = 20f;
-        float barWidth = 30f;
-        float w = EditorGUIUtility.currentViewWidth - 30f;
-        w = Mathf.Min(w, 500f);
-        Rect r = GUILayoutUtility.GetRect(w, w);
-        r.width = w;
-        r.height = r.width;
-        float viewWidth = w - barWidth;
-
-        displayX = Mathf.Clamp(width, 2, (int)(viewWidth / buttonWidth));
-        displayY = Mathf.Clamp(height, 2, (int)(viewWidth / buttonWidth));
-
-        offset.x = GUI.HorizontalSlider(new Rect(r.position + new Vector2(barWidth, 0), new Vector2(r.width - barWidth, barWidth)), offset.x, 0, width - displayX);
-        offset.y = GUI.VerticalSlider(new Rect(r.position + new Vector2(0, barWidth), new Vector2(barWidth, r.height - barWidth)), offset.y, height - displayY, 0);
-
-        GUI.BeginGroup(new Rect(r.position + new Vector2(barWidth, barWidth), new Vector2(r.width - barWidth, r.height - barWidth)), new GUIStyle("box"));
-        for (int j = (int)offset.y + displayY - 1; j >= (int)offset.y; --j)
+        if (width > displayX)
         {
-            for (int i = (int)offset.x; i < (int)offset.x + displayX; ++i)
+            Rect sliderRect = new Rect(viewRect.position + new Vector2(barWidth, 0), new Vector2(viewRect.width - barWidth, barWidth));
+            offset.x = GUI.HorizontalSlider(sliderRect, offset.x, 0, width - displayX);
+        }
+        else
+        {
+            offset.x = 0;
+        }
+
+        if (height > displayY)
+        {
+            Rect sliderRect = new Rect(viewRect.position + new Vector2(0, barWidth), new Vector2(barWidth, viewRect.height - barWidth));
+            offset.y = GUI.VerticalSlider(sliderRect, offset.y, height - displayY, 0);
+        }
+        else
+        {
+            offset.y = 0;
+        }
+
+        Rect gridViewRect = new Rect(viewRect.position + new Vector2(barWidth, barWidth), new Vector2(viewRect.width - barWidth, viewRect.height - barWidth));
+        Vector2 buttonSize = Vector2.one * buttonWidth;
+
+        GUI.BeginGroup(gridViewRect, new GUIStyle("box"));
+        int xStartIndex = (int)offset.x;
+        int xEndIndex = (int)(offset.x + displayX);
+        int yStartIndex = (int)offset.y;
+        int yEndIndex = (int)(offset.y + displayY);
+
+        for (int j = yEndIndex - 1; j >= yStartIndex; --j)
+        {
+            for (int i = xStartIndex; i < xEndIndex; ++i)
             {
-                SerializedProperty p = data.GetArrayElementAtIndex(i + j * width);
-                bool v = p.boolValue;
-                if (GUI.Button(new Rect(new Vector2((i - offset.x) * 20, (- j + offset.y + displayY - 1) * 20), new Vector2(20, 20)), v ? " " : "x"))
+                bool v = (target as TestGridData).Passable(i, j);
+                Rect buttonRect = new Rect(new Vector2((i - offset.x) * buttonWidth, (offset.y + displayY - 1 - j) * buttonWidth), buttonSize);
+                if (GUI.Button(buttonRect, v ? " " : "x"))
                 {
-                    p.boolValue = !v;
+                    (target as TestGridData).SetPassable(i, j, !v);
                 }
             }
         }
         GUI.EndGroup();
-
 
         texture = EditorGUILayout.ObjectField(texture, typeof(Texture2D), false) as Texture2D;
         if (GUILayout.Button("Load from Texture"))
@@ -127,20 +135,27 @@ public class TestGridDataEditor : Editor
             return false;
         }
 
-        if (tex.width > 2048 || tex.height > 2048)
+        if (tex.width > rangeMax || tex.height > rangeMax)
         {
-            message = "too large size (should <= 2048)";
+            message = $"too large size (should <= {rangeMax})";
+            return false;
+        }
+
+        if (tex.width < rangeMin || tex.height < rangeMin)
+        {
+            message = $"too small size (should >= {rangeMin})";
+            return false;
         }
 
         if (tex.filterMode != FilterMode.Point)
         {
-            message = "should use FilterMode.Point";
+            message = $"should use FilterMode: {FilterMode.Point}";
             return false;
         }
 
         if (tex.format != TextureFormat.R8)
         {
-            message = "should use TextureFormat.R8";
+            message = $"should use TextureFormat: {TextureFormat.R8}";
             return false;
         }
 
@@ -150,11 +165,10 @@ public class TestGridDataEditor : Editor
     private bool TryLoadDataFromTexture(Texture2D tex)
     {
         TestGridData dataObj = target as TestGridData;
-        int width = Mathf.Min(tex.width, 2048);
-        int height = Mathf.Min(tex.height, 2048);
+        int width = Mathf.Min(tex.width, rangeMax);
+        int height = Mathf.Min(tex.height, rangeMax);
 
-        dataObj.rangeX = width;
-        dataObj.rangeY = height;
+        dataObj.Resize(width, height);
         Color[] colors = tex.GetPixels();
 
         for (int i = 0; i < width; ++i)
@@ -162,14 +176,9 @@ public class TestGridDataEditor : Editor
             for (int j = 0; j < height; ++j)
             {
                 Color c = colors[i + j * width];
-                //Debug.LogError($"{i},{j},{i + j * width} --> c = {c}");
-                //Color c = tex.GetPixel((float)i / width, (float)j / height);
-                dataObj[i, j] = c.r > 0.5f;
+                dataObj.SetPassable(i, j, c.r > 0.5f);
             }
         }
-
-        //Color c1 = tex.GetPixel(0, 0);
-        //Debug.LogError($"c1 = {c1}");
 
         EditorUtility.SetDirty(dataObj);
 

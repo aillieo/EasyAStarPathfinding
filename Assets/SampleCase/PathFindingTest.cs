@@ -3,52 +3,74 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using AillieoUtils;
+using AillieoUtils.PathFinding;
+using System.Diagnostics;
 
 public class PathFindingTest : MonoBehaviour
 {
     public TestGridData mapData;
-    public Vector2Int start = new Vector2Int(1,1);
+    public Vector2Int start = new Vector2Int(1, 1);
     public Vector2Int end = new Vector2Int(8, 8);
 
     private IEnumerable<Point> path;
     private PathFinder pathFinder;
 
-    private void Start()
-    {
-        FindPath();
-    }
+    public bool drawPassable = true;
+    public bool drawBlock = true;
+    public bool drawPath = true;
 
-    [ContextMenu("Find")]
-    void FindPath()
+    public void FindPath()
     {
-        if(mapData == null)
+        if (mapData == null)
         {
+            pathFinder = null;
             return;
         }
 
-        if(pathFinder == null)
+        if (pathFinder == null)
         {
             pathFinder = new PathFinder(mapData);
         }
 
-        path = pathFinder.FindPath(new Point(start.x, start.y), new Point(end.x,end.y));
+        Stopwatch sw = new Stopwatch();
+        sw.Start();
+        path = pathFinder.FindPath(new Point(start.x, start.y), new Point(end.x, end.y));
+        long costTime = sw.ElapsedMilliseconds;
+        UnityEngine.Debug.Log($"costTime {costTime}ms");
     }
 
     private void OnDrawGizmos()
     {
+        Color backup = Gizmos.color;
+
         if (mapData != null)
         {
-            for (int i = 0; i < mapData.rangeX; ++i)
+            for (int i = 0; i < mapData.RangeX; ++i)
             {
-                for (int j = 0; j < mapData.rangeY; ++j)
+                for (int j = 0; j < mapData.RangeY; ++j)
                 {
-                    Gizmos.DrawSphere(new Vector3(i, j, 0), 0.25f);
+                    bool passable = mapData.Passable(i, j);
+                    if (passable)
+                    {
+                        if (drawPassable)
+                        {
+                            Gizmos.color = Color.white;
+                            Gizmos.DrawWireCube(new Vector3(i, j, 0), Vector3.one * 0.25f);
+                        }
+                    }
+                    else
+                    {
+                        if (drawBlock)
+                        {
+                            Gizmos.color = Color.black;
+                            Gizmos.DrawWireCube(new Vector3(i, j, 0), Vector3.one * 0.5f);
+                        }
+                    }
                 }
             }
         }
 
-        Color backup = Gizmos.color;
-        if (path != null)
+        if (drawPath && path != null)
         {
             int count = path.Count();
             int index = 0;
@@ -56,14 +78,8 @@ public class PathFindingTest : MonoBehaviour
             foreach (var pp in path)
             {
                 Gizmos.color = Color.Lerp(Color.red, Color.blue, ((float)(index++)) / count);
-                Gizmos.DrawSphere(new Vector3(pp.x, pp.y, 0), 0.4f);
+                Gizmos.DrawCube(new Vector3(pp.x, pp.y, 0), Vector3.one * 0.4f);
             }
-        }
-
-        Gizmos.color = Color.black;
-        foreach (var o in mapData.Obstacles())
-        {
-            Gizmos.DrawSphere(new Vector3(o.x, o.y, 0), 0.5f);
         }
 
         Gizmos.color = backup;

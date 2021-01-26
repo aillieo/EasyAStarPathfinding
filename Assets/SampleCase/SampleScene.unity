@@ -311,4 +311,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mapData: {fileID: 11400000, guid: b06b87880022b8349a71e27ac29d31a1, type: 2}
   start: {x: 0, y: 0}
-  end: {x: 9, y: 9}
+  end: {x: 1023, y: 1023}
+  drawPassable: 0
+  drawBlock: 0
+  drawPath: 0

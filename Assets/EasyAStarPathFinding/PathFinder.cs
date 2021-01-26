@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AillieoUtils
+namespace AillieoUtils.PathFinding
 {
     public class PathFinder
     {
@@ -14,7 +14,6 @@ namespace AillieoUtils
 
         private IGridDataProvider mapData;
         private Comparer comparer;
-
 
         private Stack<PointNode> nodePool = new Stack<PointNode>();
 
@@ -64,7 +63,18 @@ namespace AillieoUtils
 
         private PointNode GetPointNode(Point point, PointNode parent)
         {
-            return new PointNode() { point = point, previous = parent };
+            PointNode newNode;
+            if (nodePool.Count > 0)
+            {
+                newNode = nodePool.Pop();
+                newNode.point = point;
+                newNode.previous = parent;
+            }
+            else
+            {
+                newNode = new PointNode { point = point, previous = parent };
+            }
+            return newNode;
         }
 
         private void Recycle(PointNode node)
@@ -80,11 +90,17 @@ namespace AillieoUtils
             closed.Clear();
             endingNode = null;
 
-            openList.Add(new PointNode() { point = startPoint, previous = null });
+            openList.Add(GetPointNode(startPoint, null));
 
             int safe = 0;
             while (true)
             {
+                if (safe++ > 10000000)
+                {
+                    UnityEngine.Debug.LogError($"safe = {safe}");
+                    break;
+                }
+
                 if (openList.Count == 0)
                 {
                     break;
@@ -114,20 +130,27 @@ namespace AillieoUtils
 
                         // Debug.LogError($" TESTING  x={x} y= {y}");
 
-                        if (!mapData[x, y])
+                        if (!mapData.Passable(x, y))
                         {
                             continue;
                         }
 
-                        PointNode node = new PointNode() { point = new Point() { x = x, y = y }, previous = first };
-
-
+                        Point p = new Point() { x = x, y = y };
+                        PointNode node = GetPointNode(p, first);
                         if (closed.Contains(node))
                         {
+                            Recycle(node);
                             continue;
                         }
 
-                        openList.Add(node);
+                        if(!openList.Contains(node))
+                        {
+                            openList.Add(node);
+                        }
+                        else
+                        {
+                            Recycle(node);
+                        }
                     }
                 }
 
@@ -143,15 +166,10 @@ namespace AillieoUtils
                 }
 
                 //Debug.LogError($"safe = {safe}  openList = {openList.Count} closed = {closed.Count}  first = ({first.point.x},{first.point.y})");
-
-                if (safe++ > 1000)
-                {
-                    break;
-                }
             }
 
             List<Point> points = new List<Point>();
-            if(endingNode != null)
+            if (endingNode != null)
             {
                 var ppp = endingNode;
                 while (ppp.previous != null)
@@ -161,6 +179,17 @@ namespace AillieoUtils
                 }
                 points.Add(ppp.point);
             }
+
+            foreach (var p in openList)
+            {
+                Recycle(p);
+            }
+            foreach (var p in closed)
+            {
+                Recycle(p);
+            }
+            openList.Clear();
+            closed.Clear();
 
             return points;
         }
