@@ -39,31 +39,45 @@ public class PathFindingTest : MonoBehaviour
         UnityEngine.Debug.Log($"costTime {costTime}ms");
     }
 
+    private IEnumerator Start()
+    {
+        yield return new WaitForSeconds(3);
+        FindPath();
+        yield return null;
+        yield return null;
+        UnityEditor.EditorApplication.isPaused = true;
+    }
+
     private void OnDrawGizmos()
     {
         Color backup = Gizmos.color;
 
         if (mapData != null)
         {
-            for (int i = 0; i < mapData.RangeX; ++i)
+            if (drawPassable || drawBlock)
             {
-                for (int j = 0; j < mapData.RangeY; ++j)
+                int rangeX = mapData.RangeX;
+                int rangeY = mapData.RangeY;
+                for (int i = 0; i < rangeX; ++i)
                 {
-                    bool passable = mapData.Passable(i, j);
-                    if (passable)
+                    for (int j = 0; j < rangeY; ++j)
                     {
-                        if (drawPassable)
+                        bool passable = mapData.Passable(i, j);
+                        if (passable)
                         {
-                            Gizmos.color = Color.white;
-                            Gizmos.DrawWireCube(new Vector3(i, j, 0), Vector3.one * 0.25f);
+                            if (drawPassable)
+                            {
+                                Gizmos.color = Color.white;
+                                Gizmos.DrawWireCube(new Vector3(i, j, 0), Vector3.one * 0.25f);
+                            }
                         }
-                    }
-                    else
-                    {
-                        if (drawBlock)
+                        else
                         {
-                            Gizmos.color = Color.black;
-                            Gizmos.DrawWireCube(new Vector3(i, j, 0), Vector3.one * 0.5f);
+                            if (drawBlock)
+                            {
+                                Gizmos.color = Color.black;
+                                Gizmos.DrawWireCube(new Vector3(i, j, 0), Vector3.one * 0.5f);
+                            }
                         }
                     }
                 }

@@ -13,17 +13,15 @@ namespace AillieoUtils.PathFinding
         private PointNode endingNode;
 
         private IGridDataProvider mapData;
-        private Comparer comparer;
+        private PointNodeComparer comparer;
 
-        private Stack<PointNode> nodePool = new Stack<PointNode>();
-
-        private class Comparer : IComparer<PointNode>
+        private class PointNodeComparer : IComparer<PointNode>
         {
             private CostFunc costFunc;
             public Point startPoint;
             public Point endPoint;
 
-            public Comparer(CostFunc costFunc)
+            public PointNodeComparer(CostFunc costFunc)
             {
                 this.costFunc = costFunc;
             }
@@ -37,6 +35,36 @@ namespace AillieoUtils.PathFinding
                     return cost1 - cost2;
                 }
                 return lhs.point.CompareTo(rhs.point);
+            }
+        }
+
+        private class PointNodeEqualityComparer : IEqualityComparer<PointNode>
+        {
+            public bool Equals(PointNode x, PointNode y)
+            {
+                object ox = x;
+                object oy = y;
+                if (ox == null && oy == null)
+                {
+                    return true;
+                }
+
+                if (ox == null || oy == null)
+                {
+                    return false;
+                }
+
+                return x.point == y.point;
+            }
+
+            public int GetHashCode(PointNode obj)
+            {
+                if (obj != null)
+                {
+                    return obj.point.GetHashCode();
+                }
+
+                return 0;
             }
         }
 
@@ -56,30 +84,9 @@ namespace AillieoUtils.PathFinding
                 costFunc = DefaultCostFunc;
             }
 
-            comparer = new Comparer(costFunc);
+            comparer = new PointNodeComparer(costFunc);
             this.openList = new SortedSet<PointNode>(comparer);
-            this.closed = new HashSet<PointNode>();
-        }
-
-        private PointNode GetPointNode(Point point, PointNode parent)
-        {
-            PointNode newNode;
-            if (nodePool.Count > 0)
-            {
-                newNode = nodePool.Pop();
-                newNode.point = point;
-                newNode.previous = parent;
-            }
-            else
-            {
-                newNode = new PointNode { point = point, previous = parent };
-            }
-            return newNode;
-        }
-
-        private void Recycle(PointNode node)
-        {
-            nodePool.Push(node);
+            this.closed = new HashSet<PointNode>(new PointNodeEqualityComparer());
         }
 
         public IEnumerable<Point> FindPath(Point startPoint, Point endPoint)
@@ -90,7 +97,7 @@ namespace AillieoUtils.PathFinding
             closed.Clear();
             endingNode = null;
 
-            openList.Add(GetPointNode(startPoint, null));
+            openList.Add(PointNode.GetPointNode(startPoint, null));
 
             int safe = 0;
             while (true)
@@ -107,7 +114,7 @@ namespace AillieoUtils.PathFinding
                 }
 
                 // 取第一个
-                var first = openList.First();
+                var first = openList.Min;
 
                 // 把周围点 加入open
                 for (int i = -1; i <= 1; ++i)
@@ -136,20 +143,16 @@ namespace AillieoUtils.PathFinding
                         }
 
                         Point p = new Point() { x = x, y = y };
-                        PointNode node = GetPointNode(p, first);
+                        PointNode node = PointNode.GetPointNode(p, first);
                         if (closed.Contains(node))
                         {
-                            Recycle(node);
+                            PointNode.Recycle(node);
                             continue;
                         }
 
-                        if(!openList.Contains(node))
+                        if (!openList.Add(node))
                         {
-                            openList.Add(node);
-                        }
-                        else
-                        {
-                            Recycle(node);
+                            PointNode.Recycle(node);
                         }
                     }
                 }
@@ -182,11 +185,11 @@ namespace AillieoUtils.PathFinding
 
             foreach (var p in openList)
             {
-                Recycle(p);
+                PointNode.Recycle(p);
             }
             foreach (var p in closed)
             {
-                Recycle(p);
+                PointNode.Recycle(p);
             }
             openList.Clear();
             closed.Clear();

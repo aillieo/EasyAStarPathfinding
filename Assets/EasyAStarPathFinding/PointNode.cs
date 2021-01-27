@@ -4,47 +4,36 @@ using System.Collections.Generic;
 
 namespace AillieoUtils
 {
-    public class PointNode : IEquatable<PointNode>
+    public class PointNode
     {
         public Point point;
         public PointNode previous;
 
-        public bool Equals(PointNode other)
+        private PointNode()
         {
-            if (other == null)
+        }
+
+        private static Stack<PointNode> nodePool = new Stack<PointNode>();
+
+        public static PointNode GetPointNode(Point point = default, PointNode parent = default)
+        {
+            PointNode newNode;
+            if (nodePool.Count > 0)
             {
-                return false;
+                newNode = nodePool.Pop();
+                newNode.point = point;
+                newNode.previous = parent;
             }
-
-            return this.point.Equals(other.point);
-        }
-
-        public static bool operator ==(PointNode lhs, PointNode rhs)
-        {
-            object lho = (object)lhs;
-            object rho = (object)rhs;
-
-            if(lho == null || rho == null)
+            else
             {
-                return lho == rho;
+                newNode = new PointNode { point = point, previous = parent };
             }
-
-            return lhs.point == rhs.point;
+            return newNode;
         }
 
-        public static bool operator !=(PointNode lhs, PointNode rhs)
+        public static void Recycle(PointNode node)
         {
-            return !(lhs == rhs);
-        }
-
-        public override bool Equals(object other)
-        {
-            return Equals(other as PointNode);
-        }
-
-        public override int GetHashCode()
-        {
-            return point.GetHashCode();
+            nodePool.Push(node);
         }
     }
 }
