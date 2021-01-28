@@ -1,202 +1,187 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AillieoUtils.PathFinding
 {
     public class PathFinder
     {
-        public delegate int CostFunc(Point point, Point startPoint, Point endPoint);
+        private readonly PointNode.PointNodePool pool = PointNode.Pool();
+        private readonly IGridDataProvider gridDataProvider;
+        private readonly SortedSet<PointNode> openList;
+        private readonly HashSet<PointNode> closed;
+        private readonly PointNodeComparer comparer;
+        private readonly NeighborCollectingFunc neighborCollectingFunc;
 
-        private SortedSet<PointNode> openList;// = new SortedSet<PathPointNode>();
-        private HashSet<PointNode> closed;// = new HashSet<PathPointNode>();
         private PointNode endingNode;
 
-        private IGridDataProvider mapData;
-        private PointNodeComparer comparer;
-
-        private class PointNodeComparer : IComparer<PointNode>
+        public PathFinder(IGridDataProvider gridDataProvider)
+            : this(gridDataProvider, null, null)
         {
-            private CostFunc costFunc;
-            public Point startPoint;
-            public Point endPoint;
-
-            public PointNodeComparer(CostFunc costFunc)
-            {
-                this.costFunc = costFunc;
-            }
-
-            public int Compare(PointNode lhs, PointNode rhs)
-            {
-                int cost1 = costFunc(lhs.point, startPoint, endPoint);
-                int cost2 = costFunc(rhs.point, startPoint, endPoint);
-                if (cost1 != cost2)
-                {
-                    return cost1 - cost2;
-                }
-                return lhs.point.CompareTo(rhs.point);
-            }
         }
 
-        private class PointNodeEqualityComparer : IEqualityComparer<PointNode>
+        public PathFinder(IGridDataProvider gridDataProvider, CostFunc costFunc)
+            : this(gridDataProvider, costFunc, null)
         {
-            public bool Equals(PointNode x, PointNode y)
-            {
-                object ox = x;
-                object oy = y;
-                if (ox == null && oy == null)
-                {
-                    return true;
-                }
-
-                if (ox == null || oy == null)
-                {
-                    return false;
-                }
-
-                return x.point == y.point;
-            }
-
-            public int GetHashCode(PointNode obj)
-            {
-                if (obj != null)
-                {
-                    return obj.point.GetHashCode();
-                }
-
-                return 0;
-            }
         }
 
-        private static int DefaultCostFunc(Point current, Point startPoint, Point endPoint)
+        public PathFinder(IGridDataProvider gridDataProvider, NeighborCollectingFunc neighborCollectingFunc)
+            : this(gridDataProvider, null, neighborCollectingFunc)
         {
-            return Math.Abs(startPoint.x - current.x) +
-                Math.Abs(startPoint.y - current.y) +
-                Math.Abs(endPoint.x - current.x) +
-                Math.Abs(endPoint.y - current.y);
         }
 
-        public PathFinder(IGridDataProvider mapData, CostFunc costFunc = null)
+        public PathFinder(IGridDataProvider gridDataProvider, CostFunc costFunc, NeighborCollectingFunc neighborCollectingFunc)
         {
-            this.mapData = mapData;
+            this.gridDataProvider = gridDataProvider;
             if (costFunc == null)
             {
-                costFunc = DefaultCostFunc;
+                costFunc = CostFuncPreset.DefaultCostFunc;
             }
 
-            comparer = new PointNodeComparer(costFunc);
+            if (neighborCollectingFunc == null)
+            {
+                neighborCollectingFunc = NeighborCollectingFuncPreset.DefaultNeighborCollectingFunc;
+            }
+
+            this.neighborCollectingFunc = neighborCollectingFunc;
+            this.comparer = new PointNodeComparer(costFunc);
             this.openList = new SortedSet<PointNode>(comparer);
             this.closed = new HashSet<PointNode>(new PointNodeEqualityComparer());
         }
 
-        public IEnumerable<Point> FindPath(Point startPoint, Point endPoint)
+        private void Init(Point startPoint, Point endPoint)
         {
-            this.comparer.startPoint = startPoint;
-            this.comparer.endPoint = endPoint;
+            comparer.Init(startPoint, endPoint);
             openList.Clear();
             closed.Clear();
             endingNode = null;
+        }
 
-            openList.Add(PointNode.GetPointNode(startPoint, null));
-
-            int safe = 0;
-            while (true)
+        private void CollectNeighbors(PointNode pointNode)
+        {
+            // 把周围点 加入open
+            var neighbors = neighborCollectingFunc(pointNode.point, gridDataProvider);
+            foreach (Point p in neighbors)
             {
-                if (safe++ > 10000000)
+                PointNode newNode = pool.GetPointNode(p, pointNode);
+                if (closed.Contains(newNode))
                 {
-                    UnityEngine.Debug.LogError($"safe = {safe}");
-                    break;
+                    pool.Recycle(newNode);
+                    continue;
                 }
 
-                if (openList.Count == 0)
+                if (!openList.Add(newNode))
                 {
-                    break;
+                    pool.Recycle(newNode);
                 }
+            }
+        }
 
+        private void CleanUp()
+        {
+            foreach (var p in openList)
+            {
+                pool.Recycle(p);
+            }
+            foreach (var p in closed)
+            {
+                pool.Recycle(p);
+            }
+            openList.Clear();
+            closed.Clear();
+        }
+
+        public IEnumerable<Point> FindPath(Point startPoint, Point endPoint)
+        {
+            Init(startPoint, endPoint);
+
+            openList.Add(pool.GetPointNode(startPoint, null));
+
+            while (openList.Count > 0)
+            {
                 // 取第一个
                 var first = openList.Min;
 
-                // 把周围点 加入open
-                for (int i = -1; i <= 1; ++i)
-                {
-                    for (int j = -1; j <= 1; ++j)
-                    {
-                        if (i == 0 && j == 0)
-                        {
-                            continue;
-                        }
-
-                        if (i != 0 && j != 0)
-                        {
-                            // 禁止斜着走
-                            continue;
-                        }
-
-                        int x = first.point.x + i;
-                        int y = first.point.y + j;
-
-                        // Debug.LogError($" TESTING  x={x} y= {y}");
-
-                        if (!mapData.Passable(x, y))
-                        {
-                            continue;
-                        }
-
-                        Point p = new Point() { x = x, y = y };
-                        PointNode node = PointNode.GetPointNode(p, first);
-                        if (closed.Contains(node))
-                        {
-                            PointNode.Recycle(node);
-                            continue;
-                        }
-
-                        if (!openList.Add(node))
-                        {
-                            PointNode.Recycle(node);
-                        }
-                    }
-                }
+                CollectNeighbors(first);
 
                 // 将first移入close
                 openList.Remove(first);
                 closed.Add(first);
 
-                if (first.point.x == endPoint.x && first.point.y == endPoint.y)
+                if (first.point == endPoint)
                 {
                     // 找到终点了
                     endingNode = first;
                     break;
                 }
-
-                //Debug.LogError($"safe = {safe}  openList = {openList.Count} closed = {closed.Count}  first = ({first.point.x},{first.point.y})");
             }
 
             List<Point> points = new List<Point>();
-            if (endingNode != null)
-            {
-                var ppp = endingNode;
-                while (ppp.previous != null)
-                {
-                    points.Add(ppp.point);
-                    ppp = ppp.previous;
-                }
-                points.Add(ppp.point);
-            }
+            TraceBackForPath(points);
 
-            foreach (var p in openList)
-            {
-                PointNode.Recycle(p);
-            }
-            foreach (var p in closed)
-            {
-                PointNode.Recycle(p);
-            }
-            openList.Clear();
-            closed.Clear();
+            CleanUp();
 
             return points;
         }
 
-    }
+        private bool TraceBackForPath(List<Point> toFill)
+        {
+            if (endingNode == null)
+            {
+                return false;
+            }
 
+            var node = endingNode;
+            while (node.previous != null)
+            {
+                toFill.Add(node.point);
+                node = node.previous;
+            }
+            toFill.Add(node.point);
+
+            return true;
+        }
+
+        public Task<IEnumerable<Point>> FindPathAsync(Point startPoint, Point endPoint)
+        {
+            TaskCompletionSource<IEnumerable<Point>> tsc = new TaskCompletionSource<IEnumerable<Point>>();
+            ThreadPool.QueueUserWorkItem(_ => {
+                var points = this.FindPath(startPoint, endPoint);
+                tsc.SetResult(points);
+            });
+            return tsc.Task;
+        }
+
+        public IEnumerator FindPathInCoroutine(Point startPoint, Point endPoint, UnityEngine.YieldInstruction yieldInstruction, PointChangedFunc pointChanged)
+        {
+            Init(startPoint, endPoint);
+
+            openList.Add(pool.GetPointNode(startPoint, null));
+
+            while (openList.Count > 0)
+            {
+                yield return yieldInstruction;
+
+                var first = openList.Min;
+
+                CollectNeighbors(first);
+
+                openList.Remove(first);
+                closed.Add(first);
+
+                if (first.point == endPoint)
+                {
+                    endingNode = first;
+                    break;
+                }
+            }
+
+            List<Point> points = new List<Point>();
+            TraceBackForPath(points);
+
+            CleanUp();
+        }
+    }
 }

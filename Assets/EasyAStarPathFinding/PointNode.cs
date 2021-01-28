@@ -13,27 +13,40 @@ namespace AillieoUtils
         {
         }
 
-        private static Stack<PointNode> nodePool = new Stack<PointNode>();
-
-        public static PointNode GetPointNode(Point point = default, PointNode parent = default)
+        internal static PointNodePool Pool()
         {
-            PointNode newNode;
-            if (nodePool.Count > 0)
-            {
-                newNode = nodePool.Pop();
-                newNode.point = point;
-                newNode.previous = parent;
-            }
-            else
-            {
-                newNode = new PointNode { point = point, previous = parent };
-            }
-            return newNode;
+            return new PointNodePool();
         }
 
-        public static void Recycle(PointNode node)
+        internal class PointNodePool
         {
-            nodePool.Push(node);
+            internal PointNodePool()
+            {
+            }
+
+            private Stack<PointNode> nodePool = new Stack<PointNode>();
+
+            internal PointNode GetPointNode(Point point = default, PointNode parent = default)
+            {
+                PointNode newNode;
+                if (nodePool.Count > 0)
+                {
+                    newNode = nodePool.Pop();
+                    newNode.point = point;
+                    newNode.previous = parent;
+                }
+                else
+                {
+                    newNode = new PointNode { point = point, previous = parent };
+                }
+                return newNode;
+            }
+
+            public void Recycle(PointNode node)
+            {
+                node.previous = null;
+                nodePool.Push(node);
+            }
         }
     }
 }

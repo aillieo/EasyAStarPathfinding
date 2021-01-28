@@ -2,7 +2,7 @@ using System;
 
 namespace AillieoUtils
 {
-    public struct Point : IEquatable<Point>, IComparable<Point>
+    public partial struct Point : IEquatable<Point>, IComparable<Point>
     {
         public int x { get; set; }
         public int y { get; set; }

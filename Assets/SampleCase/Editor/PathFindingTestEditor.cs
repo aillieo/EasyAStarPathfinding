@@ -14,9 +14,19 @@ public class PathFindingTestEditor : Editor
     {
         base.OnInspectorGUI();
 
-        if (GUILayout.Button("Find"))
+        if (GUILayout.Button("FindPath"))
         {
             (target as PathFindingTest).FindPath();
+        }
+
+        if (GUILayout.Button("FindPathAsync"))
+        {
+            (target as PathFindingTest).FindPathAsync();
+        }
+
+        if (GUILayout.Button("FindPathInCoroutine"))
+        {
+            (target as PathFindingTest).FindPathInCoroutine();
         }
     }
 }

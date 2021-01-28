@@ -5,10 +5,11 @@ using UnityEngine;
 using AillieoUtils;
 using AillieoUtils.PathFinding;
 using System.Diagnostics;
+using System;
 
 public class PathFindingTest : MonoBehaviour
 {
-    public TestGridData mapData;
+    public TestGridData gridData;
     public Vector2Int start = new Vector2Int(1, 1);
     public Vector2Int end = new Vector2Int(8, 8);
 
@@ -19,24 +20,47 @@ public class PathFindingTest : MonoBehaviour
     public bool drawBlock = true;
     public bool drawPath = true;
 
-    public void FindPath()
+    private void EnsureFindingContext()
     {
-        if (mapData == null)
+        if (gridData == null)
         {
             pathFinder = null;
-            return;
+            throw new Exception($"invalid {nameof(gridData)}");
         }
 
         if (pathFinder == null)
         {
-            pathFinder = new PathFinder(mapData);
+            pathFinder = new PathFinder(gridData);
         }
+    }
 
+    public void FindPath()
+    {
+        EnsureFindingContext();
         Stopwatch sw = new Stopwatch();
         sw.Start();
         path = pathFinder.FindPath(new Point(start.x, start.y), new Point(end.x, end.y));
         long costTime = sw.ElapsedMilliseconds;
         UnityEngine.Debug.Log($"costTime {costTime}ms");
+    }
+
+    public async void FindPathAsync()
+    {
+        EnsureFindingContext();
+        Stopwatch sw = new Stopwatch();
+        sw.Start();
+        path = await pathFinder.FindPathAsync(new Point(start.x, start.y), new Point(end.x, end.y));
+        long costTime = sw.ElapsedMilliseconds;
+        UnityEngine.Debug.Log($"costTime {costTime}ms");
+    }
+
+    public void FindPathInCoroutine()
+    {
+        EnsureFindingContext();
+        StartCoroutine(pathFinder.FindPathInCoroutine(new Point(start.x, start.y), new Point(end.x, end.y), new WaitForSeconds(0.1f), info =>
+        {
+            UnityEngine.Debug.LogError($"{info.point} {info.changeFlag}");
+        }));
     }
 
     private IEnumerator Start()
@@ -52,17 +76,17 @@ public class PathFindingTest : MonoBehaviour
     {
         Color backup = Gizmos.color;
 
-        if (mapData != null)
+        if (gridData != null)
         {
             if (drawPassable || drawBlock)
             {
-                int rangeX = mapData.RangeX;
-                int rangeY = mapData.RangeY;
+                int rangeX = gridData.RangeX;
+                int rangeY = gridData.RangeY;
                 for (int i = 0; i < rangeX; ++i)
                 {
                     for (int j = 0; j < rangeY; ++j)
                     {
-                        bool passable = mapData.Passable(i, j);
+                        bool passable = gridData.Passable(i, j);
                         if (passable)
                         {
                             if (drawPassable)
