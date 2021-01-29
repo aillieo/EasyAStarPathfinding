@@ -11,7 +11,11 @@ public class PathFindingTest : MonoBehaviour
 {
     public TestGridData gridData;
     public Vector2Int start = new Vector2Int(1, 1);
-    public Vector2Int end = new Vector2Int(8, 8);
+    public Vector2Int end = new Vector2Int(255, 255);
+    public float timeStepForCoroutine = 0.1f;
+
+    private readonly HashSet<Vector2Int> openList = new HashSet<Vector2Int>();
+    private readonly HashSet<Vector2Int> closedList = new HashSet<Vector2Int>();
 
     private IEnumerable<Point> path;
     private PathFinder pathFinder;
@@ -19,6 +23,8 @@ public class PathFindingTest : MonoBehaviour
     public bool drawPassable = true;
     public bool drawBlock = true;
     public bool drawPath = true;
+    public bool drawOpenList = true;
+    public bool drawClosedList = true;
 
     private void EnsureFindingContext()
     {
@@ -57,20 +63,41 @@ public class PathFindingTest : MonoBehaviour
     public void FindPathInCoroutine()
     {
         EnsureFindingContext();
-        StartCoroutine(pathFinder.FindPathInCoroutine(new Point(start.x, start.y), new Point(end.x, end.y), new WaitForSeconds(0.1f), info =>
+
+        openList.Clear();
+        closedList.Clear();
+        StartCoroutine(pathFinder.FindPathInCoroutine(new Point(start.x, start.y), new Point(end.x, end.y), new WaitForSeconds(timeStepForCoroutine), info =>
         {
-            UnityEngine.Debug.LogError($"{info.point} {info.changeFlag}");
+            HashSet<Vector2Int> list = default;
+
+            if ((info.changeFlag & PointChangeFlag.OpenList) != PointChangeFlag.None)
+            {
+                list = openList;
+            }
+            else
+            {
+                list = closedList;
+            }
+
+            if ((info.changeFlag & PointChangeFlag.Add) != PointChangeFlag.None)
+            {
+                list.Add(new Vector2Int(info.point.x, info.point.y));
+            }
+            else
+            {
+                list.Remove(new Vector2Int(info.point.x, info.point.y));
+            }
         }));
     }
 
-    private IEnumerator Start()
-    {
-        yield return new WaitForSeconds(3);
-        FindPath();
-        yield return null;
-        yield return null;
-        UnityEditor.EditorApplication.isPaused = true;
-    }
+    //private IEnumerator Start()
+    //{
+    //    yield return new WaitForSeconds(3);
+    //    FindPath();
+    //    yield return null;
+    //    yield return null;
+    //    UnityEditor.EditorApplication.isPaused = true;
+    //}
 
     private void OnDrawGizmos()
     {
@@ -117,6 +144,24 @@ public class PathFindingTest : MonoBehaviour
             {
                 Gizmos.color = Color.Lerp(Color.red, Color.blue, ((float)(index++)) / count);
                 Gizmos.DrawCube(new Vector3(pp.x, pp.y, 0), Vector3.one * 0.4f);
+            }
+        }
+
+        if (drawOpenList)
+        {
+            Gizmos.color = Color.black;
+            foreach (var p in openList)
+            {
+                Gizmos.DrawCube(new Vector3(p.x, p.y, 0), Vector3.one * 0.4f);
+            }
+        }
+
+        if (drawClosedList)
+        {
+            Gizmos.color = Color.white;
+            foreach (var p in closedList)
+            {
+                Gizmos.DrawCube(new Vector3(p.x, p.y, 0), Vector3.one * 0.4f);
             }
         }
 

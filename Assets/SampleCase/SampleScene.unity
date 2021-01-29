@@ -309,9 +309,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ab6f4a8fc6565641b1876747bd2255f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapData: {fileID: 11400000, guid: b06b87880022b8349a71e27ac29d31a1, type: 2}
+  gridData: {fileID: 11400000, guid: b06b87880022b8349a71e27ac29d31a1, type: 2}
   start: {x: 0, y: 0}
-  end: {x: 1023, y: 1023}
+  end: {x: 255, y: 255}
+  timeStepForCoroutine: 0.1
   drawPassable: 0
   drawBlock: 0
   drawPath: 0
+  drawOpenList: 1
+  drawClosedList: 0

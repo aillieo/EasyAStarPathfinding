@@ -6,6 +6,8 @@ namespace AillieoUtils.PathFinding
 {
     internal class PointNodeEqualityComparer : IEqualityComparer<PointNode>
     {
+        public static readonly PointNodeEqualityComparer instance = new PointNodeEqualityComparer();
+
         public bool Equals(PointNode x, PointNode y)
         {
             object ox = x;

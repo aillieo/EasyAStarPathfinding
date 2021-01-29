@@ -16,7 +16,13 @@ namespace AillieoUtils
 
     public struct PointChangeInfo
     {
+        public PointChangeInfo(Point point, PointChangeFlag flag)
+        {
+            this.point = point;
+            changeFlag = flag;
+        }
+
         public Point point;
-        public int changeFlag;
+        public PointChangeFlag changeFlag;
     }
 }

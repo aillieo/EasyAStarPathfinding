@@ -10,7 +10,7 @@ namespace AillieoUtils.PathFinding
     {
         private readonly PointNode.PointNodePool pool = PointNode.Pool();
         private readonly IGridDataProvider gridDataProvider;
-        private readonly SortedSet<PointNode> openList;
+        private readonly UniquePriorityQueue<PointNode> openList;
         private readonly HashSet<PointNode> closed;
         private readonly PointNodeComparer comparer;
         private readonly NeighborCollectingFunc neighborCollectingFunc;
@@ -47,8 +47,8 @@ namespace AillieoUtils.PathFinding
 
             this.neighborCollectingFunc = neighborCollectingFunc;
             this.comparer = new PointNodeComparer(costFunc);
-            this.openList = new SortedSet<PointNode>(comparer);
-            this.closed = new HashSet<PointNode>(new PointNodeEqualityComparer());
+            this.openList = new UniquePriorityQueue<PointNode>(this.comparer);
+            this.closed = new HashSet<PointNode>(PointNodeEqualityComparer.instance);
         }
 
         private void Init(Point startPoint, Point endPoint)
@@ -59,24 +59,22 @@ namespace AillieoUtils.PathFinding
             endingNode = null;
         }
 
-        private void CollectNeighbors(PointNode pointNode)
+        private bool Collect(Point point, PointNode parentNode = null)
         {
-            // 把周围点 加入open
-            var neighbors = neighborCollectingFunc(pointNode.point, gridDataProvider);
-            foreach (Point p in neighbors)
+            PointNode newNode = pool.GetPointNode(point, parentNode);
+            if (closed.Contains(newNode))
             {
-                PointNode newNode = pool.GetPointNode(p, pointNode);
-                if (closed.Contains(newNode))
-                {
-                    pool.Recycle(newNode);
-                    continue;
-                }
-
-                if (!openList.Add(newNode))
-                {
-                    pool.Recycle(newNode);
-                }
+                pool.Recycle(newNode);
+                return false;
             }
+
+            if (!openList.Enqueue(newNode))
+            {
+                pool.Recycle(newNode);
+                return false;
+            }
+
+            return true;
         }
 
         private void CleanUp()
@@ -97,17 +95,21 @@ namespace AillieoUtils.PathFinding
         {
             Init(startPoint, endPoint);
 
-            openList.Add(pool.GetPointNode(startPoint, null));
+            openList.Enqueue(pool.GetPointNode(startPoint, null));
 
             while (openList.Count > 0)
             {
                 // 取第一个
-                var first = openList.Min;
+                var first = openList.Dequeue();
 
-                CollectNeighbors(first);
+                // 把周围点 加入open
+                var neighbors = neighborCollectingFunc(first.point, gridDataProvider);
+                foreach (Point p in neighbors)
+                {
+                    Collect(p, first);
+                }
 
                 // 将first移入close
-                openList.Remove(first);
                 closed.Add(first);
 
                 if (first.point == endPoint)
@@ -158,18 +160,28 @@ namespace AillieoUtils.PathFinding
         {
             Init(startPoint, endPoint);
 
-            openList.Add(pool.GetPointNode(startPoint, null));
+            openList.Enqueue(pool.GetPointNode(startPoint, null));
+            pointChanged?.Invoke(new PointChangeInfo(startPoint, PointChangeFlag.Add | PointChangeFlag.OpenList));
 
             while (openList.Count > 0)
             {
                 yield return yieldInstruction;
 
-                var first = openList.Min;
+                var first = openList.Dequeue();
+                pointChanged?.Invoke(new PointChangeInfo(first.point, PointChangeFlag.Remove | PointChangeFlag.OpenList));
 
-                CollectNeighbors(first);
+                // 把周围点 加入open
+                var neighbors = neighborCollectingFunc(first.point, gridDataProvider);
+                foreach (Point p in neighbors)
+                {
+                    if (Collect(p, first))
+                    {
+                        pointChanged?.Invoke(new PointChangeInfo(p, PointChangeFlag.Add | PointChangeFlag.OpenList));
+                    }
+                }
 
-                openList.Remove(first);
                 closed.Add(first);
+                pointChanged?.Invoke(new PointChangeInfo(first.point, PointChangeFlag.Add | PointChangeFlag.ClosedList));
 
                 if (first.point == endPoint)
                 {
