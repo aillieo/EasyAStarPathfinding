@@ -19,6 +19,8 @@ public class PathFindingTest : MonoBehaviour
 
     private IEnumerable<Point> path;
     private PathFinder pathFinder;
+    private AsyncPathFinder asyncPathFinder;
+    private CoroutinePathFinder coroutinePathFinder;
 
     public bool drawPassable = true;
     public bool drawBlock = true;
@@ -37,6 +39,8 @@ public class PathFindingTest : MonoBehaviour
         if (pathFinder == null)
         {
             pathFinder = new PathFinder(gridData);
+            asyncPathFinder = new AsyncPathFinder(gridData);
+            coroutinePathFinder = new CoroutinePathFinder(gridData);
         }
     }
 
@@ -55,7 +59,7 @@ public class PathFindingTest : MonoBehaviour
         EnsureFindingContext();
         Stopwatch sw = new Stopwatch();
         sw.Start();
-        path = await pathFinder.FindPathAsync(new Point(start.x, start.y), new Point(end.x, end.y));
+        path = await asyncPathFinder.FindPathAsync(new Point(start.x, start.y), new Point(end.x, end.y));
         long costTime = sw.ElapsedMilliseconds;
         UnityEngine.Debug.Log($"costTime {costTime}ms");
     }
@@ -66,7 +70,7 @@ public class PathFindingTest : MonoBehaviour
 
         openList.Clear();
         closedList.Clear();
-        StartCoroutine(pathFinder.FindPathInCoroutine(new Point(start.x, start.y), new Point(end.x, end.y), new WaitForSeconds(timeStepForCoroutine), info =>
+        StartCoroutine(coroutinePathFinder.FindPathInCoroutine(new Point(start.x, start.y), new Point(end.x, end.y), new WaitForSeconds(timeStepForCoroutine), info =>
         {
             HashSet<Vector2Int> list = default;
 

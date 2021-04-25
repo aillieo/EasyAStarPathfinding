@@ -18,6 +18,20 @@ namespace AillieoUtils
             return new PointNodePool();
         }
 
+        [ThreadStatic]
+        private static PointNode dummy;
+
+        public static PointNode Dummy(Point point)
+        {
+            if (dummy == null)
+            {
+                dummy = new PointNode();
+            }
+
+            dummy.point = point;
+            return dummy;
+        }
+
         internal class PointNodePool
         {
             internal PointNodePool()
