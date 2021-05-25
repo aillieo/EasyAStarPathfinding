@@ -1,0 +1,15 @@
+{
+    "name": "AillieoUtils.EasyAStarPathFinding.Visualizers",
+    "references": [
+        "AillieoUtils.EasyAStarPathFinding"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
