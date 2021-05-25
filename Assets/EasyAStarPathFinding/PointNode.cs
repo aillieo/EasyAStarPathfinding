@@ -8,7 +8,7 @@ namespace AillieoUtils
     {
         public Point point;
         public PointNode previous;
-
+        public float g;
         private PointNode()
         {
         }

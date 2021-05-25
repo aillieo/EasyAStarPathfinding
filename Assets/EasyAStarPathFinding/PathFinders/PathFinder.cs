@@ -16,13 +16,14 @@ namespace AillieoUtils.PathFinding
         protected readonly NeighborCollectingFunc neighborCollectingFunc;
 
         protected PointNode endingNode;
+        protected Point endingPoint;
 
         public PathFinder(IGridDataProvider gridDataProvider)
             : this(gridDataProvider, null, null)
         {
         }
 
-        public PathFinder(IGridDataProvider gridDataProvider, CostFunc costFunc)
+        public PathFinder(IGridDataProvider gridDataProvider, HeuristicFunc costFunc)
             : this(gridDataProvider, costFunc, null)
         {
         }
@@ -32,12 +33,12 @@ namespace AillieoUtils.PathFinding
         {
         }
 
-        public PathFinder(IGridDataProvider gridDataProvider, CostFunc costFunc, NeighborCollectingFunc neighborCollectingFunc)
+        public PathFinder(IGridDataProvider gridDataProvider, HeuristicFunc costFunc, NeighborCollectingFunc neighborCollectingFunc)
         {
             this.gridDataProvider = gridDataProvider;
             if (costFunc == null)
             {
-                costFunc = CostFuncPreset.DefaultCostFunc;
+                costFunc = HeuristicFuncPreset.DefaultCostFunc;
             }
 
             if (neighborCollectingFunc == null)
@@ -53,6 +54,7 @@ namespace AillieoUtils.PathFinding
 
         protected void Init(Point startPoint, Point endPoint)
         {
+            this.endingPoint = endPoint;
             comparer.Init(startPoint, endPoint);
             openList.Clear();
             closed.Clear();
@@ -67,8 +69,12 @@ namespace AillieoUtils.PathFinding
                 return false;
             }
 
-            if (!openList.Enqueue(newNode))
+            PointNode newNode1 = pool.GetPointNode(point, parentNode);
+            newNode1.g = parentNode != null ? parentNode.g : 0f;
+            newNode1.g += HeuristicFuncPreset.ManhattanDist(point, endingPoint);
+            if (!openList.Enqueue(newNode1))
             {
+                pool.Recycle(newNode1);
                 return false;
             }
 

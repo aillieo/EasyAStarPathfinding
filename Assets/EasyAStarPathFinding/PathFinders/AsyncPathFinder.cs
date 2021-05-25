@@ -13,12 +13,12 @@ namespace AillieoUtils.PathFinding
         {
         }
 
-        public AsyncPathFinder(IGridDataProvider gridDataProvider, CostFunc costFunc)
+        public AsyncPathFinder(IGridDataProvider gridDataProvider, HeuristicFunc costFunc)
             : base(gridDataProvider, costFunc)
         {
         }
 
-        public AsyncPathFinder(IGridDataProvider gridDataProvider, CostFunc costFunc, NeighborCollectingFunc neighborCollectingFunc)
+        public AsyncPathFinder(IGridDataProvider gridDataProvider, HeuristicFunc costFunc, NeighborCollectingFunc neighborCollectingFunc)
             : base(gridDataProvider, costFunc, neighborCollectingFunc)
         {
         }

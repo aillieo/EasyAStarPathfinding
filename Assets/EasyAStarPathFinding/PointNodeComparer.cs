@@ -6,11 +6,11 @@ namespace AillieoUtils.PathFinding
 {
     internal class PointNodeComparer : IComparer<PointNode>
     {
-        private CostFunc costFunc;
+        private HeuristicFunc costFunc;
         private Point startPoint;
         private Point endPoint;
 
-        public PointNodeComparer(CostFunc costFunc)
+        public PointNodeComparer(HeuristicFunc costFunc)
         {
             this.costFunc = costFunc;
         }
@@ -23,11 +23,14 @@ namespace AillieoUtils.PathFinding
 
         public int Compare(PointNode lhs, PointNode rhs)
         {
-            int cost1 = costFunc(lhs.point, startPoint, endPoint);
-            int cost2 = costFunc(rhs.point, startPoint, endPoint);
-            if (cost1 != cost2)
+            float h1 = costFunc(lhs.point, endPoint);
+            float h2 = costFunc(rhs.point, endPoint);
+            float f1 = h1 + lhs.g;
+            float f2 = h2 + rhs.g;
+
+            if (f1 != f2)
             {
-                return cost1 - cost2;
+                return f2.CompareTo(f1);
             }
             return lhs.point.CompareTo(rhs.point);
         }

@@ -11,12 +11,12 @@ namespace AillieoUtils.PathFinding
         {
         }
 
-        public CoroutinePathFinder(IGridDataProvider gridDataProvider, CostFunc costFunc)
+        public CoroutinePathFinder(IGridDataProvider gridDataProvider, HeuristicFunc costFunc)
             : base(gridDataProvider, costFunc)
         {
         }
 
-        public CoroutinePathFinder(IGridDataProvider gridDataProvider, CostFunc costFunc, NeighborCollectingFunc neighborCollectingFunc)
+        public CoroutinePathFinder(IGridDataProvider gridDataProvider, HeuristicFunc costFunc, NeighborCollectingFunc neighborCollectingFunc)
             : base(gridDataProvider, costFunc, neighborCollectingFunc)
         {
         }
