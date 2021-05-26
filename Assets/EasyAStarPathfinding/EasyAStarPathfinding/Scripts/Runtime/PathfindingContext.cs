@@ -1,6 +1,33 @@
+using System.Collections.Generic;
+
 namespace AillieoUtils.Pathfinding
 {
     public class PathfindingContext
     {
+        internal readonly PointNode.PointNodePool pool = PointNode.Pool();
+        internal readonly PriorityQueue<PointNode> openList;
+        internal readonly HashSet<Point> closedSet;
+        internal readonly HashSet<Point> openSet;
+        internal PointNode endingNode;
+        internal Point endingPoint;
+
+        internal PathfindingContext(IComparer<PointNode> comparer)
+        {
+            this.openList = new PriorityQueue<PointNode>(comparer);
+            this.closedSet = new HashSet<Point>();
+            this.openSet = new HashSet<Point>();
+        }
+
+        internal void Reset()
+        {
+            foreach (var p in this.openList)
+            {
+                pool.Recycle(p);
+            }
+            this.endingNode = null;
+            this.openSet.Clear();
+            this.openList.Clear();
+            this.closedSet.Clear();
+        }
     }
 }

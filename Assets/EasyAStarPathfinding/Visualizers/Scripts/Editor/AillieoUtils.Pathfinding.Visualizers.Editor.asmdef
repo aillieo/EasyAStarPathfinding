@@ -1,7 +1,12 @@
 {
-    "name": "AillieoUtils.EasyAStarPathfinding",
-    "references": [],
-    "includePlatforms": [],
+    "name": "AillieoUtils.Pathfinding.Visualizers.Editor",
+    "references": [
+        "AillieoUtils.Pathfinding",
+        "AillieoUtils.Pathfinding.Visualizers"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

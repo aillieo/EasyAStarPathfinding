@@ -314,7 +314,7 @@ MonoBehaviour:
   end: {x: 255, y: 255}
   timeStepForCoroutine: 0.1
   drawPassable: 0
-  drawBlock: 0
-  drawPath: 0
-  drawOpenList: 1
+  drawBlock: 1
+  drawPath: 1
+  drawOpenList: 0
   drawClosedList: 0

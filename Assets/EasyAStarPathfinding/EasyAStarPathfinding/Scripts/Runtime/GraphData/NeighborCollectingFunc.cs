@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 
-namespace AillieoUtils
+namespace AillieoUtils.Pathfinding
 {
-    public delegate IEnumerable<Point> NeighborCollectingFunc(Point current, IGridDataProvider gridDataProvider);
+    public delegate IEnumerable<Point> NeighborCollectingFunc(Point current, IGridData gridDataProvider);
 
     public static class NeighborCollectingFuncPreset
     {
-        public static IEnumerable<Point> DefaultNeighborCollectingFunc(Point current, IGridDataProvider gridDataProvider)
+        public static IEnumerable<Point> DefaultNeighborCollectingFunc(Point current, IGridData gridDataProvider)
         {
             for (int i = -1; i <= 1; ++i)
             {
@@ -20,7 +20,7 @@ namespace AillieoUtils
 
                     if (i != 0 && j != 0)
                     {
-                        // ½ûÖ¹Ð±×Å×ß
+                        // ç¦æ­¢æ–œç€èµ°
                         continue;
                     }
 

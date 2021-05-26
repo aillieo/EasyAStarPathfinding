@@ -1,56 +1,46 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
-namespace AillieoUtils.Pathfinding
+namespace AillieoUtils.Pathfinding.Visualizers
 {
     public class CoroutinePathfinder : Pathfinder
     {
-        public CoroutinePathfinder(IGridDataProvider gridDataProvider)
+        public CoroutinePathfinder(IGridData gridDataProvider)
             : base(gridDataProvider)
         {
         }
-        public CoroutinePathfinder(IGridDataProvider gridDataProvider, HeuristicFunc costFunc)
+        public CoroutinePathfinder(IGridData gridDataProvider, HeuristicFunc costFunc)
             : base(gridDataProvider, costFunc)
         {
         }
 
-        public CoroutinePathfinder(IGridDataProvider gridDataProvider, HeuristicFunc costFunc, NeighborCollectingFunc neighborCollectingFunc)
-            : base(gridDataProvider, costFunc, neighborCollectingFunc)
-        {
-        }
-
-        public IEnumerator FindPathInCoroutine(Point startPoint, Point endPoint, UnityEngine.YieldInstruction yieldInstruction, PointChangedFunc pointChanged)
+        public IEnumerator FindPathInCoroutine(Point startPoint, Point endPoint, UnityEngine.YieldInstruction yieldInstruction)
         {
             Init(startPoint, endPoint);
 
-            openList.Enqueue(pool.GetPointNode(startPoint, null));
-            pointChanged?.Invoke(new PointChangeInfo(startPoint, PointChangeFlag.Add | PointChangeFlag.OpenList));
+            var startNode = context.pool.GetPointNode(startPoint, null);
+            context.openList.Enqueue(startNode);
+            context.openSet.Add(startPoint);
 
-            while (openList.Count > 0)
+            while (context.openList.Count > 0)
             {
+                var first = context.openList.Dequeue();
+
                 yield return yieldInstruction;
 
-                var first = openList.Dequeue();
-                pointChanged?.Invoke(new PointChangeInfo(first.point, PointChangeFlag.Remove | PointChangeFlag.OpenList));
-
                 // 把周围点 加入open
-                var neighbors = neighborCollectingFunc(first.point, gridDataProvider);
+                var neighbors = gridDataProvider.CollectNeighbor(first.point);
                 foreach (Point p in neighbors)
                 {
-                    if (Collect(p, first))
-                    {
-                        pointChanged?.Invoke(new PointChangeInfo(p, PointChangeFlag.Add | PointChangeFlag.OpenList));
-                    }
+                    Collect(p, first);
                 }
 
-                closed.Add(first);
-                pointChanged?.Invoke(new PointChangeInfo(first.point, PointChangeFlag.Add | PointChangeFlag.ClosedList));
+                context.closedSet.Add(first.point);
 
                 if (first.point == endPoint)
                 {
-                    endingNode = first;
+                    context.endingNode = first;
                     break;
                 }
             }

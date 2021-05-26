@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace AillieoUtils
+namespace AillieoUtils.Pathfinding
 {
     public class PointNode
     {

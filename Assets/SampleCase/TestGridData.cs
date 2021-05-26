@@ -1,12 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using AillieoUtils;
 using System;
-using System.Linq;
+using AillieoUtils.Pathfinding;
 
 [CreateAssetMenu(fileName = "TestGridData", menuName = "TestGridData")]
-public class TestGridData : ScriptableObject, IGridDataProvider
+public class TestGridData : ScriptableObject, IGridData
 {
     [SerializeField]
     private bool[] data;
@@ -104,5 +103,10 @@ public class TestGridData : ScriptableObject, IGridDataProvider
                 yield return new Vector2Int(i % rangeX, i / rangeX);
             }
         }
+    }
+
+    public IEnumerable<Point> CollectNeighbor(Point current)
+    {
+        return NeighborCollectingFuncPreset.DefaultNeighborCollectingFunc(current, this);
     }
 }

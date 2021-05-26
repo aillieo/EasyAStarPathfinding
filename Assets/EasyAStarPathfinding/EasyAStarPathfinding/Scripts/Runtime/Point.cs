@@ -1,6 +1,6 @@
 using System;
 
-namespace AillieoUtils
+namespace AillieoUtils.Pathfinding
 {
     public partial struct Point : IEquatable<Point>, IComparable<Point>
     {

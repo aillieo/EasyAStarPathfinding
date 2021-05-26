@@ -1,10 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace AillieoUtils.Pathfinding
 {
-    internal class PointNodeComparer : IComparer<PointNode>
+    public class PointNodeComparer : IComparer<PointNode>
     {
         private HeuristicFunc costFunc;
         private Point startPoint;

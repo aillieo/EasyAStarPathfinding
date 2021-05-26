@@ -1,39 +1,22 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace AillieoUtils.Pathfinding
 {
     public class Pathfinder
     {
-        internal readonly PointNode.PointNodePool pool = PointNode.Pool();
-        protected readonly IGridDataProvider gridDataProvider;
-        protected readonly UniquePriorityQueue<PointNode> openList;
-        protected readonly HashSet<PointNode> closed;
+        internal protected PathfindingContext context;
+
+        protected readonly IGridData gridDataProvider;
         internal readonly PointNodeComparer comparer;
-        protected readonly NeighborCollectingFunc neighborCollectingFunc;
 
-        protected PointNode endingNode;
-        protected Point endingPoint;
-
-        public Pathfinder(IGridDataProvider gridDataProvider)
-            : this(gridDataProvider, null, null)
+        public Pathfinder(IGridData gridDataProvider)
+            : this(gridDataProvider, null)
         {
         }
 
-        public Pathfinder(IGridDataProvider gridDataProvider, HeuristicFunc costFunc)
-            : this(gridDataProvider, costFunc, null)
-        {
-        }
-
-        public Pathfinder(IGridDataProvider gridDataProvider, NeighborCollectingFunc neighborCollectingFunc)
-            : this(gridDataProvider, null, neighborCollectingFunc)
-        {
-        }
-
-        public Pathfinder(IGridDataProvider gridDataProvider, HeuristicFunc costFunc, NeighborCollectingFunc neighborCollectingFunc)
+        public Pathfinder(IGridData gridDataProvider, HeuristicFunc costFunc)
         {
             this.gridDataProvider = gridDataProvider;
             if (costFunc == null)
@@ -41,85 +24,71 @@ namespace AillieoUtils.Pathfinding
                 costFunc = HeuristicFuncPreset.DefaultCostFunc;
             }
 
-            if (neighborCollectingFunc == null)
-            {
-                neighborCollectingFunc = NeighborCollectingFuncPreset.DefaultNeighborCollectingFunc;
-            }
-
-            this.neighborCollectingFunc = neighborCollectingFunc;
             this.comparer = new PointNodeComparer(costFunc);
-            this.openList = new UniquePriorityQueue<PointNode>(this.comparer);
-            this.closed = new HashSet<PointNode>(PointNodeEqualityComparer.instance);
+
+            this.context = new PathfindingContext(this.comparer);
         }
 
         protected void Init(Point startPoint, Point endPoint)
         {
-            this.endingPoint = endPoint;
+            this.context.Reset();
+            this.context.endingPoint = endPoint;
             comparer.Init(startPoint, endPoint);
-            openList.Clear();
-            closed.Clear();
-            endingNode = null;
         }
 
         protected bool Collect(Point point, PointNode parentNode = null)
         {
-            PointNode newNode = PointNode.Dummy(point);
-            if (closed.Contains(newNode))
+            if (this.context.closedSet.Contains(point))
             {
                 return false;
             }
 
-            PointNode newNode1 = pool.GetPointNode(point, parentNode);
-            newNode1.g = parentNode != null ? parentNode.g : 0f;
-            newNode1.g += HeuristicFuncPreset.ManhattanDist(point, endingPoint);
-            if (!openList.Enqueue(newNode1))
+            if(this.context.openSet.Contains(point))
             {
-                pool.Recycle(newNode1);
                 return false;
             }
+
+            PointNode newNode = context.pool.GetPointNode(point, parentNode);
+            newNode.g = parentNode != null ? parentNode.g : 0f;
+            newNode.g += HeuristicFuncPreset.ManhattanDist(point, this.context.endingPoint);
+            this.context.openList.Enqueue(newNode);
+            this.context.openSet.Add(point);
 
             return true;
         }
 
         protected void CleanUp()
         {
-            foreach (var p in openList)
-            {
-                pool.Recycle(p);
-            }
-            foreach (var p in closed)
-            {
-                pool.Recycle(p);
-            }
-            openList.Clear();
-            closed.Clear();
+            context.Reset();
         }
 
         public IEnumerable<Point> FindPath(Point startPoint, Point endPoint)
         {
             Init(startPoint, endPoint);
 
-            openList.Enqueue(pool.GetPointNode(startPoint, null));
+            var startNode = context.pool.GetPointNode(startPoint, null);
+            this.context.openList.Enqueue(startNode);
+            this.context.openSet.Add(startPoint);
 
-            while (openList.Count > 0)
+            while (this.context.openList.Count > 0)
             {
                 // 取第一个
-                var first = openList.Dequeue();
+                var first = this.context.openList.Dequeue();
 
                 // 把周围点 加入open
-                var neighbors = neighborCollectingFunc(first.point, gridDataProvider);
+                var neighbors = gridDataProvider.CollectNeighbor(first.point);
                 foreach (Point p in neighbors)
                 {
                     Collect(p, first);
                 }
 
                 // 将first移入close
-                closed.Add(first);
+                this.context.closedSet.Add(first.point);
 
                 if (first.point == endPoint)
                 {
                     // 找到终点了
-                    endingNode = first;
+                    this.context.endingNode = first;
                     break;
                 }
             }
@@ -134,12 +103,12 @@ namespace AillieoUtils.Pathfinding
 
         protected bool TraceBackForPath(List<Point> toFill)
         {
-            if (endingNode == null)
+            if (this.context.endingNode == null)
             {
                 return false;
             }
 
-            var node = endingNode;
+            var node = this.context.endingNode;
             while (node.previous != null)
             {
                 toFill.Add(node.point);

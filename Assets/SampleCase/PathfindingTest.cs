@@ -6,6 +6,7 @@ using AillieoUtils;
 using AillieoUtils.Pathfinding;
 using System.Diagnostics;
 using System;
+using AillieoUtils.Pathfinding.Visualizers;
 
 public class PathfindingTest : MonoBehaviour
 {
@@ -13,9 +14,6 @@ public class PathfindingTest : MonoBehaviour
     public Vector2Int start = new Vector2Int(1, 1);
     public Vector2Int end = new Vector2Int(255, 255);
     public float timeStepForCoroutine = 0.1f;
-
-    private readonly HashSet<Vector2Int> openList = new HashSet<Vector2Int>();
-    private readonly HashSet<Vector2Int> closedList = new HashSet<Vector2Int>();
 
     private IEnumerable<Point> path;
     private Pathfinder pathfinder;
@@ -27,6 +25,8 @@ public class PathfindingTest : MonoBehaviour
     public bool drawPath = true;
     public bool drawOpenList = true;
     public bool drawClosedList = true;
+
+    private GizmosDrawer drawer = new GizmosDrawer();
 
     private void EnsureFindingContext()
     {
@@ -67,31 +67,7 @@ public class PathfindingTest : MonoBehaviour
     public void FindPathInCoroutine()
     {
         EnsureFindingContext();
-
-        openList.Clear();
-        closedList.Clear();
-        StartCoroutine(coroutinePathfinder.FindPathInCoroutine(new Point(start.x, start.y), new Point(end.x, end.y), new WaitForSeconds(timeStepForCoroutine), info =>
-        {
-            HashSet<Vector2Int> list = default;
-
-            if ((info.changeFlag & PointChangeFlag.OpenList) != PointChangeFlag.None)
-            {
-                list = openList;
-            }
-            else
-            {
-                list = closedList;
-            }
-
-            if ((info.changeFlag & PointChangeFlag.Add) != PointChangeFlag.None)
-            {
-                list.Add(new Vector2Int(info.point.x, info.point.y));
-            }
-            else
-            {
-                list.Remove(new Vector2Int(info.point.x, info.point.y));
-            }
-        }));
+        StartCoroutine(coroutinePathfinder.FindPathInCoroutine(new Point(start.x, start.y), new Point(end.x, end.y), new WaitForSeconds(timeStepForCoroutine)));
     }
 
     //private IEnumerator Start()
@@ -151,22 +127,11 @@ public class PathfindingTest : MonoBehaviour
             }
         }
 
-        if (drawOpenList)
+        if (drawOpenList || drawClosedList)
         {
-            Gizmos.color = Color.black;
-            foreach (var p in openList)
-            {
-                Gizmos.DrawCube(new Vector3(p.x, p.y, 0), Vector3.one * 0.4f);
-            }
-        }
-
-        if (drawClosedList)
-        {
-            Gizmos.color = Color.white;
-            foreach (var p in closedList)
-            {
-                Gizmos.DrawCube(new Vector3(p.x, p.y, 0), Vector3.one * 0.4f);
-            }
+            drawer.drawClosedList = this.drawClosedList;
+            drawer.drawOpenList = this.drawOpenList;
+            drawer.Draw(coroutinePathfinder);
         }
 
         Gizmos.color = backup;

@@ -1,8 +1,6 @@
 {
-    "name": "AillieoUtils.Pathfinding.Visualizers",
-    "references": [
-        "AillieoUtils.Pathfinding"
-    ],
+    "name": "AillieoUtils.Pathfinding",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

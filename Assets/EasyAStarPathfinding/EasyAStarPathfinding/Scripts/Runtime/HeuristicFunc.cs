@@ -1,12 +1,12 @@
 using System;
 
-namespace AillieoUtils
+namespace AillieoUtils.Pathfinding
 {
     public delegate float HeuristicFunc(Point point1, Point point2);
 
     public static class HeuristicFuncPreset
     {
-        public static HeuristicFunc DefaultCostFunc { get; set; } = ManhattanDist;
+        public static HeuristicFunc DefaultCostFunc { get; set; } = EuclideanDist;
 
         public static float ManhattanDist(Point a, Point b)
         {
