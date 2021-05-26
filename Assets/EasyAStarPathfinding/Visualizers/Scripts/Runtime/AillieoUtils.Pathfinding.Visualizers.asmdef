@@ -1,7 +1,7 @@
 {
-    "name": "AillieoUtils.EasyAStarPathFinding.Visualizers",
+    "name": "AillieoUtils.Pathfinding.Visualizers",
     "references": [
-        "AillieoUtils.EasyAStarPathFinding"
+        "AillieoUtils.EasyAStarPathfinding"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

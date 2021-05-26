@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using AillieoUtils;
-using AillieoUtils.PathFinding;
+using AillieoUtils.Pathfinding;
 using System.Diagnostics;
 using System;
 
-public class PathFindingTest : MonoBehaviour
+public class PathfindingTest : MonoBehaviour
 {
     public TestGridData gridData;
     public Vector2Int start = new Vector2Int(1, 1);
@@ -18,9 +18,9 @@ public class PathFindingTest : MonoBehaviour
     private readonly HashSet<Vector2Int> closedList = new HashSet<Vector2Int>();
 
     private IEnumerable<Point> path;
-    private PathFinder pathFinder;
-    private AsyncPathFinder asyncPathFinder;
-    private CoroutinePathFinder coroutinePathFinder;
+    private Pathfinder pathfinder;
+    private AsyncPathfinder asyncPathfinder;
+    private CoroutinePathfinder coroutinePathfinder;
 
     public bool drawPassable = true;
     public bool drawBlock = true;
@@ -32,15 +32,15 @@ public class PathFindingTest : MonoBehaviour
     {
         if (gridData == null)
         {
-            pathFinder = null;
+            pathfinder = null;
             throw new Exception($"invalid {nameof(gridData)}");
         }
 
-        if (pathFinder == null)
+        if (pathfinder == null)
         {
-            pathFinder = new PathFinder(gridData);
-            asyncPathFinder = new AsyncPathFinder(gridData);
-            coroutinePathFinder = new CoroutinePathFinder(gridData);
+            pathfinder = new Pathfinder(gridData);
+            asyncPathfinder = new AsyncPathfinder(gridData);
+            coroutinePathfinder = new CoroutinePathfinder(gridData);
         }
     }
 
@@ -49,7 +49,7 @@ public class PathFindingTest : MonoBehaviour
         EnsureFindingContext();
         Stopwatch sw = new Stopwatch();
         sw.Start();
-        path = pathFinder.FindPath(new Point(start.x, start.y), new Point(end.x, end.y));
+        path = pathfinder.FindPath(new Point(start.x, start.y), new Point(end.x, end.y));
         long costTime = sw.ElapsedMilliseconds;
         UnityEngine.Debug.Log($"costTime {costTime}ms");
     }
@@ -59,7 +59,7 @@ public class PathFindingTest : MonoBehaviour
         EnsureFindingContext();
         Stopwatch sw = new Stopwatch();
         sw.Start();
-        path = await asyncPathFinder.FindPathAsync(new Point(start.x, start.y), new Point(end.x, end.y));
+        path = await asyncPathfinder.FindPathAsync(new Point(start.x, start.y), new Point(end.x, end.y));
         long costTime = sw.ElapsedMilliseconds;
         UnityEngine.Debug.Log($"costTime {costTime}ms");
     }
@@ -70,7 +70,7 @@ public class PathFindingTest : MonoBehaviour
 
         openList.Clear();
         closedList.Clear();
-        StartCoroutine(coroutinePathFinder.FindPathInCoroutine(new Point(start.x, start.y), new Point(end.x, end.y), new WaitForSeconds(timeStepForCoroutine), info =>
+        StartCoroutine(coroutinePathfinder.FindPathInCoroutine(new Point(start.x, start.y), new Point(end.x, end.y), new WaitForSeconds(timeStepForCoroutine), info =>
         {
             HashSet<Vector2Int> list = default;
 

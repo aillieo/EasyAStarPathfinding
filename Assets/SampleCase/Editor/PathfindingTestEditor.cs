@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(PathFindingTest))]
-public class PathFindingTestEditor : Editor
+[CustomEditor(typeof(PathfindingTest))]
+public class PathfindingTestEditor : Editor
 {
     private void OnEnable()
     {
@@ -16,17 +16,17 @@ public class PathFindingTestEditor : Editor
 
         if (GUILayout.Button("FindPath"))
         {
-            (target as PathFindingTest).FindPath();
+            (target as PathfindingTest).FindPath();
         }
 
         if (GUILayout.Button("FindPathAsync"))
         {
-            (target as PathFindingTest).FindPathAsync();
+            (target as PathfindingTest).FindPathAsync();
         }
 
         if (GUILayout.Button("FindPathInCoroutine"))
         {
-            (target as PathFindingTest).FindPathInCoroutine();
+            (target as PathfindingTest).FindPathInCoroutine();
         }
     }
 }

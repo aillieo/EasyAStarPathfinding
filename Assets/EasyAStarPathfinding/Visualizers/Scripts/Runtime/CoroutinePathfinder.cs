@@ -1,22 +1,22 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
-namespace AillieoUtils.PathFinding
+namespace AillieoUtils.Pathfinding
 {
-    public class CoroutinePathFinder : PathFinder
+    public class CoroutinePathfinder : Pathfinder
     {
-        public CoroutinePathFinder(IGridDataProvider gridDataProvider)
+        public CoroutinePathfinder(IGridDataProvider gridDataProvider)
             : base(gridDataProvider)
         {
         }
-
-        public CoroutinePathFinder(IGridDataProvider gridDataProvider, HeuristicFunc costFunc)
+        public CoroutinePathfinder(IGridDataProvider gridDataProvider, HeuristicFunc costFunc)
             : base(gridDataProvider, costFunc)
         {
         }
 
-        public CoroutinePathFinder(IGridDataProvider gridDataProvider, HeuristicFunc costFunc, NeighborCollectingFunc neighborCollectingFunc)
+        public CoroutinePathfinder(IGridDataProvider gridDataProvider, HeuristicFunc costFunc, NeighborCollectingFunc neighborCollectingFunc)
             : base(gridDataProvider, costFunc, neighborCollectingFunc)
         {
         }

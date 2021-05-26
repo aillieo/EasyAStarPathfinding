@@ -1,6 +1,8 @@
 {
-    "name": "AillieoUtils.EasyAStarPathFinding",
-    "references": [],
+    "name": "AillieoUtils.Pathfinding.GraphCreator",
+    "references": [
+        "AillieoUtils.EasyAStarPathfinding"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

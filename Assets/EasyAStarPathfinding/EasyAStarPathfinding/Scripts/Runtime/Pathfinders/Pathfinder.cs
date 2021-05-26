@@ -1,12 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Threading.Tasks;
 
-namespace AillieoUtils.PathFinding
+namespace AillieoUtils.Pathfinding
 {
-    public class PathFinder
+    public class Pathfinder
     {
         internal readonly PointNode.PointNodePool pool = PointNode.Pool();
         protected readonly IGridDataProvider gridDataProvider;
@@ -18,22 +18,22 @@ namespace AillieoUtils.PathFinding
         protected PointNode endingNode;
         protected Point endingPoint;
 
-        public PathFinder(IGridDataProvider gridDataProvider)
+        public Pathfinder(IGridDataProvider gridDataProvider)
             : this(gridDataProvider, null, null)
         {
         }
 
-        public PathFinder(IGridDataProvider gridDataProvider, HeuristicFunc costFunc)
+        public Pathfinder(IGridDataProvider gridDataProvider, HeuristicFunc costFunc)
             : this(gridDataProvider, costFunc, null)
         {
         }
 
-        public PathFinder(IGridDataProvider gridDataProvider, NeighborCollectingFunc neighborCollectingFunc)
+        public Pathfinder(IGridDataProvider gridDataProvider, NeighborCollectingFunc neighborCollectingFunc)
             : this(gridDataProvider, null, neighborCollectingFunc)
         {
         }
 
-        public PathFinder(IGridDataProvider gridDataProvider, HeuristicFunc costFunc, NeighborCollectingFunc neighborCollectingFunc)
+        public Pathfinder(IGridDataProvider gridDataProvider, HeuristicFunc costFunc, NeighborCollectingFunc neighborCollectingFunc)
         {
             this.gridDataProvider = gridDataProvider;
             if (costFunc == null)

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace AillieoUtils.PathFinding
+namespace AillieoUtils.Pathfinding
 {
     internal class PointNodeComparer : IComparer<PointNode>
     {

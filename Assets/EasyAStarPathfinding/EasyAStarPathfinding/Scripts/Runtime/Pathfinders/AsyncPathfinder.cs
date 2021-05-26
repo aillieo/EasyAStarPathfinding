@@ -4,21 +4,21 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AillieoUtils.PathFinding
+namespace AillieoUtils.Pathfinding
 {
-    public class AsyncPathFinder : PathFinder
+    public class AsyncPathfinder : Pathfinder
     {
-        public AsyncPathFinder(IGridDataProvider gridDataProvider)
+        public AsyncPathfinder(IGridDataProvider gridDataProvider)
             : base(gridDataProvider)
         {
         }
 
-        public AsyncPathFinder(IGridDataProvider gridDataProvider, HeuristicFunc costFunc)
+        public AsyncPathfinder(IGridDataProvider gridDataProvider, HeuristicFunc costFunc)
             : base(gridDataProvider, costFunc)
         {
         }
 
-        public AsyncPathFinder(IGridDataProvider gridDataProvider, HeuristicFunc costFunc, NeighborCollectingFunc neighborCollectingFunc)
+        public AsyncPathfinder(IGridDataProvider gridDataProvider, HeuristicFunc costFunc, NeighborCollectingFunc neighborCollectingFunc)
             : base(gridDataProvider, costFunc, neighborCollectingFunc)
         {
         }

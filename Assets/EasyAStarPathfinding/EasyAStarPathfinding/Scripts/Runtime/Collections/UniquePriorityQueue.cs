@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace AillieoUtils.PathFinding
+namespace AillieoUtils.Pathfinding
 {
     public class UniquePriorityQueue<T> : IEnumerable<T>, IEnumerable, IReadOnlyCollection<T>, ICollection
     {
