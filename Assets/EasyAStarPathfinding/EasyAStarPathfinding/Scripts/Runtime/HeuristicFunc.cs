@@ -6,7 +6,7 @@ namespace AillieoUtils.Pathfinding
 
     public static class HeuristicFuncPreset
     {
-        public static HeuristicFunc DefaultCostFunc { get; set; } = EuclideanDist;
+        public static HeuristicFunc DefaultCostFunc { get; set; } = ManhattanDist;
 
         public static float ManhattanDist(Point a, Point b)
         {

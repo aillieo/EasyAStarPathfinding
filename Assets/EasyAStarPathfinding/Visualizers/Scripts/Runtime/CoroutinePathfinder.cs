@@ -26,6 +26,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
             while (context.openList.Count > 0)
             {
                 var first = context.openList.Dequeue();
+                context.openSet.Remove(first.point);
 
                 yield return yieldInstruction;
 

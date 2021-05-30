@@ -107,6 +107,31 @@ public class TestGridData : ScriptableObject, IGridData
 
     public IEnumerable<Point> CollectNeighbor(Point current)
     {
-        return NeighborCollectingFuncPreset.DefaultNeighborCollectingFunc(current, this);
+        for (int i = -1; i <= 1; ++i)
+        {
+            for (int j = -1; j <= 1; ++j)
+            {
+                if (i == 0 && j == 0)
+                {
+                    continue;
+                }
+
+                if (i != 0 && j != 0)
+                {
+                    // 禁止斜着走
+                    continue;
+                }
+
+                int x = current.x + i;
+                int y = current.y + j;
+
+                if (!Passable(x, y))
+                {
+                    continue;
+                }
+
+                yield return new Point(x, y);
+            }
+        }
     }
 }

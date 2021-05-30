@@ -4,11 +4,12 @@ using System.Collections.Generic;
 
 namespace AillieoUtils.Pathfinding
 {
-    public class PointNode
+    public class PointNode : IComparable<PointNode>
     {
         public Point point;
         public PointNode previous;
         public float g;
+        public float h;
         private PointNode()
         {
         }
@@ -18,18 +19,22 @@ namespace AillieoUtils.Pathfinding
             return new PointNodePool();
         }
 
-        [ThreadStatic]
-        private static PointNode dummy;
-
-        public static PointNode Dummy(Point point)
+        public int CompareTo(PointNode other)
         {
-            if (dummy == null)
+            float f1 = h + g;
+            float f2 = other.h + other.g;
+
+            if (f1 != f2)
             {
-                dummy = new PointNode();
+                return f2.CompareTo(f1);
             }
 
-            dummy.point = point;
-            return dummy;
+            if (h != other.h)
+            {
+                return other.h.CompareTo(h);
+            }
+
+            return other.point.CompareTo(point);
         }
 
         internal class PointNodePool
@@ -58,6 +63,8 @@ namespace AillieoUtils.Pathfinding
 
             public void Recycle(PointNode node)
             {
+                node.g = 0f;
+                node.h = 0f;
                 node.previous = null;
                 nodePool.Push(node);
             }

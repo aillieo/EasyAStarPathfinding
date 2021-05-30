@@ -9,7 +9,6 @@ namespace AillieoUtils.Pathfinding
         internal protected PathfindingContext context;
 
         protected readonly IGridData gridDataProvider;
-        internal readonly PointNodeComparer comparer;
 
         public Pathfinder(IGridData gridDataProvider)
             : this(gridDataProvider, null)
@@ -23,17 +22,13 @@ namespace AillieoUtils.Pathfinding
             {
                 costFunc = HeuristicFuncPreset.DefaultCostFunc;
             }
-
-            this.comparer = new PointNodeComparer(costFunc);
-
-            this.context = new PathfindingContext(this.comparer);
+            this.context = new PathfindingContext();
         }
 
         protected void Init(Point startPoint, Point endPoint)
         {
             this.context.Reset();
             this.context.endingPoint = endPoint;
-            comparer.Init(startPoint, endPoint);
         }
 
         protected bool Collect(Point point, PointNode parentNode = null)
@@ -45,12 +40,16 @@ namespace AillieoUtils.Pathfinding
 
             if(this.context.openSet.Contains(point))
             {
+                // todo 如果<=之前的g 需要更新g
                 return false;
             }
 
             PointNode newNode = context.pool.GetPointNode(point, parentNode);
-            newNode.g = parentNode != null ? parentNode.g : 0f;
-            newNode.g += HeuristicFuncPreset.ManhattanDist(point, this.context.endingPoint);
+            if (parentNode != null)
+            {
+                newNode.g = parentNode.g + HeuristicFuncPreset.DefaultCostFunc(point, parentNode.point);
+                newNode.h = HeuristicFuncPreset.DefaultCostFunc(point, this.context.endingPoint);
+            }
             this.context.openList.Enqueue(newNode);
             this.context.openSet.Add(point);
 
@@ -74,6 +73,7 @@ namespace AillieoUtils.Pathfinding
             {
                 // 取第一个
                 var first = this.context.openList.Dequeue();
+                context.openSet.Remove(first.point);
 
                 // 把周围点 加入open
                 var neighbors = gridDataProvider.CollectNeighbor(first.point);
