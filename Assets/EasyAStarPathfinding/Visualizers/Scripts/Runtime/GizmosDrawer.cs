@@ -25,9 +25,13 @@ namespace AillieoUtils.Pathfinding.Visualizers
             if (drawOpenList)
             {
                 Gizmos.color = Color.black;
-                foreach (var p in context.openSet)
+                foreach (var p in context.openList)
                 {
-                    Gizmos.DrawCube(new Vector3(p.x, p.y, 0), Vector3.one * 0.4f);
+                    Vector3 position = new Vector3(p.point.x, p.point.y, 0);
+#if UNITY_EDITOR
+                    UnityEditor.Handles.Label(position, $"{p.g},{p.h}");
+#endif
+                    Gizmos.DrawCube(position, Vector3.one * 0.4f);
                 }
             }
 

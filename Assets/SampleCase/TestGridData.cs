@@ -7,6 +7,8 @@ using AillieoUtils.Pathfinding;
 [CreateAssetMenu(fileName = "TestGridData", menuName = "TestGridData")]
 public class TestGridData : ScriptableObject, IGridData
 {
+    // public SquareGridData data;
+
     [SerializeField]
     private bool[] data;
     [SerializeField]

@@ -8,13 +8,8 @@ namespace AillieoUtils.Pathfinding
 {
     public class AsyncPathfinder : Pathfinder
     {
-        public AsyncPathfinder(IGridData gridDataProvider)
-            : base(gridDataProvider)
-        {
-        }
-
-        public AsyncPathfinder(IGridData gridDataProvider, HeuristicFunc costFunc)
-            : base(gridDataProvider, costFunc)
+        public AsyncPathfinder(IGridData gridDataProvider, Algorithms algorithm = Algorithms.AStar)
+            : base(gridDataProvider, algorithm)
         {
         }
 

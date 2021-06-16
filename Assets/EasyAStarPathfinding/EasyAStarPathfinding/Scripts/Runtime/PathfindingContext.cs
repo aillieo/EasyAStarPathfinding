@@ -5,11 +5,6 @@ namespace AillieoUtils.Pathfinding
 {
     public class PathfindingContext
     {
-        internal event Action<Point, float> onAddToOpenSet;
-        internal event Action<Point> onAddToCloseSet;
-        internal event Action<Point> onRemoveFromOpenSet;
-        internal event Action<Point> onRemoveFromCloseSet;
-
         internal readonly PointNode.PointNodePool pool = PointNode.Pool();
         internal readonly PriorityQueue<PointNode> openList;
         internal readonly HashSet<Point> closedSet;

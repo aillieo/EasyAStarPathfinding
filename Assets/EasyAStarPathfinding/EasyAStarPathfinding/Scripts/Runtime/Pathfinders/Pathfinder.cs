@@ -10,18 +10,9 @@ namespace AillieoUtils.Pathfinding
 
         protected readonly IGridData gridDataProvider;
 
-        public Pathfinder(IGridData gridDataProvider)
-            : this(gridDataProvider, null)
-        {
-        }
-
-        public Pathfinder(IGridData gridDataProvider, HeuristicFunc costFunc)
+        public Pathfinder(IGridData gridDataProvider, Algorithms algorithm = Algorithms.AStar)
         {
             this.gridDataProvider = gridDataProvider;
-            if (costFunc == null)
-            {
-                costFunc = HeuristicFuncPreset.DefaultCostFunc;
-            }
             this.context = new PathfindingContext();
         }
 

@@ -6,12 +6,8 @@ namespace AillieoUtils.Pathfinding.Visualizers
 {
     public class CoroutinePathfinder : Pathfinder
     {
-        public CoroutinePathfinder(IGridData gridDataProvider)
-            : base(gridDataProvider)
-        {
-        }
-        public CoroutinePathfinder(IGridData gridDataProvider, HeuristicFunc costFunc)
-            : base(gridDataProvider, costFunc)
+        public CoroutinePathfinder(IGridData gridDataProvider, Algorithms algorithm = Algorithms.AStar)
+            : base(gridDataProvider, algorithm)
         {
         }
 

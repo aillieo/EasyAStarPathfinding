@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 namespace AillieoUtils.Pathfinding
 {
+    [Serializable]
     public class SquareGridData : IGridData
     {
         private bool[] data;
