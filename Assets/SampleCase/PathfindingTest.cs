@@ -10,12 +10,18 @@ using AillieoUtils.Pathfinding.Visualizers;
 
 public class PathfindingTest : MonoBehaviour
 {
-    public TestGridData gridData;
+    public SquareGridData gridData;
     public Vector2Int start = new Vector2Int(1, 1);
     public Vector2Int end = new Vector2Int(255, 255);
     public float timeStepForCoroutine = 0.1f;
 
     private IEnumerable<Point> path;
+
+    public void LoadData(string dataPath)
+    {
+        gridData = SerializeHelper.Load<SquareGridData>(dataPath);
+    }
+
     private Pathfinder pathfinder;
     private AsyncPathfinder asyncPathfinder;
     private CoroutinePathfinder coroutinePathfinder;

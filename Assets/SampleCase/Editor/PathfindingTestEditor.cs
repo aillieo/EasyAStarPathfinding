@@ -14,19 +14,30 @@ public class PathfindingTestEditor : Editor
     {
         base.OnInspectorGUI();
 
-        if (GUILayout.Button("FindPath"))
+        PathfindingTest targetPathfindingTest = target as PathfindingTest;
+
+        if (GUILayout.Button("LoadData"))
         {
-            (target as PathfindingTest).FindPath();
+            string dataPath = EditorUtility.OpenFilePanel("Select grid data file:", Application.dataPath, "bytes");
+            targetPathfindingTest.LoadData(dataPath); 
         }
 
-        if (GUILayout.Button("FindPathAsync"))
+        if(targetPathfindingTest.gridData != null)
         {
-            (target as PathfindingTest).FindPathAsync();
-        }
+            if (GUILayout.Button("FindPath"))
+            {
+                targetPathfindingTest.FindPath();
+            }
 
-        if (GUILayout.Button("FindPathInCoroutine"))
-        {
-            (target as PathfindingTest).FindPathInCoroutine();
+            if (GUILayout.Button("FindPathAsync"))
+            {
+                targetPathfindingTest.FindPathAsync();
+            }
+
+            if (GUILayout.Button("FindPathInCoroutine"))
+            {
+                targetPathfindingTest.FindPathInCoroutine();
+            }
         }
     }
 }
