@@ -6,13 +6,12 @@ using UnityEngine;
 namespace AillieoUtils.Pathfinding.GraphCreator.Editor
 {
 
-    public class SquareGridDataEditorWindow : EditorWindow
+    public class SquareGridEditorWindowLite : BaseEditorWindow<SquareGridData>
     {
-        [MenuItem("AillieoUtils/AStarPathfinding/SquareGridDataEditorWindow")]
+        [MenuItem("AillieoUtils/AStarPathfinding/SquareGridEditorWindowLite")]
         public static void Open()
         {
-            var window = GetWindow<SquareGridDataEditorWindow>();
-            window.Show();
+            GetWindowAndOpen<SquareGridEditorWindowLite>();
         }
 
         private Vector2Int dataRange;
@@ -26,39 +25,13 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
         private const float barWidth = 30f;
         private const float viewWidthMax = 500f;
 
-        private string path;
-        private SquareGridData data;
-
-        public static bool editInScene = false;
-
         public void OnGUI()
         {
-            EditorGUILayout.BeginVertical("box");
-            path = EditorGUILayout.TextField(new GUIContent("path"), $"{Application.dataPath}/data.bytes");
-            if (GUILayout.Button("New"))
-            {
-                data = new SquareGridData();
-            }
-            if (GUILayout.Button("Save"))
-            {
-                SerializeHelper.Save(data, path);
-            }
-            if (GUILayout.Button("Load"))
-            {
-                data = SerializeHelper.Load<SquareGridData>(path);
-            }
-            EditorGUILayout.EndVertical();
+            DrawSaveLoadButtons();
 
             EditorGUILayout.Space(10);
 
-            if (editInScene)
-            {
-                DrawGridDataInScene();
-            }
-            else
-            {
-                DrawGridDataEditor();
-            }
+            DrawGridDataEditor();
         }
 
         private void DrawGridDataEditor()
@@ -151,8 +124,9 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             }
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             widthCtrl = GUILayout.MaxWidth(viewWidthMax);
         }
 
@@ -224,9 +198,16 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             return true;
         }
 
-        private void DrawGridDataInScene()
+        protected override void OnSceneGUI(SceneView sceneView)
         {
+        }
 
+        protected override void SceneInit()
+        {
+        }
+
+        protected override void SceneCleanUp()
+        {
         }
     }
 }
