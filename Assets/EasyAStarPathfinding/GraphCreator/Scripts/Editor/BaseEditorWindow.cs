@@ -41,7 +41,7 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             data = SerializeHelper.Load<T>(path);
         }
 
-        protected virtual T CreateNew()
+        protected virtual T CreateNewGraph()
         {
             return Activator.CreateInstance<T>();
         }
@@ -50,9 +50,10 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
         {
             EditorGUILayout.BeginVertical("box");
             path = EditorGUILayout.TextField(new GUIContent("path"), $"{Application.dataPath}/data.bytes");
+            EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("New"))
             {
-                data = CreateNew();
+                data = CreateNewGraph();
             }
             if (GUILayout.Button("Save"))
             {
@@ -62,6 +63,7 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             {
                 Load();
             }
+            EditorGUILayout.EndHorizontal();
             EditorGUILayout.EndVertical();
         }
 
@@ -70,5 +72,14 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
         protected abstract void SceneInit();
 
         protected abstract void SceneCleanUp();
+
+        protected Vector2 GetMouseWorldPosition2D(Event evt)
+        {
+            Ray mouseRay = HandleUtility.GUIPointToWorldRay(evt.mousePosition);
+            float Y = 0;
+            float dist = (Y - mouseRay.origin.y) / mouseRay.direction.y;
+            Vector2 mousePosition2D = mouseRay.GetPoint(dist).ToV2();
+            return mousePosition2D;
+        }
     }
 }

@@ -19,7 +19,7 @@ public class PathfindingTestEditor : Editor
         if (GUILayout.Button("LoadData"))
         {
             string dataPath = EditorUtility.OpenFilePanel("Select grid data file:", Application.dataPath, "bytes");
-            targetPathfindingTest.LoadData(dataPath); 
+            targetPathfindingTest.LoadData(dataPath);
         }
 
         if(targetPathfindingTest.gridData != null)

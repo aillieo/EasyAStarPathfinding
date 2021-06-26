@@ -26,6 +26,7 @@ public class PathfindingTest : MonoBehaviour
     private AsyncPathfinder asyncPathfinder;
     private CoroutinePathfinder coroutinePathfinder;
 
+    public bool autoPathfinding = false;
     public bool drawPassable = true;
     public bool drawBlock = true;
     public bool drawPath = true;
@@ -84,6 +85,14 @@ public class PathfindingTest : MonoBehaviour
     //    yield return null;
     //    UnityEditor.EditorApplication.isPaused = true;
     //}
+
+    private void Update()
+    {
+        if (autoPathfinding)
+        {
+            FindPath();
+        }
+    }
 
     private void OnDrawGizmos()
     {

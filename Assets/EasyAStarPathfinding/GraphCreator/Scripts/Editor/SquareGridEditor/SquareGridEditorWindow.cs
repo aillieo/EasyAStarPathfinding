@@ -17,22 +17,25 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
         private Vector2Int dataRange;
         private GameObject goRoot;
         private Texture2D texture;
+        private Texture2D savedTexture;
 
         public void OnGUI()
         {
             DrawSaveLoadButtons();
+
+            savedTexture = EditorGUILayout.ObjectField(savedTexture, typeof(Texture2D), false) as Texture2D;
+            GUILayout.Button("Save to texture");
+            GUILayout.Button("Load from texture");
         }
 
         protected override void SceneInit()
         {
             if (data == null)
             {
-                data = CreateNew();
+                data = CreateNewGraph();
             }
 
-
-
-            var range = new Vector2Int(10, 10);
+            dataRange = new Vector2Int(10, 10);
 
 
             goRoot = new GameObject("EditRoot");
@@ -44,10 +47,10 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
             quad.name = "quad";
             quad.transform.SetParent(goRoot.transform, false);
-            quad.transform.localPosition = new Vector3(range.x / 2.0f, 0, range.y / 2.0f);
-            quad.transform.localScale = new Vector3(range.x, range.y, 1);
+            quad.transform.localPosition = new Vector3(dataRange.x / 2.0f, 0, dataRange.y / 2.0f);
+            quad.transform.localScale = new Vector3(dataRange.x, dataRange.y, 1);
             quad.transform.localEulerAngles = new Vector3(90, 0, 0);
-            texture = new Texture2D(range.x, range.y, TextureFormat.ARGB32, false);
+            texture = new Texture2D(dataRange.x, dataRange.y, TextureFormat.ARGB32, false);
             texture.wrapMode = TextureWrapMode.Clamp;
             texture.filterMode = FilterMode.Point;
             Material material = new Material(shader);
@@ -62,7 +65,7 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
 
 
             var sv = SceneView.lastActiveSceneView;
-            Vector3 center = new Vector3(range.x / 2, 0, range.y / 2);
+            Vector3 center = new Vector3(dataRange.x / 2, 0, dataRange.y / 2);
             sv.in2DMode = false;
             sv.LookAt(center, new Quaternion(1, 0, 0, 1), 200, true, false);
             sv.Repaint();
@@ -89,27 +92,23 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
 
             if (pressed)
             {
-                Vector2 mousePos = Event.current.mousePosition;
-                mousePos.y = Screen.height - mousePos.y - 40;
-                Ray ray = SceneView.lastActiveSceneView.camera.ScreenPointToRay(mousePos);
-                RaycastHit hitInfo;
-                if (Physics.Raycast(ray, out hitInfo))
+                Vector2 mousePosition2D = GetMouseWorldPosition2D(current);
+
+//                for (int i = 0; i < dataRange.y; ++i)
+//                {
+//                    for (int j = 0; j < dataRange.x; ++j)
+//                    {
+//                        texture.SetPixel(i, j, Color.black);
+//                    }
+//                }
+
+                Vector2Int pos = new Vector2Int((int)mousePosition2D.x, (int)mousePosition2D.y);
+                if (pos.x >= 0 && pos.x < dataRange.x && pos.y >= 0 && pos.y < dataRange.y)
                 {
-                    Vector2 pos = new Vector2(hitInfo.point.x, hitInfo.point.z);
-
-                    for (int i = 0; i < dataRange.y; ++i)
-                    {
-                        for (int j = 0; j < dataRange.x; ++j)
-                        {
-                            texture.SetPixel(i, j, Color.black);
-                        }
-                    }
-
-                    texture.SetPixel((int)pos.x, (int)pos.y, Color.black);
-                    Debug.LogError($"hit {pos}");
+                    texture.SetPixel(pos.x, pos.y, Color.black);
+                    //Debug.LogError($"{pos} | {dataRange}");
+                    texture.Apply();
                 }
-
-                texture.Apply();
             }
 
             if (Event.current.type == EventType.Layout)
