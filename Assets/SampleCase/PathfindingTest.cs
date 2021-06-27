@@ -146,7 +146,18 @@ public class PathfindingTest : MonoBehaviour
         {
             drawer.drawClosedList = this.drawClosedList;
             drawer.drawOpenList = this.drawOpenList;
-            drawer.Draw(coroutinePathfinder);
+            if (pathfinder != null)
+            {
+                drawer.Draw(pathfinder);
+            }
+            if (asyncPathfinder != null)
+            {
+                drawer.Draw(asyncPathfinder);
+            }
+            if (coroutinePathfinder != null)
+            {
+                drawer.Draw(coroutinePathfinder);
+            }
         }
 
         Gizmos.color = backup;

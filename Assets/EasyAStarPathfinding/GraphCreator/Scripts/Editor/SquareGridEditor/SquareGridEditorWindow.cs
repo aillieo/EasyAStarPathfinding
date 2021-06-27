@@ -14,7 +14,6 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             GetWindowAndOpen<SquareGridEditorWindow>();
         }
 
-        private Vector2Int dataRange;
         private GameObject goRoot;
         private Texture2D texture;
         private Texture2D savedTexture;
@@ -28,6 +27,25 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             GUILayout.Button("Load from texture");
         }
 
+        protected override void Save()
+        {
+            for (int i = 0; i < data.RangeY; ++i)
+            {
+                for (int j = 0; j < data.RangeX; ++j)
+                {
+                    Color c = texture.GetPixel(i, j);
+                    data.SetPassable(i, j, c.r > 0.5f);
+                }
+            }
+            base.Save();
+        }
+
+        protected override void Load()
+        {
+            base.Load();
+            CreateSceneRootForData();
+        }
+
         protected override void SceneInit()
         {
             if (data == null)
@@ -35,8 +53,26 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
                 data = CreateNewGraph();
             }
 
-            dataRange = new Vector2Int(10, 10);
+            CreateSceneRootForData();
 
+            var sv = SceneView.lastActiveSceneView;
+            Vector3 center = new Vector3(data.RangeX / 2, 0, data.RangeY / 2);
+            sv.in2DMode = false;
+            sv.LookAt(center, new Quaternion(1, 0, 0, 1), 200, true, false);
+            sv.Repaint();
+        }
+
+        private void CreateSceneRootForData()
+        {
+            if (this.data == null)
+            {
+                return;
+            }
+
+            if (goRoot != null)
+            {
+                DestroyImmediate(goRoot);
+            }
 
             goRoot = new GameObject("EditRoot");
             goRoot.transform.localPosition = Vector3.zero;
@@ -47,10 +83,10 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
             quad.name = "quad";
             quad.transform.SetParent(goRoot.transform, false);
-            quad.transform.localPosition = new Vector3(dataRange.x / 2.0f, 0, dataRange.y / 2.0f);
-            quad.transform.localScale = new Vector3(dataRange.x, dataRange.y, 1);
+            quad.transform.localScale = new Vector3(data.RangeX, data.RangeY, 1);
+            quad.transform.localPosition = new Vector3(data.RangeX / 2.0f, 0, data.RangeY / 2.0f);
             quad.transform.localEulerAngles = new Vector3(90, 0, 0);
-            texture = new Texture2D(dataRange.x, dataRange.y, TextureFormat.ARGB32, false);
+            texture = new Texture2D(data.RangeX, data.RangeY, TextureFormat.ARGB32, false);
             texture.wrapMode = TextureWrapMode.Clamp;
             texture.filterMode = FilterMode.Point;
             Material material = new Material(shader);
@@ -58,18 +94,16 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             Renderer renderer = quad.GetComponent<MeshRenderer>();
             renderer.material = material;
 
-
-
-
-
-
-
-            var sv = SceneView.lastActiveSceneView;
-            Vector3 center = new Vector3(dataRange.x / 2, 0, dataRange.y / 2);
-            sv.in2DMode = false;
-            sv.LookAt(center, new Quaternion(1, 0, 0, 1), 200, true, false);
-            sv.Repaint();
+            for (int i = 0; i < data.RangeY; ++i)
+            {
+                for (int j = 0; j < data.RangeX; ++j)
+                {
+                    texture.SetPixel(i, j, data.Passable(i, j) ? Color.white : Color.black);
+                }
+            }
+            texture.Apply();
         }
+
 
         protected override void SceneCleanUp()
         {
@@ -81,6 +115,8 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
 
         protected override void OnSceneGUI(SceneView sceneView)
         {
+            // Handles.Label(Vector3.zero, texture);
+
             Event current = Event.current;
             EventType et = current.type;
 
@@ -93,17 +129,8 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             if (pressed)
             {
                 Vector2 mousePosition2D = GetMouseWorldPosition2D(current);
-
-//                for (int i = 0; i < dataRange.y; ++i)
-//                {
-//                    for (int j = 0; j < dataRange.x; ++j)
-//                    {
-//                        texture.SetPixel(i, j, Color.black);
-//                    }
-//                }
-
                 Vector2Int pos = new Vector2Int((int)mousePosition2D.x, (int)mousePosition2D.y);
-                if (pos.x >= 0 && pos.x < dataRange.x && pos.y >= 0 && pos.y < dataRange.y)
+                if (pos.x >= 0 && pos.x < data.RangeX && pos.y >= 0 && pos.y < data.RangeY)
                 {
                     texture.SetPixel(pos.x, pos.y, Color.black);
                     //Debug.LogError($"{pos} | {dataRange}");

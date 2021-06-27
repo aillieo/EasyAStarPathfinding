@@ -5,9 +5,9 @@ namespace AillieoUtils.Pathfinding
     [Serializable]
     public class SquareGridData : IGridData
     {
-        private bool[] data;
-        private int rangeX;
-        private int rangeY;
+        private bool[] data = Array.Empty<bool>();
+        private int rangeX = 2;
+        private int rangeY = 2;
 
         public int RangeX => rangeX;
         public int RangeY => rangeY;
