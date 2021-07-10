@@ -2,15 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AillieoUtils.Pathfinding.GraphCreator
+namespace AillieoUtils.Geometries
 {
-    public class PolygonSimple
+    public class PolygonSimple : Polygon
     {
-        public readonly List<Vector2> points = new List<Vector2>();
-
-        public virtual bool Validate()
+        public override bool Validate()
         {
-            if (points.Count <= 3)
+            if (verts.Count <= 3)
             {
                 return false;
             }
@@ -20,4 +18,3 @@ namespace AillieoUtils.Pathfinding.GraphCreator
         }
     }
 }
-

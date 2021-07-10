@@ -3,19 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace AillieoUtils.Pathfinding.GraphCreator
+namespace AillieoUtils.Geometries
 {
-    public class PolygonComposite : PolygonSimple
+    public class PolygonComposite : Polygon
     {
-        public readonly List<PolygonSimple> holes = new List<PolygonSimple>();
+        public readonly List<Polygon> holes = new List<Polygon>();
 
         public override bool Validate()
         {
-            if (!base.Validate())
-            {
-                return false;
-            }
-
             if (holes.Any(h => !Validate()))
             {
                 return false;

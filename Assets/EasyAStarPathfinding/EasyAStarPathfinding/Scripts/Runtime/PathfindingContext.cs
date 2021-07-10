@@ -10,6 +10,7 @@ namespace AillieoUtils.Pathfinding
         internal readonly HashSet<Point> closedSet;
         internal readonly HashSet<Point> openSet;
         internal PointNode endingNode;
+        internal Point startPoint;
         internal Point endingPoint;
 
         internal PathfindingContext()

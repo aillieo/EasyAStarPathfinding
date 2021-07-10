@@ -18,13 +18,32 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
         private Texture2D texture;
         private Texture2D savedTexture;
 
+        private Vector2Int size;
+        private int brushValue;
+
         public void OnGUI()
         {
             DrawSaveLoadButtons();
 
             savedTexture = EditorGUILayout.ObjectField(savedTexture, typeof(Texture2D), false) as Texture2D;
-            GUILayout.Button("Save to texture");
-            GUILayout.Button("Load from texture");
+            if (GUILayout.Button("Save to texture"))
+            {
+            }
+
+            if (GUILayout.Button("Load from texture"))
+            {
+            }
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Size:");
+            size = EditorGUILayout.Vector2IntField(GUIContent.none, size);
+            if (GUILayout.Button("Resize"))
+            {
+                data.Resize(size.x, size.y);
+            }
+            EditorGUILayout.EndHorizontal();
+
+            brushValue = EditorGUILayout.IntSlider("brush", brushValue, 0, 1);
         }
 
         protected override void Save()
@@ -44,6 +63,8 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
         {
             base.Load();
             CreateSceneRootForData();
+            size = new Vector2Int(data.RangeX, data.RangeY);
+            brushValue = 1;
         }
 
         protected override void SceneInit()
@@ -132,7 +153,7 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
                 Vector2Int pos = new Vector2Int((int)mousePosition2D.x, (int)mousePosition2D.y);
                 if (pos.x >= 0 && pos.x < data.RangeX && pos.y >= 0 && pos.y < data.RangeY)
                 {
-                    texture.SetPixel(pos.x, pos.y, Color.black);
+                    texture.SetPixel(pos.x, pos.y, brushValue == 1 ? Color.black : Color.white);
                     //Debug.LogError($"{pos} | {dataRange}");
                     texture.Apply();
                 }

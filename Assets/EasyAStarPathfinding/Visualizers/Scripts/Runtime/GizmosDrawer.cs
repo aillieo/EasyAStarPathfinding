@@ -31,7 +31,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
 #if UNITY_EDITOR
                     UnityEditor.Handles.Label(position, $"{p.g},{p.h}");
 #endif
-                    Gizmos.DrawCube(position, Vector3.one * 0.4f);
+                    Gizmos.DrawWireCube(position, Vector3.one * 0.4f);
                 }
             }
 
@@ -40,7 +40,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
                 Gizmos.color = Color.white;
                 foreach (var p in context.closedSet)
                 {
-                    Gizmos.DrawCube(new Vector3(p.x, p.y, 0), Vector3.one * 0.4f);
+                    Gizmos.DrawWireCube(new Vector3(p.x, p.y, 0), Vector3.one * 0.4f);
                 }
             }
 

@@ -8,7 +8,7 @@ namespace AillieoUtils
     {
         public class RTreeNode
         {
-            public AABB bounds;
+            public AABB2D bounds;
         }
     }
 }

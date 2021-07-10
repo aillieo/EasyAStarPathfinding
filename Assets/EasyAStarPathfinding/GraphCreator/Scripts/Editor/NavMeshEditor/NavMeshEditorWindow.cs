@@ -1,3 +1,4 @@
+using AillieoUtils.Geometries;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -120,14 +121,14 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
         private void TryAddNewPoint(Vector2 position)
         {
             var selectedPoly = simplePolygons[ctrl.polygonSelected].polygon;
-            int newPointIndex = selectedPoly.points.Count;
+            int newPointIndex = selectedPoly.verts.Count;
             FindClosestLineForPolygon(position, ctrl.polygonSelected, out int lineIndex);
             if (lineIndex != -1)
             {
                 newPointIndex = lineIndex + 1;
             }
 
-            selectedPoly.points.Insert(newPointIndex, position);
+            selectedPoly.verts.Insert(newPointIndex, position);
             ctrl.mouseOverPoint = true;
             ctrl.pointSelected = newPointIndex;
             ctrl.polygonHover = ctrl.polygonSelected;
@@ -150,7 +151,7 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             ctrl.lineSelected = -1;
 
             var polygonSelected = simplePolygons[ctrl.polygonSelected].polygon;
-            ctrl.beginDragPosition = polygonSelected.points[ctrl.pointSelected];
+            ctrl.beginDragPosition = polygonSelected.verts[ctrl.pointSelected];
 
             sceneDirty = true;
         }
@@ -177,7 +178,7 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
                     {
                         TrySelectPolygon();
                         var polygonSelected = simplePolygons[ctrl.polygonSelected].polygon;
-                        polygonSelected.points.RemoveAt(ctrl.pointSelected);
+                        polygonSelected.verts.RemoveAt(ctrl.pointSelected);
                         ctrl.selectingPoint = false;
                         ctrl.mouseOverPoint = false;
 
@@ -209,8 +210,8 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
                     if (ctrl.selectingPoint)
                     {
                         var polygonSelected = simplePolygons[ctrl.polygonSelected].polygon;
-                        polygonSelected.points[ctrl.pointSelected] = ctrl.beginDragPosition;
-                        polygonSelected.points[ctrl.pointSelected] = mousePosition2D;
+                        polygonSelected.verts[ctrl.pointSelected] = ctrl.beginDragPosition;
+                        polygonSelected.verts[ctrl.pointSelected] = mousePosition2D;
 
                         ctrl.selectingPoint = false;
                         ctrl.pointSelected = -1;
@@ -223,7 +224,7 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
                     if (ctrl.selectingPoint)
                     {
                         var polygonSelected = simplePolygons[ctrl.polygonSelected].polygon;
-                        polygonSelected.points[ctrl.pointSelected] = mousePosition2D;
+                        polygonSelected.verts[ctrl.pointSelected] = mousePosition2D;
                         sceneDirty = true;
                     }
                 }
@@ -241,12 +242,12 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             float dist = float.MaxValue;
             var poly = simplePolygons[polygon].polygon;
 
-            for (int i = 0; i < poly.points.Count; i++)
+            for (int i = 0; i < poly.verts.Count; i++)
             {
                 float newDist = HandleUtility.DistancePointToLineSegment(
                     mousePosition2D,
-                    poly.points[i],
-                    poly.points[(i + 1) % poly.points.Count]);
+                    poly.verts[i],
+                    poly.verts[(i + 1) % poly.verts.Count]);
 
                 if (newDist < dist)
                 {
@@ -284,9 +285,9 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             for (int i = 0; i < simplePolygons.Count; i++)
             {
                 var p = simplePolygons[i].polygon;
-                for (int j = 0; j < p.points.Count; j++)
+                for (int j = 0; j < p.verts.Count; j++)
                 {
-                    if (Vector2.Distance(mousePosition2D, p.points[j]) < ctrl.selectDistance)
+                    if (Vector2.Distance(mousePosition2D, p.verts[j]) < ctrl.selectDistance)
                     {
                         pointIndex = j;
                         polygon = i;
@@ -347,10 +348,10 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
                 bool polygonSelected = i == ctrl.polygonSelected;
                 bool polygonHover = i == ctrl.polygonHover;
 
-                for (int j = 0; j < poly.points.Count; j++)
+                for (int j = 0; j < poly.verts.Count; j++)
                 {
-                    Vector3 thisPoint = poly.points[j].ToV3();
-                    Vector3 nextPoint = poly.points[(j + 1) % poly.points.Count].ToV3();
+                    Vector3 thisPoint = poly.verts[j].ToV3();
+                    Vector3 nextPoint = poly.verts[(j + 1) % poly.verts.Count].ToV3();
                     if (j == ctrl.lineSelected && polygonHover)
                     {
                         Handles.color = colorSelected;
@@ -388,7 +389,7 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
                 EditorGUILayout.BeginHorizontal();
                 simplePolygons[i].name = EditorGUILayout.TextField(simplePolygons[i].name);
 
-                GUILayout.Label($"{simplePolygons[i].polygon.points.Count}");
+                GUILayout.Label($"{simplePolygons[i].polygon.verts.Count}");
 
                 bool polygonSelected = i == ctrl.polygonSelected;
                 GUI.enabled = !polygonSelected;

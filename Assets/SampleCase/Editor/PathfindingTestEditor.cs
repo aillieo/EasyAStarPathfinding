@@ -18,7 +18,8 @@ public class PathfindingTestEditor : Editor
 
         if (GUILayout.Button("LoadData"))
         {
-            string dataPath = EditorUtility.OpenFilePanel("Select grid data file:", Application.dataPath, "bytes");
+            //string dataPath = EditorUtility.OpenFilePanel("Select grid data file:", Application.dataPath, "bytes");
+            string dataPath = Application.dataPath + "/data.bytes";
             targetPathfindingTest.LoadData(dataPath);
         }
 
@@ -37,6 +38,11 @@ public class PathfindingTestEditor : Editor
             if (GUILayout.Button("FindPathInCoroutine"))
             {
                 targetPathfindingTest.FindPathInCoroutine();
+            }
+
+            if (GUILayout.Button("FindPathInCoroutineV2"))
+            {
+                targetPathfindingTest.FindPathInCoroutineV2();
             }
         }
     }

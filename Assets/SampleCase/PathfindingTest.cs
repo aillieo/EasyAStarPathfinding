@@ -23,8 +23,6 @@ public class PathfindingTest : MonoBehaviour
     }
 
     private Pathfinder pathfinder;
-    private AsyncPathfinder asyncPathfinder;
-    private CoroutinePathfinder coroutinePathfinder;
 
     public bool autoPathfinding = false;
     public bool drawPassable = true;
@@ -46,8 +44,6 @@ public class PathfindingTest : MonoBehaviour
         if (pathfinder == null)
         {
             pathfinder = new Pathfinder(gridData);
-            asyncPathfinder = new AsyncPathfinder(gridData);
-            coroutinePathfinder = new CoroutinePathfinder(gridData);
         }
     }
 
@@ -66,7 +62,7 @@ public class PathfindingTest : MonoBehaviour
         EnsureFindingContext();
         Stopwatch sw = new Stopwatch();
         sw.Start();
-        path = await asyncPathfinder.FindPathAsync(new Point(start.x, start.y), new Point(end.x, end.y));
+        path = await pathfinder.FindPathAsync(new Point(start.x, start.y), new Point(end.x, end.y));
         long costTime = sw.ElapsedMilliseconds;
         UnityEngine.Debug.Log($"costTime {costTime}ms");
     }
@@ -74,7 +70,31 @@ public class PathfindingTest : MonoBehaviour
     public void FindPathInCoroutine()
     {
         EnsureFindingContext();
-        StartCoroutine(coroutinePathfinder.FindPathInCoroutine(new Point(start.x, start.y), new Point(end.x, end.y), new WaitForSeconds(timeStepForCoroutine)));
+        StartCoroutine(pathfinder.FindPathInCoroutine(new Point(start.x, start.y), new Point(end.x, end.y), new WaitForSeconds(timeStepForCoroutine)));
+    }
+
+    public void FindPathInCoroutineV2()
+    {
+        StopAllCoroutines();
+
+        EnsureFindingContext();
+
+        if (pathfinder.state == PathfindingState.Found || pathfinder.state == PathfindingState.Failed)
+        {
+            pathfinder.CleanUp();
+        }
+
+        pathfinder.Init(new Point(start.x, start.y), new Point(end.x, end.y));
+        StartCoroutine(InternalFindPathInCoroutineV2());
+    }
+
+    private IEnumerator InternalFindPathInCoroutineV2()
+    {
+        while (pathfinder.state != PathfindingState.Found && pathfinder.state != PathfindingState.Failed)
+        {
+            pathfinder.FindPath();
+            yield return new WaitForSeconds(timeStepForCoroutine);
+        }
     }
 
     //private IEnumerator Start()
@@ -149,14 +169,6 @@ public class PathfindingTest : MonoBehaviour
             if (pathfinder != null)
             {
                 drawer.Draw(pathfinder);
-            }
-            if (asyncPathfinder != null)
-            {
-                drawer.Draw(asyncPathfinder);
-            }
-            if (coroutinePathfinder != null)
-            {
-                drawer.Draw(coroutinePathfinder);
             }
         }
 
