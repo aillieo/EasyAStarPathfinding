@@ -84,22 +84,6 @@ namespace AillieoUtils.Pathfinding
             }
         }
 
-        public IEnumerable<Point> Obstacles()
-        {
-            if (data == null)
-            {
-                yield break;
-            }
-
-            for (int i = 0; i < rangeX * rangeY; ++i)
-            {
-                if (!data[i])
-                {
-                    yield return new Point(i % rangeX, i / rangeX);
-                }
-            }
-        }
-
         public IEnumerable<Point> CollectNeighbor(Point current)
         {
             for (int i = -1; i <= 1; ++i)

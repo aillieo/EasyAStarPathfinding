@@ -27,7 +27,7 @@ namespace AillieoUtils.Pathfinding
         private Dictionary<int, int[]> connections;
         //private RTree<NMFace> faceTree;
 
-        public IEnumerable<Point> CollectNeighbor(Point current)
+        public IEnumerable<NMFace> CollectNeighbor(NMFace current)
         {
             throw new NotImplementedException();
         }

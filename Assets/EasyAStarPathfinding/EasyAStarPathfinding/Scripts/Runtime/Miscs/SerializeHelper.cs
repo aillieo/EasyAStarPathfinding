@@ -13,6 +13,7 @@ namespace AillieoUtils
         {
             if (!File.Exists(filename))
             {
+                Debug.LogError($"File not exist: {filename}");
                 return default;
             }
             IFormatter formatter = new BinaryFormatter();

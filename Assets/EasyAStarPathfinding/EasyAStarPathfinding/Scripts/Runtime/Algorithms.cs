@@ -6,7 +6,7 @@ namespace AillieoUtils.Pathfinding
         DepthFirstSearch,
         BestFirstSearch,
         DijkstraAlgorithm,
-        AStar,
+        AStar = 0,
         AStarWithJPS,
         AStarWithRSR,
     }

@@ -2,8 +2,10 @@ using System.Collections.Generic;
 
 namespace AillieoUtils.Pathfinding
 {
-    public interface IGraphData
+    public interface IGraphData { }
+
+    public interface IGraphData<T> : IGraphData
     {
-        IEnumerable<Point> CollectNeighbor(Point current);
+        IEnumerable<T> CollectNeighbor(T current);
     }
 }

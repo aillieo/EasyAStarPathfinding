@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -20,6 +21,7 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
 
         protected virtual void OnEnable()
         {
+            path = EditorPrefs.GetString(defaultPathKey, string.Empty);
             SceneInit();
             SceneView.duringSceneGui -= OnSceneGUI;
             SceneView.duringSceneGui += OnSceneGUI;
@@ -34,6 +36,7 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
         protected virtual void Save()
         {
             SerializeHelper.Save(data, path);
+            EditorPrefs.SetString(defaultPathKey, path);
         }
 
         protected virtual void Load()
@@ -49,7 +52,7 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
         protected virtual void DrawSaveLoadButtons()
         {
             EditorGUILayout.BeginVertical("box");
-            path = EditorGUILayout.TextField(new GUIContent("path"), $"{Application.dataPath}/data.bytes");
+            path = EditorGUILayout.TextField(new GUIContent("path"), path);
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("New"))
             {
@@ -57,10 +60,20 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             }
             if (GUILayout.Button("Save"))
             {
+                if (string.IsNullOrWhiteSpace(path))
+                {
+                    path = EditorUtility.SaveFilePanel("Where to save?", Application.dataPath, "data", "bytes");
+                }
+
                 Save();
             }
             if (GUILayout.Button("Load"))
             {
+                if (string.IsNullOrWhiteSpace(path))
+                {
+                    path = EditorUtility.OpenFilePanel("Where to load?", Application.dataPath, "bytes");
+                }
+
                 Load();
             }
             EditorGUILayout.EndHorizontal();
@@ -72,6 +85,8 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
         protected abstract void SceneInit();
 
         protected abstract void SceneCleanUp();
+
+        private string defaultPathKey => $"DefaultPath{GetType().Name}";
 
         protected Vector2 GetMouseWorldPosition2D(Event evt)
         {

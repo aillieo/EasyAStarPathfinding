@@ -307,7 +307,7 @@ GameObject:
   - component: {fileID: 1173270340}
   - component: {fileID: 1173270339}
   m_Layer: 0
-  m_Name: PathfindingTest
+  m_Name: GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -322,18 +322,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 1173270338}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ab6f4a8fc6565641b1876747bd2255f, type: 3}
+  m_Script: {fileID: 11500000, guid: 9e9afb4ed838b400580bbf07307c1d22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  start: {x: 0, y: 0}
-  end: {x: 9, y: 9}
+  assetFilePath: /Users/aillieo/PROJECTS/Unity/EasyAStarPathFinding/Assets/SampleCase/data.bytes
+  start: {x: 1, y: 1}
+  end: {x: 255, y: 255}
   timeStepForCoroutine: 0.1
   autoPathfinding: 0
-  drawPassable: 0
-  drawBlock: 0
+  drawPassable: 1
+  drawBlock: 1
   drawPath: 1
-  drawOpenList: 0
-  drawClosedList: 0
+  drawOpenList: 1
+  drawClosedList: 1
 --- !u!4 &1173270340
 Transform:
   m_ObjectHideFlags: 0

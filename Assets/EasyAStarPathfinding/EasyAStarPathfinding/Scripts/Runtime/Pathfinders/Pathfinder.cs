@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,14 +9,14 @@ namespace AillieoUtils.Pathfinding
     {
         public PathfindingState state { get; private set; }
 
-        internal PathfindingContext context;
-        private readonly IGridData gridDataProvider;
+        internal readonly PathfindingContext context;
+        internal readonly ISolver solver;
         private readonly List<Point> result = new List<Point>();
 
-        public Pathfinder(IGridData gridDataProvider, Algorithms algorithm = Algorithms.AStar)
+        public Pathfinder(IGraphData graphData, Algorithms algorithm = Algorithms.AStar)
         {
-            this.gridDataProvider = gridDataProvider;
-            this.context = new PathfindingContext();
+            this.context = new PathfindingContext(graphData as IGridData, algorithm);
+            this.solver = Solvers.Create(graphData, algorithm);
             this.state = PathfindingState.Uninitialized;
         }
 
@@ -43,22 +42,6 @@ namespace AillieoUtils.Pathfinding
             }
 
             return result.ToArray();
-        }
-
-        public IEnumerator FindPathInCoroutine(Point startPoint, Point endPoint, UnityEngine.YieldInstruction yieldInstruction)
-        {
-            Init(startPoint, endPoint);
-            yield return yieldInstruction;
-            while (true)
-            {
-                if (state == PathfindingState.Found || state == PathfindingState.Failed)
-                {
-                    break;
-                }
-
-                FindPath();
-                yield return yieldInstruction;
-            }
         }
 
         public Task<Point[]> FindPathAsync(Point startPoint, Point endPoint)
@@ -94,7 +77,7 @@ namespace AillieoUtils.Pathfinding
         private void FirstStep()
         {
             state = PathfindingState.Finding;
-            var startNode = context.pool.GetPointNode(context.startPoint, null);
+            var startNode = context.GetPointNode(context.startPoint, null);
             context.openList.Enqueue(startNode);
             context.openSet.Add(context.startPoint);
             return;
@@ -108,7 +91,7 @@ namespace AillieoUtils.Pathfinding
                 context.openSet.Remove(first.point);
 
                 // 把周围点 加入open
-                var neighbors = gridDataProvider.CollectNeighbor(first.point);
+                var neighbors = context.graphData.CollectNeighbor(first.point);
                 foreach (Point p in neighbors)
                 {
                     Collect(p, first);
@@ -118,6 +101,7 @@ namespace AillieoUtils.Pathfinding
 
                 if (first.point == context.endingPoint)
                 {
+                    context.endingNode = first;
                     state = PathfindingState.Found;
                     TraceBackForPath();
                     return;
@@ -131,25 +115,22 @@ namespace AillieoUtils.Pathfinding
             }
         }
 
-        private bool Collect(Point point, PointNode parentNode = null)
+        private bool Collect(Point point, PointNode parentNode)
         {
             if (this.context.closedSet.Contains(point))
             {
                 return false;
             }
 
-            if(this.context.openSet.Contains(point))
+            if (this.context.openSet.Contains(point))
             {
                 // todo 如果<=之前的g 需要更新g
                 return false;
             }
 
-            PointNode newNode = context.pool.GetPointNode(point, parentNode);
-            if (parentNode != null)
-            {
-                newNode.g = parentNode.g + HeuristicFuncPreset.DefaultCostFunc(point, parentNode.point);
-                newNode.h = HeuristicFuncPreset.DefaultCostFunc(point, this.context.endingPoint);
-            }
+            PointNode newNode = context.GetPointNode(point, parentNode);
+            newNode.g = parentNode.g + HeuristicFuncPreset.DefaultCostFunc(point, parentNode.point);
+            newNode.h = HeuristicFuncPreset.DefaultCostFunc(point, this.context.endingPoint);
             this.context.openList.Enqueue(newNode);
             this.context.openSet.Add(point);
 
@@ -165,6 +146,7 @@ namespace AillieoUtils.Pathfinding
 
         private bool TraceBackForPath()
         {
+            result.Clear();
             if (this.context.endingNode == null)
             {
                 return false;
@@ -177,7 +159,6 @@ namespace AillieoUtils.Pathfinding
                 node = node.previous;
             }
             result.Add(node.point);
-
             return true;
         }
 

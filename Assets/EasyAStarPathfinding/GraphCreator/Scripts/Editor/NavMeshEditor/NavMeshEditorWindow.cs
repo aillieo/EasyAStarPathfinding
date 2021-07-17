@@ -63,6 +63,12 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
 
         protected override void SceneInit()
         {
+            var sceneView = SceneView.lastActiveSceneView;
+            Vector3 center = Vector3.zero;
+            sceneView.in2DMode = false;
+            sceneView.LookAt(center, new Quaternion(1, 0, 0, 1), 200, true, false);
+            sceneView.Repaint();
+
             //if (mesh == null)
             //{
             //    mesh = new Mesh();
@@ -129,7 +135,7 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             }
 
             selectedPoly.verts.Insert(newPointIndex, position);
-            ctrl.mouseOverPoint = true;
+            ctrl.pointHover = newPointIndex;
             ctrl.pointSelected = newPointIndex;
             ctrl.polygonHover = ctrl.polygonSelected;
 
@@ -141,13 +147,13 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
 
         private void TrySelectPoint()
         {
-            if (!ctrl.mouseOverPoint)
+            if (ctrl.pointHover < 0)
             {
                 return;
             }
 
             ctrl.selectingPoint = true;
-            ctrl.mouseOverLine = false;
+            ctrl.lineHover = -1;
             ctrl.lineSelected = -1;
 
             var polygonSelected = simplePolygons[ctrl.polygonSelected].polygon;
@@ -174,13 +180,13 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             {
                 if (evt.type == EventType.MouseDown && evt.modifiers == EventModifiers.Shift)
                 {
-                    if (ctrl.mouseOverPoint)
+                    if (ctrl.pointHover >= 0)
                     {
                         TrySelectPolygon();
                         var polygonSelected = simplePolygons[ctrl.polygonSelected].polygon;
                         polygonSelected.verts.RemoveAt(ctrl.pointSelected);
                         ctrl.selectingPoint = false;
-                        ctrl.mouseOverPoint = false;
+                        ctrl.pointHover = -1;
 
                         sceneDirty = true;
                         guiDirty = true;
@@ -198,7 +204,7 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
                         TrySelectPolygon();
                     }
 
-                    if (ctrl.mouseOverPoint)
+                    if (ctrl.pointHover >= 0)
                     {
                         TrySelectPolygon();
                         TrySelectPoint();
@@ -310,14 +316,14 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             {
                 ctrl.polygonHover = mouseOverPolygon;
                 ctrl.pointSelected = mouseOverPoint;
-                ctrl.mouseOverPoint = mouseOverPoint != -1;
+                ctrl.pointHover = mouseOverPoint;
 
                 sceneDirty = true;
             }
 
-            if (ctrl.mouseOverPoint)
+            if (ctrl.pointHover >= 0)
             {
-                ctrl.mouseOverLine = false;
+                ctrl.lineHover = -1;
                 ctrl.lineSelected = -1;
             }
             else
@@ -332,7 +338,7 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
                 {
                     ctrl.polygonHover = mouseOverPolygon;
                     ctrl.lineSelected = mouseOverLineIndex;
-                    ctrl.mouseOverLine = mouseOverLineIndex != -1;
+                    ctrl.lineHover = mouseOverLineIndex;
                     sceneDirty = true;
                 }
             }
