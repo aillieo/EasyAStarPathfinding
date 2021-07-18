@@ -8,18 +8,18 @@ namespace AillieoUtils.Pathfinding
         public class NMFace
         {
             public int index;
-            public Point center;
+            public Grid center;
             public int[] verts;
         }
 
         public class NMVertex
         {
-            public Point position;
+            public Grid position;
             public int index;
         }
 
         // mesh data
-        private Point[] verts;
+        private Grid[] verts;
         private int[] triangles;
 
         // 重新组织一下

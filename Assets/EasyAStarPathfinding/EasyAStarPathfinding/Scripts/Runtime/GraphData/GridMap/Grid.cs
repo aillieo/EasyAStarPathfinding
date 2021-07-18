@@ -2,36 +2,38 @@ using System;
 
 namespace AillieoUtils.Pathfinding
 {
-    public partial struct Point : IEquatable<Point>, IComparable<Point>
+    public struct Grid : IEquatable<Grid>, IComparable<Grid>
     {
         public int x { get; set; }
         public int y { get; set; }
 
-        public Point(int x, int y)
+        public Grid(int x, int y)
         {
             this.x = x;
             this.y = y;
         }
 
-        public static bool operator ==(Point lhs, Point rhs)
+        public static bool operator ==(Grid lhs, Grid rhs)
         {
             return lhs.x == rhs.x && lhs.y == rhs.y;
         }
 
-        public static bool operator !=(Point lhs, Point rhs)
+        public static bool operator !=(Grid lhs, Grid rhs)
         {
             return !(lhs == rhs);
         }
 
         public override bool Equals(object other)
         {
-            if (!(other is Point))
+            if (!(other is Grid))
+            {
                 return false;
+            }
 
-            return Equals((Point)other);
+            return Equals((Grid)other);
         }
 
-        public bool Equals(Point other)
+        public bool Equals(Grid other)
         {
             return x.Equals(other.x) && y.Equals(other.y);
         }
@@ -46,9 +48,9 @@ namespace AillieoUtils.Pathfinding
             return $"({x},{y})";
         }
 
-        public int CompareTo(Point other)
+        public int CompareTo(Grid other)
         {
-            if(x != other.x)
+            if (x != other.x)
             {
                 return x - other.x;
             }

@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 namespace AillieoUtils.Pathfinding
 {
-    public class PointNode : IComparable<PointNode>
+    public class GridNode : IComparable<GridNode>
     {
-        public Point point;
-        public PointNode previous;
+        public Grid grid;
+        public GridNode previous;
         public float g;
         public float h;
-        private PointNode()
+        private GridNode()
         {
         }
 
@@ -19,7 +19,7 @@ namespace AillieoUtils.Pathfinding
             return new PointNodePool();
         }
 
-        public int CompareTo(PointNode other)
+        public int CompareTo(GridNode other)
         {
             float f1 = h + g;
             float f2 = other.h + other.g;
@@ -34,7 +34,7 @@ namespace AillieoUtils.Pathfinding
                 return other.h.CompareTo(h);
             }
 
-            return other.point.CompareTo(point);
+            return other.grid.CompareTo(grid);
         }
 
         internal class PointNodePool
@@ -43,25 +43,25 @@ namespace AillieoUtils.Pathfinding
             {
             }
 
-            private Stack<PointNode> nodePool = new Stack<PointNode>();
+            private Stack<GridNode> nodePool = new Stack<GridNode>();
 
-            internal PointNode GetPointNode(Point point = default, PointNode parent = default)
+            internal GridNode GetPointNode(Grid grid = default, GridNode parent = default)
             {
-                PointNode newNode;
+                GridNode newNode;
                 if (nodePool.Count > 0)
                 {
                     newNode = nodePool.Pop();
-                    newNode.point = point;
+                    newNode.grid = grid;
                     newNode.previous = parent;
                 }
                 else
                 {
-                    newNode = new PointNode { point = point, previous = parent };
+                    newNode = new GridNode { grid = grid, previous = parent };
                 }
                 return newNode;
             }
 
-            public void Recycle(PointNode node)
+            public void Recycle(GridNode node)
             {
                 node.g = 0f;
                 node.h = 0f;

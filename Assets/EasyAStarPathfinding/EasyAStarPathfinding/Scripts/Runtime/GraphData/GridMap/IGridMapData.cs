@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace AillieoUtils.Pathfinding
 {
-    public interface IGridData : IGraphData<Point>
+    public interface IGridMapData : IGraphData<Grid>
     {
         bool Passable(int x, int y);
     }

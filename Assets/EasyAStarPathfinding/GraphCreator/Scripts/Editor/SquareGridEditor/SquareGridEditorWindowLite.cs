@@ -6,7 +6,7 @@ using UnityEngine;
 namespace AillieoUtils.Pathfinding.GraphCreator.Editor
 {
 
-    public class SquareGridEditorWindowLite : BaseEditorWindow<SquareGridData>
+    public class SquareGridEditorWindowLite : BaseEditorWindow<SquareGridMapData>
     {
         [MenuItem("AillieoUtils/AStarPathfinding/SquareGridEditorWindowLite")]
         public static void Open()

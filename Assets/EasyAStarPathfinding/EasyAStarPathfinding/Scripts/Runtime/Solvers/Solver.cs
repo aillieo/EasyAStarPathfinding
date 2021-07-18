@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 
 namespace AillieoUtils.Pathfinding
 {
     public interface ISolver
     {
+        PathfindingState state { get; }
+
         void Init();
 
         PathfindingState Step();
@@ -17,16 +20,24 @@ namespace AillieoUtils.Pathfinding
         {
             switch (graphData)
             {
-                case IGridData gridData:
+                case IGridMapData gridData:
                     return CreateForGridData(gridData, algorithm);
             }
 
             throw new NotImplementedException();
         }
 
-        private static ISolver CreateForGridData(IGridData gridData, Algorithms algorithm)
+        private static IGridMapSolver CreateForGridData(IGridMapData gridData, Algorithms algorithm)
         {
-            return new AStar();
+            switch (algorithm)
+            {
+                case Algorithms.AStar:
+                    return new AStarGrid(gridData, algorithm);
+                case Algorithms.DepthFirstSearch:
+                    return new DepthFSGrid(gridData, algorithm);
+            }
+
+            throw new NotImplementedException();
         }
     }
 }

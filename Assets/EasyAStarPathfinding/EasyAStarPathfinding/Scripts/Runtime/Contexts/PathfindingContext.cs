@@ -5,28 +5,28 @@ namespace AillieoUtils.Pathfinding
 {
     public class PathfindingContext
     {
-        internal readonly PointNode.PointNodePool pool = PointNode.Pool();
-        internal readonly PriorityQueue<PointNode> openList;
-        internal readonly HashSet<Point> closedSet;
-        internal readonly HashSet<Point> openSet;
-        internal PointNode endingNode;
-        internal Point startPoint;
-        internal Point endingPoint;
-        internal readonly IGridData graphData;
+        internal readonly GridNode.PointNodePool pool = GridNode.Pool();
+        internal readonly PriorityQueue<GridNode> openList;
+        internal readonly HashSet<Grid> closedSet;
+        internal readonly HashSet<Grid> openSet;
+        internal GridNode endingNode;
+        internal Grid startPoint;
+        internal Grid endingPoint;
+        internal readonly IGridMapData graphData;
         internal readonly Algorithms algorithm;
 
-        internal PathfindingContext(IGridData graphData, Algorithms algorithm)
+        internal PathfindingContext(IGridMapData graphData, Algorithms algorithm)
         {
             this.graphData = graphData;
             this.algorithm = algorithm;
-            this.openList = new PriorityQueue<PointNode>();
-            this.closedSet = new HashSet<Point>();
-            this.openSet = new HashSet<Point>();
+            this.openList = new PriorityQueue<GridNode>();
+            this.closedSet = new HashSet<Grid>();
+            this.openSet = new HashSet<Grid>();
         }
 
-        internal PointNode GetPointNode(Point point = default, PointNode parent = default)
+        internal GridNode GetPointNode(Grid gird = default, GridNode parent = default)
         {
-            return this.pool.GetPointNode(point, parent);
+            return this.pool.GetPointNode(gird, parent);
         }
 
         internal void Reset()

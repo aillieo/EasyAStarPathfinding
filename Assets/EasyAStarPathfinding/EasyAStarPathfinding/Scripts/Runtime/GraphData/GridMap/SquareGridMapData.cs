@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace AillieoUtils.Pathfinding
 {
     [Serializable]
-    public class SquareGridData : IGridData
+    public class SquareGridMapData : IGridMapData
     {
         private bool[] data = Array.Empty<bool>();
         private int rangeX = 2;
@@ -84,7 +84,7 @@ namespace AillieoUtils.Pathfinding
             }
         }
 
-        public IEnumerable<Point> CollectNeighbor(Point current)
+        public IEnumerable<Grid> CollectNeighbor(Grid current)
         {
             for (int i = -1; i <= 1; ++i)
             {
@@ -109,7 +109,7 @@ namespace AillieoUtils.Pathfinding
                         continue;
                     }
 
-                    yield return new Point(x, y);
+                    yield return new Grid(x, y);
                 }
             }
         }

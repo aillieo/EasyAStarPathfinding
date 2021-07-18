@@ -6,7 +6,7 @@ using UnityEngine;
 namespace AillieoUtils.Pathfinding.GraphCreator.Editor
 {
 
-    public class SquareGridEditorWindow : BaseEditorWindow<SquareGridData>
+    public class SquareGridEditorWindow : BaseEditorWindow<SquareGridMapData>
     {
         [MenuItem("AillieoUtils/AStarPathfinding/SquareGridEditorWindow")]
         public static void Open()
@@ -19,7 +19,8 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
         private Texture2D savedTexture;
 
         private Vector2Int size;
-        private int brushValue;
+        private float brushValue;
+        private int brushSize;
 
         public void OnGUI()
         {
@@ -43,7 +44,8 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             }
             EditorGUILayout.EndHorizontal();
 
-            brushValue = EditorGUILayout.IntSlider("brush", brushValue, 0, 1);
+            brushValue = EditorGUILayout.Slider("Brush", brushValue, 0, 1);
+            brushSize = EditorGUILayout.IntSlider("BrushSize", brushSize, 1, 50);
         }
 
         protected override void Save()
@@ -125,6 +127,15 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             texture.Apply();
         }
 
+        private Color ValueToColor(float value)
+        {
+            return new Color(value, value, value, 1f);
+        }
+
+        private float ColorToValue(Color color)
+        {
+            return color.r;
+        }
 
         protected override void SceneCleanUp()
         {
@@ -153,8 +164,7 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
                 Vector2Int pos = new Vector2Int((int)mousePosition2D.x, (int)mousePosition2D.y);
                 if (pos.x >= 0 && pos.x < data.RangeX && pos.y >= 0 && pos.y < data.RangeY)
                 {
-                    texture.SetPixel(pos.x, pos.y, brushValue == 1 ? Color.black : Color.white);
-                    //Debug.LogError($"{pos} | {dataRange}");
+                    Paint(pos.x, pos.y);
                     texture.Apply();
                 }
             }
@@ -162,6 +172,22 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             if (Event.current.type == EventType.Layout)
             {
                 HandleUtility.AddDefaultControl(GUIUtility.GetControlID(GetHashCode(), FocusType.Passive));
+            }
+        }
+
+        private void Paint(int x, int y)
+        {
+            Color color = brushValue == 1 ? Color.black : Color.white;
+            int xFrom = x - brushSize / 2;
+            int yFrom = y - brushSize / 2;
+            int xTo = xFrom + brushSize;
+            int yTo = yFrom + brushSize;
+            for (int i = xFrom; i < xTo; ++i)
+            {
+                for (int j = yFrom; j < yTo; ++j)
+                {
+                    texture.SetPixel(i, j, color);
+                }
             }
         }
     }

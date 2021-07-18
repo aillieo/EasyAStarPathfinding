@@ -7,6 +7,7 @@ using AillieoUtils.Pathfinding;
 using System.Diagnostics;
 using System;
 using AillieoUtils.Pathfinding.Visualizers;
+using Grid = AillieoUtils.Pathfinding.Grid;
 
 namespace Samples
 {
@@ -17,12 +18,12 @@ namespace Samples
         public Vector2Int end = new Vector2Int(255, 255);
         public float timeStepForCoroutine = 0.1f;
 
-        private SquareGridData gridData;
-        private IEnumerable<Point> path;
+        private SquareGridMapData gridData;
+        private IEnumerable<AillieoUtils.Pathfinding.Grid> path;
 
         public void LoadData()
         {
-            gridData = SerializeHelper.Load<SquareGridData>(assetFilePath);
+            gridData = SerializeHelper.Load<SquareGridMapData>(assetFilePath);
         }
 
         private Pathfinder pathfinder;
@@ -60,7 +61,7 @@ namespace Samples
             EnsureFindingContext();
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            path = pathfinder.FindPath(new Point(start.x, start.y), new Point(end.x, end.y));
+            path = pathfinder.FindPath(new AillieoUtils.Pathfinding.Grid(start.x, start.y), new AillieoUtils.Pathfinding.Grid(end.x, end.y));
             long costTime = sw.ElapsedMilliseconds;
             UnityEngine.Debug.Log($"costTime {costTime}ms");
         }
@@ -70,7 +71,7 @@ namespace Samples
             EnsureFindingContext();
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            path = await pathfinder.FindPathAsync(new Point(start.x, start.y), new Point(end.x, end.y));
+            path = await pathfinder.FindPathAsync(new AillieoUtils.Pathfinding.Grid(start.x, start.y), new AillieoUtils.Pathfinding.Grid(end.x, end.y));
             long costTime = sw.ElapsedMilliseconds;
             UnityEngine.Debug.Log($"costTime {costTime}ms");
         }
@@ -86,7 +87,7 @@ namespace Samples
                 pathfinder.CleanUp();
             }
 
-            pathfinder.Init(new Point(start.x, start.y), new Point(end.x, end.y));
+            pathfinder.Init(new AillieoUtils.Pathfinding.Grid(start.x, start.y), new AillieoUtils.Pathfinding.Grid(end.x, end.y));
             StartCoroutine(InternalFindPathInCoroutine());
         }
 
@@ -151,11 +152,19 @@ namespace Samples
             {
                 int count = path.Count();
                 int index = 0;
+                Vector3? last = null;
 
                 foreach (var pp in path)
                 {
                     Gizmos.color = Color.Lerp(Color.red, Color.blue, ((float) (index++)) / count);
-                    Gizmos.DrawCube(new Vector3(pp.x, pp.y, 0), Vector3.one * 0.4f);
+                    Vector3 pos = new Vector3(pp.x, pp.y, 0);
+                    Gizmos.DrawCube(pos, Vector3.one * 0.4f);
+                    if (last.HasValue)
+                    {
+                        Gizmos.DrawLine(pos, last.Value);
+                    }
+
+                    last = pos;
                 }
             }
 
