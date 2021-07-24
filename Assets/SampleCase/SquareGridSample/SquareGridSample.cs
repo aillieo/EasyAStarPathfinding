@@ -35,7 +35,7 @@ namespace Samples
         public bool drawOpenList = true;
         public bool drawClosedList = true;
 
-        private GizmosDrawer drawer = new GizmosDrawer();
+        private SquareGidGizmosDrawer drawer = new SquareGidGizmosDrawer();
 
         private void EnsureFindingContext()
         {
@@ -61,7 +61,7 @@ namespace Samples
             EnsureFindingContext();
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            path = pathfinder.FindPath(new AillieoUtils.Pathfinding.Grid(start.x, start.y), new AillieoUtils.Pathfinding.Grid(end.x, end.y));
+            path = pathfinder.FindPath(gridData.GetGrid(start.x, start.y), gridData.GetGrid(end.x, end.y));
             long costTime = sw.ElapsedMilliseconds;
             UnityEngine.Debug.Log($"costTime {costTime}ms");
         }
@@ -71,7 +71,7 @@ namespace Samples
             EnsureFindingContext();
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            path = await pathfinder.FindPathAsync(new AillieoUtils.Pathfinding.Grid(start.x, start.y), new AillieoUtils.Pathfinding.Grid(end.x, end.y));
+            path = await pathfinder.FindPathAsync(gridData.GetGrid(start.x, start.y), gridData.GetGrid(end.x, end.y));
             long costTime = sw.ElapsedMilliseconds;
             UnityEngine.Debug.Log($"costTime {costTime}ms");
         }
@@ -87,7 +87,7 @@ namespace Samples
                 pathfinder.CleanUp();
             }
 
-            pathfinder.Init(new AillieoUtils.Pathfinding.Grid(start.x, start.y), new AillieoUtils.Pathfinding.Grid(end.x, end.y));
+            pathfinder.Init(gridData.GetGrid(start.x, start.y), gridData.GetGrid(end.x, end.y));
             StartCoroutine(InternalFindPathInCoroutine());
         }
 
@@ -126,7 +126,7 @@ namespace Samples
                     {
                         for (int j = 0; j < rangeY; ++j)
                         {
-                            bool passable = gridData.Passable(i, j);
+                            bool passable = gridData.GetCost(i, j) < 0.5f;
                             if (passable)
                             {
                                 if (drawPassable)

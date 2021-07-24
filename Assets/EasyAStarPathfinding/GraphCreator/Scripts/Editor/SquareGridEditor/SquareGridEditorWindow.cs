@@ -55,7 +55,7 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
                 for (int j = 0; j < data.RangeX; ++j)
                 {
                     Color c = texture.GetPixel(i, j);
-                    data.SetPassable(i, j, c.r > 0.5f);
+                    data.SetCost(i, j, c.r);
                 }
             }
             base.Save();
@@ -121,7 +121,7 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             {
                 for (int j = 0; j < data.RangeX; ++j)
                 {
-                    texture.SetPixel(i, j, data.Passable(i, j) ? Color.white : Color.black);
+                    texture.SetPixel(i, j, ValueToColor(data.GetCost(i, j)));
                 }
             }
             texture.Apply();
@@ -177,7 +177,7 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
 
         private void Paint(int x, int y)
         {
-            Color color = brushValue == 1 ? Color.black : Color.white;
+            Color color = ValueToColor(brushValue);
             int xFrom = x - brushSize / 2;
             int yFrom = y - brushSize / 2;
             int xTo = xFrom + brushSize;

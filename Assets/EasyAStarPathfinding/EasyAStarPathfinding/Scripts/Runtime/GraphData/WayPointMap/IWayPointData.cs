@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace AillieoUtils.Pathfinding
 {
-    public interface IWayPointData : IGraphData<Vector2>
+    public interface IWayPointData : IGraphData<Point>
     {
     }
 }

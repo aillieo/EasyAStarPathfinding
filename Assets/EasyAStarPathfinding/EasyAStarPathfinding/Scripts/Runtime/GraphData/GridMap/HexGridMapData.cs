@@ -10,7 +10,7 @@ namespace AillieoUtils.Pathfinding
             throw new NotImplementedException();
         }
 
-        public bool Passable(int x, int y)
+        public float GetCost(int x, int y)
         {
             throw new NotImplementedException();
         }

@@ -99,11 +99,11 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             {
                 for (int i = xStartIndex; i < xEndIndex; ++i)
                 {
-                    bool v = data.Passable(i, j);
+                    bool passable = data.GetCost(i, j) < 0.5f;
                     Rect buttonRect = new Rect(new Vector2((i - offset.x) * buttonWidth, (offset.y + displayY - 1 - j) * buttonWidth), buttonSize);
-                    if (GUI.Button(buttonRect, v ? " " : "x"))
+                    if (GUI.Button(buttonRect, passable ? " " : "x"))
                     {
-                        data.SetPassable(i, j, !v);
+                        data.SetCost(i, j, passable ? 0 : 1);
                     }
                 }
             }
@@ -191,7 +191,7 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
                 for (int j = 0; j < height; ++j)
                 {
                     Color c = colors[i + j * width];
-                    data.SetPassable(i, j, c.r > 0.5f);
+                    data.SetCost(i, j, c.r);
                 }
             }
 

@@ -2,10 +2,17 @@ using System;
 
 namespace AillieoUtils.Pathfinding
 {
-    public struct Grid : IEquatable<Grid>, IComparable<Grid>
+    [Serializable]
+    public class Grid : IGraphNode, IEquatable<Grid>, IComparable<Grid>
     {
-        public int x { get; set; }
-        public int y { get; set; }
+        public int x;
+        public int y;
+
+        public int id => throw new NotImplementedException();
+
+        public int flag => throw new NotImplementedException();
+
+        public float cost { get; set; } = 0f;
 
         public Grid(int x, int y)
         {
@@ -15,6 +22,19 @@ namespace AillieoUtils.Pathfinding
 
         public static bool operator ==(Grid lhs, Grid rhs)
         {
+            bool lNull = (object)lhs == null;
+            bool rNull = (object)rhs == null;
+
+            if (lNull && rNull)
+            {
+                return true;
+            }
+
+            if (lNull || rNull)
+            {
+                return false;
+            }
+
             return lhs.x == rhs.x && lhs.y == rhs.y;
         }
 

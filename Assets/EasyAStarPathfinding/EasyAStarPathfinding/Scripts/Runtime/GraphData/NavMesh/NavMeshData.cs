@@ -1,15 +1,22 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
+
 namespace AillieoUtils.Pathfinding
 {
     [Serializable]
     public class NavMeshData : INavMeshData
     {
-        public class NMFace
+        public class NMFace : IGraphNode
         {
-            public int index;
-            public Grid center;
+            public Vector2 center;
             public int[] verts;
+
+            public int id { get; private set; }
+
+            public int flag { get; private set; }
+
+            public float cost { get; private set; }
         }
 
         public class NMVertex
@@ -19,7 +26,7 @@ namespace AillieoUtils.Pathfinding
         }
 
         // mesh data
-        private Grid[] verts;
+        private Vector2[] verts;
         private int[] triangles;
 
         // 重新组织一下

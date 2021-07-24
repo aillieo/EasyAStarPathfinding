@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace AillieoUtils.Pathfinding
 {
-    public interface IVisibilityGraphData : IGraphData<Vector2>
+    public interface IVisibilityGraphData : IGraphData<Point>
     {
     }
 }

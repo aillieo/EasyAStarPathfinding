@@ -5,7 +5,7 @@ namespace AillieoUtils.Pathfinding
 {
     public class WayPointData : IWayPointData
     {
-        public IEnumerable<Vector2> CollectNeighbor(Vector2 current)
+        public IEnumerable<Point> CollectNeighbor(Point current)
         {
             throw new System.NotImplementedException();
         }

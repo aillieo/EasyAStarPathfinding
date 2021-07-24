@@ -4,6 +4,6 @@ namespace AillieoUtils.Pathfinding
 {
     public interface IGridMapData : IGraphData<Grid>
     {
-        bool Passable(int x, int y);
+        float GetCost(int x, int y);
     }
 }

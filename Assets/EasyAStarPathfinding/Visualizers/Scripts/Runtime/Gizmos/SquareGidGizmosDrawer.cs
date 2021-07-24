@@ -4,21 +4,21 @@ using UnityEngine;
 
 namespace AillieoUtils.Pathfinding.Visualizers
 {
-    public class GizmosDrawer : IVisualizer
+    public class SquareGidGizmosDrawer : IVisualizer<Grid>
     {
         public bool drawOpenList;
         public bool drawClosedList;
 
         public void Draw(Pathfinder pathfinder)
         {
-            DrawContext((pathfinder.solver as AStar).context);
+            DrawContext((pathfinder.solver as AStar<Grid>).context);
         }
 
         public void DrawGraph(IGraphData graphData)
         {
         }
 
-        public void DrawContext(PathfindingContext context)
+        public void DrawContext(PathfindingContext<Grid> context)
         {
             Color backup = Gizmos.color;
 
@@ -27,7 +27,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
                 Gizmos.color = Color.black;
                 foreach (var p in context.openList)
                 {
-                    Vector3 position = new Vector3(p.grid.x, p.grid.y, 0);
+                    Vector3 position = new Vector3(p.node.x, p.node.y, 0);
 #if UNITY_EDITOR
                     UnityEditor.Handles.Label(position, $"{p.g},{p.h}");
 #endif

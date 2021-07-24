@@ -5,21 +5,35 @@ namespace AillieoUtils.Pathfinding
     [Serializable]
     public class SquareGridMapData : IGridMapData
     {
-        private bool[] data = Array.Empty<bool>();
+        private Grid[] data = Array.Empty<Grid>();
         private int rangeX = 2;
         private int rangeY = 2;
 
         public int RangeX => rangeX;
         public int RangeY => rangeY;
 
-        public bool Passable(int x, int y)
+        public float GetCost(int x, int y)
         {
-            return this[x, y];
+            Grid grid = this[x, y];
+
+            if (grid == null)
+            {
+                return float.MaxValue;
+            }
+            else
+            {
+                //return true;
+                return grid.cost;
+            }
         }
 
-        public void SetPassable(int x, int y, bool passable)
+        public void SetCost(int x, int y, float cst)
         {
-            this[x, y] = passable;
+            Grid grid = this[x, y];
+            if (grid != null)
+            {
+                grid.cost = cst;
+            }
         }
 
         public void Resize(int newRangeX, int newRangeY)
@@ -29,8 +43,8 @@ namespace AillieoUtils.Pathfinding
                 return;
             }
 
-            bool[] oldData = data;
-            data = new bool[newRangeX * newRangeY];
+            Grid[] oldData = data;
+            data = new Grid[newRangeX * newRangeY];
             for (int i = 0, xMin = Math.Min(newRangeX, rangeX); i < xMin; ++i)
             {
                 for (int j = 0, yMin = Math.Min(newRangeY, rangeY); j < yMin; ++j)
@@ -41,27 +55,40 @@ namespace AillieoUtils.Pathfinding
 
             rangeX = newRangeX;
             rangeY = newRangeY;
+
+            FillWithDefault();
         }
 
-        private bool this[int x, int y]
+        public Grid GetGrid(int x, int y)
+        {
+            return this[x, y];
+        }
+
+        private Grid this[int x, int y]
         {
             get
             {
                 if (x < 0 || x >= rangeX)
                 {
-                    return false;
+                    return null;
                 }
                 if (y < 0 || y >= rangeY)
                 {
-                    return false;
+                    return null;
                 }
 
                 if (data.Length < rangeX * rangeY)
                 {
                     Array.Resize(ref data, rangeX * rangeY);
+                    FillWithDefault();
                 }
 
-                return data[x + y * rangeX];
+                Grid grid = data[x + y * rangeX];
+                if (grid == null)
+                {
+                    throw new Exception("invalid grid map data");
+                }
+                return grid;
             }
 
             set
@@ -78,6 +105,7 @@ namespace AillieoUtils.Pathfinding
                 if (data.Length < rangeX * rangeY)
                 {
                     Array.Resize(ref data, rangeX * rangeY);
+                    FillWithDefault();
                 }
 
                 data[x + y * rangeX] = value;
@@ -104,12 +132,23 @@ namespace AillieoUtils.Pathfinding
                     int x = current.x + i;
                     int y = current.y + j;
 
-                    if (!Passable(x, y))
+                    if (GetCost(x, y) > 0.5f)
                     {
                         continue;
                     }
 
-                    yield return new Grid(x, y);
+                    yield return this[x, y];
+                }
+            }
+        }
+
+        private void FillWithDefault()
+        {
+            for (int i = 0; i < data.Length; ++i)
+            {
+                if (data[i] == null)
+                {
+                    data[i] = new Grid(i % rangeX, i / rangeX);
                 }
             }
         }

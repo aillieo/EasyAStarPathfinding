@@ -3,17 +3,17 @@ using System.Collections.Generic;
 
 namespace AillieoUtils.Pathfinding
 {
-    public abstract class AStar : ISolver
+    public abstract class AStar<T> : ISolver where T : IGraphNode
     {
         public PathfindingState state { get; private set; }
 
-        private readonly List<Grid> result = new List<Grid>();
+        private readonly List<T> result = new List<T>();
 
-        internal readonly PathfindingContext context;
+        internal readonly PathfindingContext<T> context;
 
-        public AStar(IGridMapData gridData, Algorithms algorithm)
+        public AStar(IGraphData<T> graphData, Algorithms algorithm)
         {
-            this.context = new PathfindingContext(gridData, algorithm);
+            this.context = new PathfindingContext<T>(graphData, algorithm);
             this.state = PathfindingState.Uninitialized;
         }
 
@@ -29,11 +29,11 @@ namespace AillieoUtils.Pathfinding
             this.state = PathfindingState.Initialized;
         }
 
-        public void Init(Grid startPoint, Grid endPoint)
+        public void Init(T startPoint, T endPoint)
         {
             this.context.Reset();
-            this.context.startPoint = startPoint;
-            this.context.endingPoint = endPoint;
+            this.context.startingNode = startPoint;
+            this.context.endingNode = endPoint;
             this.Init();
         }
 
@@ -42,9 +42,9 @@ namespace AillieoUtils.Pathfinding
             if (state == PathfindingState.Initialized)
             {
                 state = PathfindingState.Finding;
-                var startNode = context.GetPointNode(context.startPoint, null);
+                var startNode = context.GetPointNode(context.startingNode, null);
                 context.openList.Enqueue(startNode);
-                context.openSet.Add(context.startPoint);
+                context.openSet.Add(context.startingNode);
                 return state;
             }
 
@@ -56,20 +56,20 @@ namespace AillieoUtils.Pathfinding
             if (context.openList.Count > 0)
             {
                 var first = context.openList.Dequeue();
-                context.openSet.Remove(first.grid);
+                context.openSet.Remove(first.node);
 
                 // 把周围点 加入open
-                var neighbors = context.graphData.CollectNeighbor(first.grid);
-                foreach (Grid p in neighbors)
+                var neighbors = context.graphData.CollectNeighbor(first.node);
+                foreach (T p in neighbors)
                 {
                     Collect(p, first);
                 }
 
-                context.closedSet.Add(first.grid);
+                context.closedSet.Add(first.node);
 
-                if (first.grid == context.endingPoint)
+                if (context.IsEndingNode(first.node))
                 {
-                    context.endingNode = first;
+                    context.endingPointer = first;
                     state = PathfindingState.Found;
                     TraceBackForPath();
                     return state;
@@ -85,24 +85,24 @@ namespace AillieoUtils.Pathfinding
             return state;
         }
 
-        private bool Collect(Grid grid, GridNode parentNode)
+        private bool Collect(T node, NodePointer<T> parentNode)
         {
-            if (this.context.closedSet.Contains(grid))
+            if (this.context.closedSet.Contains(node))
             {
                 return false;
             }
 
-            if (this.context.openSet.Contains(grid))
+            if (this.context.openSet.Contains(node))
             {
                 // todo 如果<=之前的g 需要更新g
                 return false;
             }
 
-            GridNode newNode = context.GetPointNode(grid, parentNode);
-            newNode.g = parentNode.g + HeuristicFuncPreset.DefaultCostFunc(grid, parentNode.grid);
-            newNode.h = HeuristicFuncPreset.DefaultCostFunc(grid, this.context.endingPoint);
+            NodePointer<T> newNode = context.GetPointNode(node, parentNode);
+            newNode.g = parentNode.g + HeuristicFuncPreset.DefaultCostFunc(node as Grid, parentNode.node as Grid);
+            newNode.h = HeuristicFuncPreset.DefaultCostFunc(node as Grid, this.context.endingNode as Grid);
             this.context.openList.Enqueue(newNode);
-            this.context.openSet.Add(grid);
+            this.context.openSet.Add(node);
 
             return true;
         }
@@ -110,22 +110,22 @@ namespace AillieoUtils.Pathfinding
         private bool TraceBackForPath()
         {
             result.Clear();
-            if (this.context.endingNode == null)
+            if (this.context.endingPointer == null)
             {
                 return false;
             }
 
-            var node = this.context.endingNode;
+            var node = this.context.endingPointer;
             while (node.previous != null)
             {
-                result.Add(node.grid);
+                result.Add(node.node);
                 node = node.previous;
             }
-            result.Add(node.grid);
+            result.Add(node.node);
             return true;
         }
 
-        public void GetResult(List<Grid> toFill)
+        public void GetResult(List<T> toFill)
         {
             toFill.Clear();
             toFill.AddRange(result);

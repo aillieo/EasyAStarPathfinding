@@ -3,28 +3,28 @@ using System.Collections.Generic;
 
 namespace AillieoUtils.Pathfinding
 {
-    public class PathfindingContext
+    public class PathfindingContext<T> where T : IGraphNode
     {
-        internal readonly GridNode.PointNodePool pool = GridNode.Pool();
-        internal readonly PriorityQueue<GridNode> openList;
-        internal readonly HashSet<Grid> closedSet;
-        internal readonly HashSet<Grid> openSet;
-        internal GridNode endingNode;
-        internal Grid startPoint;
-        internal Grid endingPoint;
-        internal readonly IGridMapData graphData;
+        internal readonly NodePointer<T>.NodePointerPool pool = NodePointer<T>.Pool();
+        internal readonly PriorityQueue<NodePointer<T>> openList;
+        internal readonly HashSet<T> closedSet;
+        internal readonly HashSet<T> openSet;
+        internal NodePointer<T> endingPointer;
+        internal T startingNode;
+        internal T endingNode;
+        internal readonly IGraphData<T> graphData;
         internal readonly Algorithms algorithm;
 
-        internal PathfindingContext(IGridMapData graphData, Algorithms algorithm)
+        internal PathfindingContext(IGraphData<T> graphData, Algorithms algorithm)
         {
             this.graphData = graphData;
             this.algorithm = algorithm;
-            this.openList = new PriorityQueue<GridNode>();
-            this.closedSet = new HashSet<Grid>();
-            this.openSet = new HashSet<Grid>();
+            this.openList = new PriorityQueue<NodePointer<T>>();
+            this.closedSet = new HashSet<T>();
+            this.openSet = new HashSet<T>();
         }
 
-        internal GridNode GetPointNode(Grid gird = default, GridNode parent = default)
+        internal NodePointer<T> GetPointNode(T gird = default, NodePointer<T> parent = default)
         {
             return this.pool.GetPointNode(gird, parent);
         }
@@ -35,10 +35,15 @@ namespace AillieoUtils.Pathfinding
             {
                 pool.Recycle(p);
             }
-            this.endingNode = null;
+            this.endingPointer = null;
             this.openSet.Clear();
             this.openList.Clear();
             this.closedSet.Clear();
+        }
+
+        internal bool IsEndingNode(T node)
+        {
+            return object.ReferenceEquals(node, endingPointer);
         }
     }
 }
