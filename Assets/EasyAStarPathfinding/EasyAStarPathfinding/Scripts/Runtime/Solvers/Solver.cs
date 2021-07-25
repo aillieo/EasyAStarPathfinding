@@ -35,6 +35,12 @@ namespace AillieoUtils.Pathfinding
                     return new AStarGrid(gridData, algorithm);
                 case Algorithms.DepthFirstSearch:
                     return new DepthFSGrid(gridData, algorithm);
+                case Algorithms.BreadthFirstSearch:
+                    return new BreadthFSGrid(gridData, algorithm);
+                case Algorithms.BestFirstSearch:
+                    return new BestFSGrid(gridData, algorithm);
+                case Algorithms.DijkstraAlgorithm:
+                    return new DijkstraGrid(gridData, algorithm);
             }
 
             throw new NotImplementedException();

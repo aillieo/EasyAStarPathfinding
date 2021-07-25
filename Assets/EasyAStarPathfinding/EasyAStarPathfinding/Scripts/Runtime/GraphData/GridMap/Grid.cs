@@ -2,11 +2,10 @@ using System;
 
 namespace AillieoUtils.Pathfinding
 {
-    [Serializable]
     public class Grid : IGraphNode, IEquatable<Grid>, IComparable<Grid>
     {
-        public int x;
-        public int y;
+        public readonly int x;
+        public readonly int y;
 
         public int id => throw new NotImplementedException();
 

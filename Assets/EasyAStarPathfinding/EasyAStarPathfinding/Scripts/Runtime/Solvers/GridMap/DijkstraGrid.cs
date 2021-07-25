@@ -3,10 +3,9 @@ using System.Collections.Generic;
 
 namespace AillieoUtils.Pathfinding
 {
-    public class AStarGrid : AStar<Grid>, IGridMapSolver
+    public class DijkstraGrid : Dijkstra<Grid>, IGridMapSolver
     {
-        public AStarGrid(IGridMapData gridData, Algorithms algorithm)
-            : base(gridData, algorithm)
+        public DijkstraGrid(IGraphData<Grid> graphData, Algorithms algorithm) : base(graphData, algorithm)
         {
         }
 

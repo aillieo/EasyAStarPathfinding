@@ -16,6 +16,7 @@ namespace Samples
         [HideInInspector] public string assetFilePath;
         public Vector2Int start = new Vector2Int(1, 1);
         public Vector2Int end = new Vector2Int(255, 255);
+        public Algorithms algorithm;
         public float timeStepForCoroutine = 0.1f;
 
         private SquareGridMapData gridData;
@@ -50,9 +51,14 @@ namespace Samples
                 throw new Exception($"invalid {nameof(gridData)}");
             }
 
+            if (pathfinder != null && pathfinder.algorithm != this.algorithm)
+            {
+                pathfinder = null;
+            }
+
             if (pathfinder == null)
             {
-                pathfinder = new Pathfinder(gridData);
+                pathfinder = new Pathfinder(gridData, this.algorithm);
             }
         }
 

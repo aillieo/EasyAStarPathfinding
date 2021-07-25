@@ -1,41 +1,32 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+
 namespace AillieoUtils.Pathfinding
 {
     [Serializable]
     public class SquareGridMapData : IGridMapData
     {
-        private Grid[] data = Array.Empty<Grid>();
-        private int rangeX = 2;
-        private int rangeY = 2;
+        private Grid[] grids = null;
+        private float[] data = Array.Empty<float>();
+        private int rangeX = 0;
+        private int rangeY = 0;
 
         public int RangeX => rangeX;
         public int RangeY => rangeY;
 
         public float GetCost(int x, int y)
         {
-            Grid grid = this[x, y];
-
-            if (grid == null)
-            {
-                return float.MaxValue;
-            }
-            else
-            {
-                //return true;
-                return grid.cost;
-            }
+            return this[x, y];
         }
 
         public void SetCost(int x, int y, float cst)
         {
-            Grid grid = this[x, y];
-            if (grid != null)
-            {
-                grid.cost = cst;
-            }
+            this[x, y] = cst;
         }
 
+        [Conditional("UNITY_EDITOR")]
         public void Resize(int newRangeX, int newRangeY)
         {
             if (newRangeX == rangeX && newRangeY == rangeY)
@@ -43,8 +34,8 @@ namespace AillieoUtils.Pathfinding
                 return;
             }
 
-            Grid[] oldData = data;
-            data = new Grid[newRangeX * newRangeY];
+            float[] oldData = data;
+            data = new float[newRangeX * newRangeY];
             for (int i = 0, xMin = Math.Min(newRangeX, rangeX); i < xMin; ++i)
             {
                 for (int j = 0, yMin = Math.Min(newRangeY, rangeY); j < yMin; ++j)
@@ -55,40 +46,41 @@ namespace AillieoUtils.Pathfinding
 
             rangeX = newRangeX;
             rangeY = newRangeY;
-
-            FillWithDefault();
         }
 
         public Grid GetGrid(int x, int y)
         {
-            return this[x, y];
+            if (grids == null)
+            {
+                grids = new Grid[data.Length];
+            }
+
+            int index = x + y * rangeX;
+            Grid grid = grids[index];
+            if (grid == null)
+            {
+                grid = new Grid(x, y);
+                grid.cost = this[x, y];
+                grids[index] = grid;
+            }
+
+            return grid;
         }
 
-        private Grid this[int x, int y]
+        private float this[int x, int y]
         {
             get
             {
                 if (x < 0 || x >= rangeX)
                 {
-                    return null;
+                    return float.MaxValue;
                 }
                 if (y < 0 || y >= rangeY)
                 {
-                    return null;
+                    return float.MaxValue;
                 }
 
-                if (data.Length < rangeX * rangeY)
-                {
-                    Array.Resize(ref data, rangeX * rangeY);
-                    FillWithDefault();
-                }
-
-                Grid grid = data[x + y * rangeX];
-                if (grid == null)
-                {
-                    throw new Exception("invalid grid map data");
-                }
-                return grid;
+                return data[x + y * rangeX];
             }
 
             set
@@ -100,12 +92,6 @@ namespace AillieoUtils.Pathfinding
                 if (y < 0 || y >= rangeY)
                 {
                     return;
-                }
-
-                if (data.Length < rangeX * rangeY)
-                {
-                    Array.Resize(ref data, rangeX * rangeY);
-                    FillWithDefault();
                 }
 
                 data[x + y * rangeX] = value;
@@ -137,18 +123,7 @@ namespace AillieoUtils.Pathfinding
                         continue;
                     }
 
-                    yield return this[x, y];
-                }
-            }
-        }
-
-        private void FillWithDefault()
-        {
-            for (int i = 0; i < data.Length; ++i)
-            {
-                if (data[i] == null)
-                {
-                    data[i] = new Grid(i % rangeX, i / rangeX);
+                    yield return GetGrid(x, y);
                 }
             }
         }

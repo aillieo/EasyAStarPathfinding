@@ -326,8 +326,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   assetFilePath: /Users/aillieo/PROJECTS/Unity/EasyAStarPathFinding/Assets/SampleCase/data.bytes
-  start: {x: 1, y: 1}
-  end: {x: 8, y: 8}
+  start: {x: 0, y: 0}
+  end: {x: 19, y: 19}
+  algorithm: 2
   timeStepForCoroutine: 0.1
   autoPathfinding: 0
   drawPassable: 1

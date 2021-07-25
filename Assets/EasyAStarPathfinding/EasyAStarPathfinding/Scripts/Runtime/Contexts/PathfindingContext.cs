@@ -43,7 +43,7 @@ namespace AillieoUtils.Pathfinding
 
         internal bool IsEndingNode(T node)
         {
-            return object.ReferenceEquals(node, endingPointer);
+            return object.ReferenceEquals(node, endingNode);
         }
     }
 }

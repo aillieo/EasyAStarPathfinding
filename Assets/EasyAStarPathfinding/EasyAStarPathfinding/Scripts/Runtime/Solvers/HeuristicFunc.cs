@@ -6,8 +6,6 @@ namespace AillieoUtils.Pathfinding
 
     public static class HeuristicFuncPreset
     {
-        public static HeuristicFunc DefaultCostFunc { get; set; } = ManhattanDist;
-
         public static float ManhattanDist(Grid a, Grid b)
         {
             return Math.Abs(a.x - b.x) + Math.Abs(a.y - b.y);

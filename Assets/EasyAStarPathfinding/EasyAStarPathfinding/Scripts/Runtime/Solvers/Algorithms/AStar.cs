@@ -98,14 +98,30 @@ namespace AillieoUtils.Pathfinding
                 return false;
             }
 
-            NodePointer<T> newNode = context.GetPointNode(node, parentNode);
-            newNode.g = parentNode.g + HeuristicFuncPreset.DefaultCostFunc(node as Grid, parentNode.node as Grid);
-            newNode.h = HeuristicFuncPreset.DefaultCostFunc(node as Grid, this.context.endingNode as Grid);
-            this.context.openList.Enqueue(newNode);
+            NodePointer<T> nodePointer = context.GetPointNode(node, parentNode);
+            nodePointer.g = GetG(nodePointer);
+            nodePointer.h = GetH(nodePointer);
+            this.context.openList.Enqueue(nodePointer);
             this.context.openSet.Add(node);
 
             return true;
         }
+
+        protected virtual float GetG(NodePointer<T> nodePointer)
+        {
+            if (nodePointer.previous == null)
+            {
+                return 0f;
+            }
+            return nodePointer.previous.g + HeuristicFunc(nodePointer.node, nodePointer.previous.node); 
+        }
+
+        protected virtual float GetH(NodePointer<T> nodePointer)
+        {
+            return HeuristicFunc(nodePointer.node, context.endingNode);
+        }
+
+        protected abstract float HeuristicFunc(T nodeFrom, T nodeTo);
 
         private bool TraceBackForPath()
         {

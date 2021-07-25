@@ -3,23 +3,24 @@ using System.Collections.Generic;
 
 namespace AillieoUtils.Pathfinding
 {
-    public abstract class BreadthFS : ISolver
+    public abstract class BreadthFS<T> : AStar<T> where T : IGraphNode
     {
-        public PathfindingState state => throw new NotImplementedException();
-
-        public void CleanUp()
+        protected BreadthFS(IGraphData<T> graphData, Algorithms algorithm) : base(graphData, algorithm)
         {
-            throw new NotImplementedException();
         }
 
-        public void Init()
+        protected override float GetG(NodePointer<T> nodePointer)
         {
-            throw new NotImplementedException();
+            if (nodePointer.previous == null)
+            {
+                return 0f;
+            }
+            return nodePointer.previous.g + 0.1f;
         }
 
-        public PathfindingState Step()
+        protected override float GetH(NodePointer<T> nodePointer)
         {
-            throw new NotImplementedException();
+            return 0f;
         }
     }
 }

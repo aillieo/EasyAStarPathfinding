@@ -10,9 +10,11 @@ namespace AillieoUtils.Pathfinding
         internal readonly IGridMapSolver solver;
 
         public PathfindingState state => solver.state;
+        public readonly Algorithms algorithm;
 
         public Pathfinder(IGraphData graphData, Algorithms algorithm = Algorithms.AStar)
         {
+            this.algorithm = algorithm;
             this.solver = Solvers.Create(graphData, algorithm) as IGridMapSolver;
         }
 

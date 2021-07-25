@@ -2,12 +2,17 @@ namespace AillieoUtils.Pathfinding
 {
     public enum Algorithms
     {
+        AStar = 0,
         BreadthFirstSearch,
         DepthFirstSearch,
         BestFirstSearch,
         DijkstraAlgorithm,
-        AStar = 0,
+
         AStarWithJPS,
         AStarWithRSR,
+
+        DStar,
+        LPAStar,
+        DStarLite,
     }
 }

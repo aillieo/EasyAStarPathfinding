@@ -2,27 +2,24 @@ using System;
 
 namespace AillieoUtils.Pathfinding
 {
-    public abstract class DepthFS : ISolver
+    public abstract class DepthFS<T> : AStar<T> where T : IGraphNode
     {
-        public PathfindingState state => throw new NotImplementedException();
-
-        public DepthFS(IGridMapData gridData, Algorithms algorithm)
+        protected DepthFS(IGraphData<T> graphData, Algorithms algorithm) : base(graphData, algorithm)
         {
         }
 
-        public void CleanUp()
+        protected override float GetG(NodePointer<T> nodePointer)
         {
-            throw new NotImplementedException();
+            if (nodePointer.previous == null)
+            {
+                return float.MaxValue;
+            }
+            return nodePointer.previous.g - 0.1f;
         }
 
-        public void Init()
+        protected override float GetH(NodePointer<T> nodePointer)
         {
-            throw new NotImplementedException();
-        }
-
-        public PathfindingState Step()
-        {
-            throw new NotImplementedException();
+            return 0f;
         }
     }
 }
