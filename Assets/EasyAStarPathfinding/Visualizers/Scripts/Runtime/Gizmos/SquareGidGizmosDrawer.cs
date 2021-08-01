@@ -11,15 +11,12 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
         public void Draw(Pathfinder pathfinder)
         {
-            DrawContext((pathfinder.solver as AStar<Grid>).context);
+            Visualize(pathfinder);
         }
 
-        public void DrawGraph(IGraphData graphData)
+        public void Visualize(Pathfinder pathfinder)
         {
-        }
-
-        public void DrawContext(PathfindingContext<Grid> context)
-        {
+            PathfindingContext<Grid> context = (pathfinder.solver as AStar<Grid>).context;
             Color backup = Gizmos.color;
 
             if (drawOpenList)

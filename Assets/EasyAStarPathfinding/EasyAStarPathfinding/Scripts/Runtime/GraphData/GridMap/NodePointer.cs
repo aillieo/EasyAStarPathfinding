@@ -34,7 +34,7 @@ namespace AillieoUtils.Pathfinding
                 return other.h.CompareTo(h);
             }
 
-            return GetHashCode().CompareTo(other.GetHashCode());
+            return Comparer<T>.Default.Compare(node, other.node);
         }
 
         internal class NodePointerPool

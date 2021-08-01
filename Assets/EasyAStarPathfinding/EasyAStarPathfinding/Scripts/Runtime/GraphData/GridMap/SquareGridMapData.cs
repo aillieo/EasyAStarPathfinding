@@ -50,7 +50,7 @@ namespace AillieoUtils.Pathfinding
 
         public Grid GetGrid(int x, int y)
         {
-            if (grids == null)
+            if (grids == null || grids.Length == 0)
             {
                 grids = new Grid[data.Length];
             }
