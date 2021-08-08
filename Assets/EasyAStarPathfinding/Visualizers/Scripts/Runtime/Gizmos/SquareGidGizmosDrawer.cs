@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace AillieoUtils.Pathfinding.Visualizers
 {
-    public class SquareGidGizmosDrawer : IVisualizer<Grid>
+    public class SquareGidGizmosDrawer : IVisualizer<Tile>
     {
         public bool drawOpenList;
         public bool drawClosedList;
@@ -16,7 +16,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
         public void Visualize(Pathfinder pathfinder)
         {
-            PathfindingContext<Grid> context = (pathfinder.solver as AStar<Grid>).context;
+            PathfindingContext<Tile> context = (pathfinder.solver as AStar<Tile>).context;
             Color backup = Gizmos.color;
 
             if (drawOpenList)
@@ -37,7 +37,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
                 Gizmos.color = Color.white;
                 foreach (var p in context.closedSet)
                 {
-                    Gizmos.DrawWireCube(new Vector3(p.x, p.y, 0), Vector3.one * 0.4f);
+                    Gizmos.DrawWireCube(new Vector3(p.Key.x, p.Key.y, 0), Vector3.one * 0.4f);
                 }
             }
 

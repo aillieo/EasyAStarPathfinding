@@ -3,9 +3,9 @@ using System.Collections.Generic;
 namespace AillieoUtils.Pathfinding
 {
     [Serializable]
-    public class IsometricGridMapData : IGridMapData
+    public class IsometricTileMapData : ITileMapData
     {
-        public IEnumerable<Grid> CollectNeighbor(Grid current)
+        public IEnumerable<Tile> CollectNeighbor(Tile current)
         {
             throw new NotImplementedException();
         }

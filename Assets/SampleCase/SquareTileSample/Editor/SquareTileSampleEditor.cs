@@ -5,8 +5,8 @@ using UnityEditor;
 
 namespace Samples
 {
-    [CustomEditor(typeof(SquareGridSample))]
-    public class SquareGridSampleEditor : Editor
+    [CustomEditor(typeof(SquareTileSample))]
+    public class SquareTileSampleEditor : Editor
     {
         private void OnEnable()
         {
@@ -18,7 +18,7 @@ namespace Samples
 
             EditorGUILayout.Space(20);
 
-            SquareGridSample targetPathfindingTest = target as SquareGridSample;
+            SquareTileSample targetPathfindingTest = target as SquareTileSample;
 
             EditorGUI.BeginDisabledGroup(Application.isPlaying);
 

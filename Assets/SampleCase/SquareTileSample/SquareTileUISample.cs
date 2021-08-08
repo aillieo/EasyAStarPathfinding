@@ -9,28 +9,29 @@ using System;
 using AillieoUtils.Pathfinding.Visualizers;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
-using Grid = AillieoUtils.Pathfinding.Grid;
 
 namespace Samples
 {
-    public class SquareGridUISample : MonoBehaviour
+    public class SquareTileUISample : MonoBehaviour
     {
         [SerializeField]
-        private UISquareGridView view;
+        private UISquareTileView view;
         [SerializeField]
         public string assetFilePath;
 
         private Vector2Int start = new Vector2Int(0, 0);
         private Vector2Int end = new Vector2Int(19, 19);
         private Algorithms algorithm;
-        private float timeStepForCoroutine = 0.1f;
 
         [SerializeField]
         private Dropdown algorithmSelector;
+        [SerializeField]
+        private Slider stepIntervalSlider;
+        [SerializeField]
+        private Toggle autoPathfinding;
 
-
-        private SquareGridMapData gridData;
-        private IEnumerable<AillieoUtils.Pathfinding.Grid> path;
+        private SquareTileMapData tileData;
+        private IEnumerable<AillieoUtils.Pathfinding.Tile> path;
 
         private void Awake()
         {
@@ -47,29 +48,22 @@ namespace Samples
 
         public void LoadData()
         {
-            gridData = SerializeHelper.Load<SquareGridMapData>(assetFilePath);
+            tileData = SerializeHelper.Load<SquareTileMapData>(assetFilePath);
         }
 
         private Pathfinder pathfinder;
 
-        private bool autoPathfinding = false;
-        private bool drawPassable = true;
-        private bool drawBlock = true;
-        private bool drawPath = true;
-        private bool drawOpenList = true;
-        private bool drawClosedList = true;
-
         private void EnsureFindingContext()
         {
-            if (gridData == null)
+            if (tileData == null)
             {
                 LoadData();
             }
 
-            if (gridData == null)
+            if (tileData == null)
             {
                 pathfinder = null;
-                throw new Exception($"invalid {nameof(gridData)}");
+                throw new Exception($"invalid {nameof(tileData)}");
             }
 
             if (pathfinder != null && pathfinder.algorithm != this.algorithm)
@@ -79,7 +73,7 @@ namespace Samples
 
             if (pathfinder == null)
             {
-                pathfinder = new Pathfinder(gridData, this.algorithm);
+                pathfinder = new Pathfinder(tileData, this.algorithm);
             }
 
             this.view.Visualize(pathfinder);
@@ -90,7 +84,7 @@ namespace Samples
             EnsureFindingContext();
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            path = pathfinder.FindPath(gridData.GetGrid(start.x, start.y), gridData.GetGrid(end.x, end.y));
+            path = pathfinder.FindPath(tileData.GetTile(start.x, start.y), tileData.GetTile(end.x, end.y));
             this.view.SetDirty();
             long costTime = sw.ElapsedMilliseconds;
             UnityEngine.Debug.Log($"costTime {costTime}ms");
@@ -101,7 +95,7 @@ namespace Samples
             EnsureFindingContext();
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            path = await pathfinder.FindPathAsync(gridData.GetGrid(start.x, start.y), gridData.GetGrid(end.x, end.y));
+            path = await pathfinder.FindPathAsync(tileData.GetTile(start.x, start.y), tileData.GetTile(end.x, end.y));
             this.view.SetDirty();
             long costTime = sw.ElapsedMilliseconds;
             UnityEngine.Debug.Log($"costTime {costTime}ms");
@@ -118,13 +112,14 @@ namespace Samples
                 pathfinder.CleanUp();
             }
 
-            pathfinder.Init(gridData.GetGrid(start.x, start.y), gridData.GetGrid(end.x, end.y));
+            pathfinder.Init(tileData.GetTile(start.x, start.y), tileData.GetTile(end.x, end.y));
             StartCoroutine(InternalFindPathInCoroutine());
         }
 
         private IEnumerator InternalFindPathInCoroutine()
         {
             path = null;
+            float timeStepForCoroutine = stepIntervalSlider.value;
             WaitForSeconds waitForSeconds = new WaitForSeconds(timeStepForCoroutine);
             while (pathfinder.state != PathfindingState.Found && pathfinder.state != PathfindingState.Failed)
             {
@@ -139,7 +134,7 @@ namespace Samples
 
         private void Update()
         {
-            if (autoPathfinding)
+            if (autoPathfinding.isOn)
             {
                 FindPath();
             }

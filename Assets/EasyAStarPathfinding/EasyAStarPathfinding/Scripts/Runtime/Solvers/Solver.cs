@@ -20,27 +20,27 @@ namespace AillieoUtils.Pathfinding
         {
             switch (graphData)
             {
-                case IGridMapData gridData:
-                    return CreateForGridData(gridData, algorithm);
+                case ITileMapData gridData:
+                    return CreateForTileData(gridData, algorithm);
             }
 
             throw new NotImplementedException();
         }
 
-        private static IGridMapSolver CreateForGridData(IGridMapData gridData, Algorithms algorithm)
+        private static ITileMapSolver CreateForTileData(ITileMapData tileData, Algorithms algorithm)
         {
             switch (algorithm)
             {
                 case Algorithms.AStar:
-                    return new AStarGrid(gridData, algorithm);
+                    return new AStarTile(tileData, algorithm);
                 case Algorithms.DepthFirstSearch:
-                    return new DepthFSGrid(gridData, algorithm);
+                    return new DepthFSTile(tileData, algorithm);
                 case Algorithms.BreadthFirstSearch:
-                    return new BreadthFSGrid(gridData, algorithm);
+                    return new BreadthFSTile(tileData, algorithm);
                 case Algorithms.BestFirstSearch:
-                    return new BestFSGrid(gridData, algorithm);
+                    return new BestFSTile(tileData, algorithm);
                 case Algorithms.DijkstraAlgorithm:
-                    return new DijkstraGrid(gridData, algorithm);
+                    return new DijkstraTile(tileData, algorithm);
             }
 
             throw new NotImplementedException();

@@ -7,19 +7,22 @@ using UnityEngine.UI;
 
 namespace AillieoUtils.Pathfinding.Visualizers
 {
-    public class UISquareGridView : MonoBehaviour, IVisualizer<Grid>
+    public class UISquareTileView : MonoBehaviour, IVisualizer<Tile>
     {
         [SerializeField]
-        private UISquareGridElement template;
+        private UISquareTileElement template;
+
+        [SerializeField]
+        private Transform tilesRoot;
 
         [SerializeField]
         private SimpleUILine uiPath;
 
-        private UISquareGridElement[,] grids;
-        private PathfindingContext<Grid> cachedContext;
+        private UISquareTileElement[,] tiles;
+        private PathfindingContext<Tile> cachedContext;
         private Pathfinder cachedPathfinder;
 
-        private List<Grid> pathFound = new List<Grid>();
+        private List<Tile> pathFound = new List<Tile>();
 
         private bool dirty = true;
         private HashSet<Vector2Int> dirtyElements = new HashSet<Vector2Int>();
@@ -37,16 +40,26 @@ namespace AillieoUtils.Pathfinding.Visualizers
         public void Visualize(Pathfinder pathfinder)
         {
             cachedPathfinder = pathfinder;
-            cachedContext = (pathfinder.solver as AStar<Grid>).context;
+            cachedContext = (pathfinder.solver as AStar<Tile>).context;
             dirty = true;
         }
 
         public void SetDirty()
         {
+            IGraphData<Tile> data = cachedContext.graphData;
+            SquareTileMapData sData = data as SquareTileMapData;
+            for (int i = 0; i < sData.RangeX; ++i)
+            {
+                for (int j = 0; j < sData.RangeY; ++j)
+                {
+                    dirtyElements.Add(new Vector2Int(i, j));
+                }
+            }
+
             dirty = true;
         }
 
-        public void SetGridDirty(int x, int y)
+        public void SetTileDirty(int x, int y)
         {
             dirtyElements.Add(new Vector2Int(x, y));
             dirty = true;
@@ -69,18 +82,18 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
         private void UpdateElements()
         {
-            IGraphData<Grid> data = cachedContext.graphData;
-            SquareGridMapData sData = data as SquareGridMapData;
-            if (grids == null || grids.Length == 0)
+            IGraphData<Tile> data = cachedContext.graphData;
+            SquareTileMapData sData = data as SquareTileMapData;
+            if (tiles == null || tiles.Length == 0)
             {
-                grids = new UISquareGridElement[sData.RangeX, sData.RangeY];
+                tiles = new UISquareTileElement[sData.RangeX, sData.RangeY];
                 for (int i = 0; i < sData.RangeX; ++i)
                 {
                     for (int j = 0; j < sData.RangeY; ++j)
                     {
-                        UISquareGridElement grid = Instantiate<UISquareGridElement>(template, this.transform);
-                        grid.Init(i, j, cachedContext);
-                        grids[i, j] = grid;
+                        UISquareTileElement tile = Instantiate<UISquareTileElement>(template, this.tilesRoot);
+                        tile.Init(i, j, cachedContext);
+                        tiles[i, j] = tile;
                     }
                 }
             }
@@ -88,7 +101,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
             {
                 foreach (var cord in dirtyElements)
                 {
-                    UISquareGridElement grid = this.grids[cord.x, cord.y];
+                    UISquareTileElement tile = this.tiles[cord.x, cord.y];
                     //
                 }
                 dirtyElements.Clear();
@@ -97,20 +110,26 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
         private void UpdatePath()
         {
-            pathFound.Clear();
+            //pathFound.Clear();
             if (cachedPathfinder != null)
             {
+                uiPath.RemoveAllPoints();
+
                 if (cachedPathfinder.state == PathfindingState.Found)
                 {
                     cachedPathfinder.GetResult(pathFound);
 
-                    uiPath.RemoveAllPoints();
+                    Vector2 rectSize = (this.transform as RectTransform).rect.size;
                     foreach (var g in pathFound)
                     {
-                        UISquareGridElement ele = this.grids[g.x, g.y];
-                        Vector2 pos = ele.rectTransform.anchoredPosition / (this.transform as RectTransform).rect.width;
+                        UISquareTileElement ele = this.tiles[g.x, g.y];
+                        Vector2 elePos = (ele.transform as RectTransform).anchoredPosition;
+                        Vector2 pos = new Vector2(elePos.x / rectSize.x, elePos.y / rectSize.y);
                         uiPath.AddPoint(pos);
                     }
+
+                    uiPath.rectTransform.anchoredPosition = (tiles[0, 0].transform as RectTransform).anchoredPosition;
+                    //uiPath.rectTransform.Strentch();
                 }
             }
         }

@@ -6,8 +6,8 @@ namespace AillieoUtils.Pathfinding
     public class PathfindingContext<T> where T : IGraphNode
     {
         internal readonly NodePointer<T>.NodePointerPool pool = NodePointer<T>.Pool();
-        internal readonly PriorityQueue<NodePointer<T>> openList;
-        internal readonly HashSet<T> closedSet;
+        internal readonly UniquePriorityQueue<NodePointer<T>> openList;
+        internal readonly Dictionary<T, NodePointer<T>> closedSet;
         internal readonly HashSet<T> openSet;
         internal NodePointer<T> endingPointer;
         internal T startingNode;
@@ -19,8 +19,8 @@ namespace AillieoUtils.Pathfinding
         {
             this.graphData = graphData;
             this.algorithm = algorithm;
-            this.openList = new PriorityQueue<NodePointer<T>>();
-            this.closedSet = new HashSet<T>();
+            this.openList = new UniquePriorityQueue<NodePointer<T>>();
+            this.closedSet = new Dictionary<T, NodePointer<T>>();
             this.openSet = new HashSet<T>();
         }
 

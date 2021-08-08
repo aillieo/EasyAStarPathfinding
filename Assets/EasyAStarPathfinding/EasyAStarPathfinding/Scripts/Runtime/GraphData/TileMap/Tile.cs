@@ -1,8 +1,9 @@
 using System;
+using UnityEngine;
 
 namespace AillieoUtils.Pathfinding
 {
-    public class Grid : IGraphNode, IEquatable<Grid>, IComparable<Grid>
+    public class Tile : IGraphNode, IEquatable<Tile>, IComparable<Tile>
     {
         public readonly int x;
         public readonly int y;
@@ -13,13 +14,18 @@ namespace AillieoUtils.Pathfinding
 
         public float cost { get; set; } = 0f;
 
-        public Grid(int x, int y)
+        public Tile(int x, int y)
         {
             this.x = x;
             this.y = y;
         }
 
-        public static bool operator ==(Grid lhs, Grid rhs)
+        public static explicit operator Vector2(Tile tile)
+        {
+            return new Vector2(tile.x, tile.y);
+        }
+
+        public static bool operator ==(Tile lhs, Tile rhs)
         {
             bool lNull = (object)lhs == null;
             bool rNull = (object)rhs == null;
@@ -37,22 +43,22 @@ namespace AillieoUtils.Pathfinding
             return lhs.x == rhs.x && lhs.y == rhs.y;
         }
 
-        public static bool operator !=(Grid lhs, Grid rhs)
+        public static bool operator !=(Tile lhs, Tile rhs)
         {
             return !(lhs == rhs);
         }
 
         public override bool Equals(object other)
         {
-            if (!(other is Grid))
+            if (!(other is Tile))
             {
                 return false;
             }
 
-            return Equals((Grid)other);
+            return Equals((Tile)other);
         }
 
-        public bool Equals(Grid other)
+        public bool Equals(Tile other)
         {
             return x.Equals(other.x) && y.Equals(other.y);
         }
@@ -67,7 +73,7 @@ namespace AillieoUtils.Pathfinding
             return $"({x},{y})";
         }
 
-        public int CompareTo(Grid other)
+        public int CompareTo(Tile other)
         {
             if (x != other.x)
             {
@@ -76,5 +82,4 @@ namespace AillieoUtils.Pathfinding
             return y - other.y;
         }
     }
-
 }

@@ -6,12 +6,12 @@ using UnityEngine;
 namespace AillieoUtils.Pathfinding.GraphCreator.Editor
 {
 
-    public class SquareGridEditorWindowLite : BaseEditorWindow<SquareGridMapData>
+    public class SquareTileEditorWindowLite : BaseEditorWindow<SquareTileMapData>
     {
-        [MenuItem("AillieoUtils/AStarPathfinding/SquareGridEditorWindowLite")]
+        [MenuItem("AillieoUtils/AStarPathfinding/SquareTileEditorWindowLite")]
         public static void Open()
         {
-            GetWindowAndOpen<SquareGridEditorWindowLite>();
+            GetWindowAndOpen<SquareTileEditorWindowLite>();
         }
 
         private Vector2Int dataRange;
@@ -31,10 +31,10 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
 
             EditorGUILayout.Space(10);
 
-            DrawGridDataEditor();
+            DrawTileDataEditor();
         }
 
-        private void DrawGridDataEditor()
+        private void DrawTileDataEditor()
         {
             if (data == null)
             {
@@ -86,10 +86,10 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
                 offset.y = 0;
             }
 
-            Rect gridViewRect = new Rect(viewRect.position + new Vector2(barWidth, barWidth), new Vector2(viewRect.width - barWidth, viewRect.height - barWidth));
+            Rect tileViewRect = new Rect(viewRect.position + new Vector2(barWidth, barWidth), new Vector2(viewRect.width - barWidth, viewRect.height - barWidth));
             Vector2 buttonSize = Vector2.one * buttonWidth;
 
-            GUI.BeginGroup(gridViewRect, new GUIStyle("box"));
+            GUI.BeginGroup(tileViewRect, new GUIStyle("box"));
             int xStartIndex = (int)offset.x;
             int xEndIndex = (int)(offset.x + displayX);
             int yStartIndex = (int)offset.y;

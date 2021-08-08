@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace AillieoUtils.Pathfinding
 {
-    public interface IGridMapData : IGraphData<Grid>
+    public interface ITileMapData : IGraphData<Tile>
     {
         float GetCost(int x, int y);
     }

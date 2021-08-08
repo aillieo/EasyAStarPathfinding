@@ -65,7 +65,7 @@ namespace AillieoUtils.Pathfinding
                     Collect(p, first);
                 }
 
-                context.closedSet.Add(first.node);
+                context.closedSet.Add(first.node, first);
 
                 if (context.IsEndingNode(first.node))
                 {
@@ -87,7 +87,7 @@ namespace AillieoUtils.Pathfinding
 
         private bool Collect(T node, NodePointer<T> parentNode)
         {
-            if (this.context.closedSet.Contains(node))
+            if (this.context.closedSet.ContainsKey(node))
             {
                 return false;
             }
@@ -113,7 +113,7 @@ namespace AillieoUtils.Pathfinding
             {
                 return 0f;
             }
-            return nodePointer.previous.g + HeuristicFunc(nodePointer.node, nodePointer.previous.node); 
+            return nodePointer.previous.g + HeuristicFunc(nodePointer.node, nodePointer.previous.node);
         }
 
         protected virtual float GetH(NodePointer<T> nodePointer)

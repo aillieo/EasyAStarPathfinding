@@ -21,7 +21,7 @@ namespace AillieoUtils.Pathfinding
 
         public class NMVertex
         {
-            public Grid position;
+            public Tile position;
             public int index;
         }
 

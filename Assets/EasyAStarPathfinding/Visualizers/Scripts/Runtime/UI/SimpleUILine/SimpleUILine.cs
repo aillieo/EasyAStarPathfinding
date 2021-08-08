@@ -9,46 +9,46 @@ namespace AillieoUtils.UI
     public class SimpleUILine : MaskableGraphic, ILayoutIgnorer
     {
         public float width = 2;
-        public List<Vector2> Points;
+        private List<Vector2> points = new List<Vector2>();
 
         public Vector2[] GetAllPoints()
         {
-            return Points.ToArray();
+            return points.ToArray();
         }
 
         public void GetAllPoints(List<Vector2> toFill)
         {
             toFill.Clear();
-            toFill.AddRange(Points);
+            toFill.AddRange(points);
         }
 
         public void AddPoint(Vector2 point)
         {
-            Points.Add(point);
+            points.Add(point);
             SetVerticesDirty();
         }
 
         public void AddPoints(IEnumerable<Vector2> points)
         {
-            Points.AddRange(points);
+            this.points.AddRange(points);
             SetVerticesDirty();
         }
 
         public void RemovePoint(int index)
         {
-            Points.RemoveAt(index);
+            points.RemoveAt(index);
             SetVerticesDirty();
         }
 
         public void RemoveAllPoints()
         {
-            Points.Clear();
+            points.Clear();
             SetVerticesDirty();
         }
 
         public int GetPointCount()
         {
-            return Points.Count;
+            return points.Count;
         }
 
         private List<UIVertex> buffer = new List<UIVertex>();
@@ -61,7 +61,7 @@ namespace AillieoUtils.UI
         {
             vh.Clear();
 
-            if (Points == null || Points.Count < 2)
+            if (points == null || points.Count < 2)
             {
                 return;
             }
@@ -80,10 +80,10 @@ namespace AillieoUtils.UI
             Vector2 prevV1 = Vector2.zero;
             Vector2 prevV2 = Vector2.zero;
 
-            for (int i = 1; i < Points.Count; i++)
+            for (int i = 1; i < points.Count; i++)
             {
-                Vector2 first = Points[i - 1];
-                Vector2 second = Points[i];
+                Vector2 first = points[i - 1];
+                Vector2 second = points[i];
                 first = new Vector2(first.x * sizeX + baseX, first.y * sizeY + baseY);
                 second = new Vector2(second.x * sizeX + baseX, second.y * sizeY + baseY);
 
@@ -120,12 +120,16 @@ namespace AillieoUtils.UI
         {
             UIVertex v0 = UIVertex.simpleVert;
             v0.position = p0;
+            v0.color = this.color;
             UIVertex v1 = UIVertex.simpleVert;
             v1.position = p1;
+            v1.color = this.color;
             UIVertex v2 = UIVertex.simpleVert;
             v2.position = p2;
+            v2.color = this.color;
             UIVertex v3 = UIVertex.simpleVert;
             v3.position = p3;
+            v3.color = this.color;
 
             buffer.Add(v0);
             buffer.Add(v1);

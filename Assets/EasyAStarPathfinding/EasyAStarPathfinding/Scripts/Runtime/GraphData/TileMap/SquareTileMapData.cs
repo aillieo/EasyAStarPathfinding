@@ -6,9 +6,10 @@ using System.Linq;
 namespace AillieoUtils.Pathfinding
 {
     [Serializable]
-    public class SquareGridMapData : IGridMapData
+    public class SquareTileMapData : ITileMapData
     {
-        private Grid[] grids = null;
+        private float blockThreshold = 0.5f;
+        private Tile[] tiles = null;
         private float[] data = Array.Empty<float>();
         private int rangeX = 0;
         private int rangeY = 0;
@@ -48,23 +49,23 @@ namespace AillieoUtils.Pathfinding
             rangeY = newRangeY;
         }
 
-        public Grid GetGrid(int x, int y)
+        public Tile GetTile(int x, int y)
         {
-            if (grids == null || grids.Length == 0)
+            if (tiles == null || tiles.Length == 0)
             {
-                grids = new Grid[data.Length];
+                tiles = new Tile[data.Length];
             }
 
             int index = x + y * rangeX;
-            Grid grid = grids[index];
-            if (grid == null)
+            Tile tile = tiles[index];
+            if (tile == null)
             {
-                grid = new Grid(x, y);
-                grid.cost = this[x, y];
-                grids[index] = grid;
+                tile = new Tile(x, y);
+                tile.cost = this[x, y];
+                tiles[index] = tile;
             }
 
-            return grid;
+            return tile;
         }
 
         private float this[int x, int y]
@@ -98,7 +99,7 @@ namespace AillieoUtils.Pathfinding
             }
         }
 
-        public IEnumerable<Grid> CollectNeighbor(Grid current)
+        public IEnumerable<Tile> CollectNeighbor(Tile current)
         {
             for (int i = -1; i <= 1; ++i)
             {
@@ -118,12 +119,12 @@ namespace AillieoUtils.Pathfinding
                     int x = current.x + i;
                     int y = current.y + j;
 
-                    if (GetCost(x, y) > 0.5f)
+                    if (GetCost(x, y) > blockThreshold)
                     {
                         continue;
                     }
 
-                    yield return GetGrid(x, y);
+                    yield return GetTile(x, y);
                 }
             }
         }

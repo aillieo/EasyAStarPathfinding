@@ -7,7 +7,7 @@ namespace AillieoUtils.Pathfinding
 {
     public class Pathfinder
     {
-        internal readonly IGridMapSolver solver;
+        internal readonly ITileMapSolver solver;
 
         public PathfindingState state => solver.state;
         public readonly Algorithms algorithm;
@@ -15,15 +15,15 @@ namespace AillieoUtils.Pathfinding
         public Pathfinder(IGraphData graphData, Algorithms algorithm = Algorithms.AStar)
         {
             this.algorithm = algorithm;
-            this.solver = Solvers.Create(graphData, algorithm) as IGridMapSolver;
+            this.solver = Solvers.Create(graphData, algorithm) as ITileMapSolver;
         }
 
-        public void Init(Grid startPoint, Grid endPoint)
+        public void Init(Tile startPoint, Tile endPoint)
         {
             this.solver.Init(startPoint, endPoint);
         }
 
-        public Grid[] FindPath(Grid startPoint, Grid endPoint)
+        public Tile[] FindPath(Tile startPoint, Tile endPoint)
         {
             Init(startPoint, endPoint);
             while (true)
@@ -39,9 +39,9 @@ namespace AillieoUtils.Pathfinding
             return GetResult();
         }
 
-        public Task<Grid[]> FindPathAsync(Grid startPoint, Grid endPoint)
+        public Task<Tile[]> FindPathAsync(Tile startPoint, Tile endPoint)
         {
-            TaskCompletionSource<Grid[]> tsc = new TaskCompletionSource<Grid[]>();
+            TaskCompletionSource<Tile[]> tsc = new TaskCompletionSource<Tile[]>();
             ThreadPool.QueueUserWorkItem(_ => {
                 var points = this.FindPath(startPoint, endPoint);
                 tsc.SetResult(points);
@@ -72,14 +72,14 @@ namespace AillieoUtils.Pathfinding
             solver.CleanUp();
         }
 
-        public void GetResult(List<Grid> toFill)
+        public void GetResult(List<Tile> toFill)
         {
             solver.GetResult(toFill);
         }
 
-        public Grid[] GetResult()
+        public Tile[] GetResult()
         {
-            List<Grid> result = new List<Grid>();
+            List<Tile> result = new List<Tile>();
             GetResult(result);
             return result.ToArray();
         }

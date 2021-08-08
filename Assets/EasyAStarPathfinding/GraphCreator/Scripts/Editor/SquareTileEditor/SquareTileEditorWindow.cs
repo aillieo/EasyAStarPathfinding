@@ -6,12 +6,12 @@ using UnityEngine;
 namespace AillieoUtils.Pathfinding.GraphCreator.Editor
 {
 
-    public class SquareGridEditorWindow : BaseEditorWindow<SquareGridMapData>
+    public class SquareTileEditorWindow : BaseEditorWindow<SquareTileMapData>
     {
-        [MenuItem("AillieoUtils/AStarPathfinding/SquareGridEditorWindow")]
+        [MenuItem("AillieoUtils/AStarPathfinding/SquareTileEditorWindow")]
         public static void Open()
         {
-            GetWindowAndOpen<SquareGridEditorWindow>();
+            GetWindowAndOpen<SquareTileEditorWindow>();
         }
 
         private GameObject goRoot;

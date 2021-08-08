@@ -7,11 +7,10 @@ using AillieoUtils.Pathfinding;
 using System.Diagnostics;
 using System;
 using AillieoUtils.Pathfinding.Visualizers;
-using Grid = AillieoUtils.Pathfinding.Grid;
 
 namespace Samples
 {
-    public class SquareGridSample : MonoBehaviour
+    public class SquareTileSample : MonoBehaviour
     {
         [HideInInspector] public string assetFilePath;
         public Vector2Int start = new Vector2Int(1, 1);
@@ -19,12 +18,12 @@ namespace Samples
         public Algorithms algorithm;
         public float timeStepForCoroutine = 0.1f;
 
-        private SquareGridMapData gridData;
-        private IEnumerable<AillieoUtils.Pathfinding.Grid> path;
+        private SquareTileMapData tileData;
+        private IEnumerable<AillieoUtils.Pathfinding.Tile> path;
 
         public void LoadData()
         {
-            gridData = SerializeHelper.Load<SquareGridMapData>(assetFilePath);
+            tileData = SerializeHelper.Load<SquareTileMapData>(assetFilePath);
         }
 
         private Pathfinder pathfinder;
@@ -40,15 +39,15 @@ namespace Samples
 
         private void EnsureFindingContext()
         {
-            if (gridData == null)
+            if (tileData == null)
             {
                 LoadData();
             }
 
-            if (gridData == null)
+            if (tileData == null)
             {
                 pathfinder = null;
-                throw new Exception($"invalid {nameof(gridData)}");
+                throw new Exception($"invalid {nameof(tileData)}");
             }
 
             if (pathfinder != null && pathfinder.algorithm != this.algorithm)
@@ -58,7 +57,7 @@ namespace Samples
 
             if (pathfinder == null)
             {
-                pathfinder = new Pathfinder(gridData, this.algorithm);
+                pathfinder = new Pathfinder(tileData, this.algorithm);
             }
         }
 
@@ -67,7 +66,7 @@ namespace Samples
             EnsureFindingContext();
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            path = pathfinder.FindPath(gridData.GetGrid(start.x, start.y), gridData.GetGrid(end.x, end.y));
+            path = pathfinder.FindPath(tileData.GetTile(start.x, start.y), tileData.GetTile(end.x, end.y));
             long costTime = sw.ElapsedMilliseconds;
             UnityEngine.Debug.Log($"costTime {costTime}ms");
         }
@@ -77,7 +76,7 @@ namespace Samples
             EnsureFindingContext();
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            path = await pathfinder.FindPathAsync(gridData.GetGrid(start.x, start.y), gridData.GetGrid(end.x, end.y));
+            path = await pathfinder.FindPathAsync(tileData.GetTile(start.x, start.y), tileData.GetTile(end.x, end.y));
             long costTime = sw.ElapsedMilliseconds;
             UnityEngine.Debug.Log($"costTime {costTime}ms");
         }
@@ -93,7 +92,7 @@ namespace Samples
                 pathfinder.CleanUp();
             }
 
-            pathfinder.Init(gridData.GetGrid(start.x, start.y), gridData.GetGrid(end.x, end.y));
+            pathfinder.Init(tileData.GetTile(start.x, start.y), tileData.GetTile(end.x, end.y));
             StartCoroutine(InternalFindPathInCoroutine());
         }
 
@@ -122,17 +121,17 @@ namespace Samples
         {
             Color backup = Gizmos.color;
 
-            if (gridData != null)
+            if (tileData != null)
             {
                 if (drawPassable || drawBlock)
                 {
-                    int rangeX = gridData.RangeX;
-                    int rangeY = gridData.RangeY;
+                    int rangeX = tileData.RangeX;
+                    int rangeY = tileData.RangeY;
                     for (int i = 0; i < rangeX; ++i)
                     {
                         for (int j = 0; j < rangeY; ++j)
                         {
-                            bool passable = gridData.GetCost(i, j) < 0.5f;
+                            bool passable = tileData.GetCost(i, j) < 0.5f;
                             if (passable)
                             {
                                 if (drawPassable)

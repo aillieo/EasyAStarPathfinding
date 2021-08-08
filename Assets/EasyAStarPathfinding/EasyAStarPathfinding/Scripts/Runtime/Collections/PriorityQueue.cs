@@ -71,7 +71,9 @@ namespace AillieoUtils
         private void SiftUp(int n)
         {
             var v = data[n];
-            for (var n2 = n / 2; n > 0 && comparer.Compare(v, data[n2]) > 0; n = n2, n2 /= 2)
+            for (var n2 = n / 2;
+                n > 0 && comparer.Compare(v, data[n2]) > 0;
+                n = n2, n2 /= 2)
             {
                 data[n] = data[n2];
             }
@@ -82,7 +84,9 @@ namespace AillieoUtils
         private void SiftDown(int n)
         {
             var v = data[n];
-            for (var n2 = n * 2; n2 < Count; n = n2, n2 *= 2)
+            for (var n2 = n * 2;
+                n2 < Count;
+                n = n2, n2 *= 2)
             {
                 if (n2 + 1 < Count && comparer.Compare(data[n2 + 1], data[n2]) > 0)
                 {
@@ -106,10 +110,7 @@ namespace AillieoUtils
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            for (int i = 0; i < Count; ++i)
-            {
-                yield return data[i];
-            }
+            return GetEnumerator();
         }
 
         public IEnumerator<T> GetEnumerator()
