@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace AillieoUtils.Pathfinding
 {
@@ -44,7 +45,7 @@ namespace AillieoUtils.Pathfinding
                 state = PathfindingState.Finding;
                 var startNode = context.GetPointNode(context.startingNode, null);
                 context.openList.Enqueue(startNode);
-                context.openSet.Add(context.startingNode);
+                context.openSet.Add(context.startingNode, startNode);
                 return state;
             }
 
@@ -92,19 +93,33 @@ namespace AillieoUtils.Pathfinding
                 return false;
             }
 
-            if (this.context.openSet.Contains(node))
-            {
-                // todo 如果<=之前的g 需要更新g
-                return false;
-            }
-
+            bool changed = false;
             NodePointer<T> nodePointer = context.GetPointNode(node, parentNode);
             nodePointer.g = GetG(nodePointer);
             nodePointer.h = GetH(nodePointer);
-            this.context.openList.Enqueue(nodePointer);
-            this.context.openSet.Add(node);
 
-            return true;
+            if (!this.context.openSet.ContainsKey(node))
+            {
+                changed = true;
+            }
+            else
+            {
+                NodePointer<T> oldNodePointer = this.context.openSet[node];
+                if (nodePointer.g < oldNodePointer.g)
+                {
+                    this.context.openList.Remove(oldNodePointer);
+                    this.context.openSet.Remove(node);
+                    changed = true;
+                }
+            }
+
+            if (changed)
+            {
+                this.context.openList.Enqueue(nodePointer);
+                this.context.openSet.Add(node, nodePointer);
+            }
+
+            return changed;
         }
 
         protected virtual float GetG(NodePointer<T> nodePointer)
@@ -113,7 +128,8 @@ namespace AillieoUtils.Pathfinding
             {
                 return 0f;
             }
-            return nodePointer.previous.g + HeuristicFunc(nodePointer.node, nodePointer.previous.node);
+
+            return nodePointer.previous.g + HeuristicFunc(nodePointer.node, nodePointer.previous.node) * nodePointer.node.cost;
         }
 
         protected virtual float GetH(NodePointer<T> nodePointer)

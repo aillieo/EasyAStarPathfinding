@@ -47,10 +47,10 @@ namespace AillieoUtils
         public UniquePriorityQueue(int capacity, IComparer<T> comparer)
         {
             this.comparer = (comparer == null) ? Comparer<T>.Default : comparer;
-            this.data = new T[defaultCapacity];
+            this.data = new T[capacity];
 
             EqualityComparer equalityComparer = new EqualityComparer(comparer);
-            set = new Dictionary<T, int>(equalityComparer);
+            set = new Dictionary<T, int>(capacity, equalityComparer);
         }
 
         private readonly IComparer<T> comparer;
@@ -152,6 +152,35 @@ namespace AillieoUtils
             {
                 yield return data[i];
             }
+        }
+
+        // o(n) + o(log(n)) optimize later
+        public bool Remove(T item)
+        {
+            int index = -1;
+            for (int i = 0; i < Count; ++i)
+            {
+                if (object.ReferenceEquals(item, data[i]))
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (index < 0)
+            {
+                return false;
+            }
+
+            for (int i = index; i < Count - 1; ++i)
+            {
+                data[i] = data[i + 1];
+            }
+
+            this.Count--;
+            SiftDown(index);
+
+            return true;
         }
     }
 }

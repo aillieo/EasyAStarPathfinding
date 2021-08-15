@@ -26,8 +26,6 @@ namespace AillieoUtils.Pathfinding.Visualizers
             this.cachedInstance = context;
 
             (this.transform as RectTransform).anchoredPosition = new Vector2((x + 0.5f) * 60f, (y + 0.5f) * 60f);
-            float cost = (cachedInstance.graphData as SquareTileMapData).GetCost(x, y);
-            SetColorByCost(cost);
         }
 
         private void SetColorByCost(float cost)
@@ -60,11 +58,34 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
             SquareTileMapData sData = cachedInstance.graphData as SquareTileMapData;
             sData.SetCost(x, y, cost);
-            SetColorByCost(cost);
+
+            UpdateView();
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
+        }
+
+        public void UpdateView()
+        {
+            SquareTileMapData sData = cachedInstance.graphData as SquareTileMapData;
+            float cost = sData.GetCost(x, y);
+            SetColorByCost(cost);
+
+            float g = 0;
+            float h = 0;
+            if (cachedInstance.openSet.TryGetValue(sData.GetTile(x, y), out NodePointer<Tile> node))
+            {
+                g = node.g;
+                h = node.h;
+            }
+            else if(cachedInstance.openSet.TryGetValue(sData.GetTile(x, y), out NodePointer<Tile> node1))
+            {
+                g = node1.g;
+                h = node1.h;
+            }
+
+            this.label.text = $"{g:f2}\n{h:f2}";
         }
     }
 }

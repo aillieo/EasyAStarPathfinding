@@ -94,6 +94,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
                         UISquareTileElement tile = Instantiate<UISquareTileElement>(template, this.tilesRoot);
                         tile.Init(i, j, cachedContext);
                         tiles[i, j] = tile;
+                        tile.UpdateView();
                     }
                 }
             }
@@ -102,7 +103,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
                 foreach (var cord in dirtyElements)
                 {
                     UISquareTileElement tile = this.tiles[cord.x, cord.y];
-                    //
+                    tile.UpdateView();
                 }
                 dirtyElements.Clear();
             }

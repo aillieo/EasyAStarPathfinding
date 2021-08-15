@@ -8,7 +8,8 @@ namespace AillieoUtils.Pathfinding
     [Serializable]
     public class SquareTileMapData : ITileMapData
     {
-        private float blockThreshold = 0.5f;
+        private static float blockThreshold = 1.0f;
+        [NonSerialized]
         private Tile[] tiles = null;
         private float[] data = Array.Empty<float>();
         private int rangeX = 0;
@@ -25,6 +26,8 @@ namespace AillieoUtils.Pathfinding
         public void SetCost(int x, int y, float cst)
         {
             this[x, y] = cst;
+            Tile t = GetTile(x, y);
+            t.cost = cst;
         }
 
         [Conditional("UNITY_EDITOR")]

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace AillieoUtils.Pathfinding
 {
@@ -8,7 +9,7 @@ namespace AillieoUtils.Pathfinding
         internal readonly NodePointer<T>.NodePointerPool pool = NodePointer<T>.Pool();
         internal readonly UniquePriorityQueue<NodePointer<T>> openList;
         internal readonly Dictionary<T, NodePointer<T>> closedSet;
-        internal readonly HashSet<T> openSet;
+        internal readonly Dictionary<T, NodePointer<T>> openSet;
         internal NodePointer<T> endingPointer;
         internal T startingNode;
         internal T endingNode;
@@ -21,7 +22,7 @@ namespace AillieoUtils.Pathfinding
             this.algorithm = algorithm;
             this.openList = new UniquePriorityQueue<NodePointer<T>>();
             this.closedSet = new Dictionary<T, NodePointer<T>>();
-            this.openSet = new HashSet<T>();
+            this.openSet = new Dictionary<T, NodePointer<T>>();
         }
 
         internal NodePointer<T> GetPointNode(T gird = default, NodePointer<T> parent = default)
@@ -31,6 +32,7 @@ namespace AillieoUtils.Pathfinding
 
         internal void Reset()
         {
+            Debug.Log("clear");
             foreach (var p in this.openList)
             {
                 pool.Recycle(p);
