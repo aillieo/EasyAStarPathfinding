@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace AillieoUtils.Pathfinding
 {
     public class PathfindingContext<T> where T : IGraphNode
     {
-        internal readonly NodePointer<T>.NodePointerPool pool = NodePointer<T>.Pool();
         internal readonly UniquePriorityQueue<NodePointer<T>> openList;
         internal readonly Dictionary<T, NodePointer<T>> closedSet;
         internal readonly Dictionary<T, NodePointer<T>> openSet;
@@ -25,18 +23,13 @@ namespace AillieoUtils.Pathfinding
             this.openSet = new Dictionary<T, NodePointer<T>>();
         }
 
-        internal NodePointer<T> GetPointNode(T gird = default, NodePointer<T> parent = default)
+        internal NodePointer<T> GetNode(T node, NodePointer<T> previous = default)
         {
-            return this.pool.GetPointNode(gird, parent);
+            return new NodePointer<T>(node, previous);
         }
 
         internal void Reset()
         {
-            Debug.Log("clear");
-            foreach (var p in this.openList)
-            {
-                pool.Recycle(p);
-            }
             this.endingPointer = null;
             this.openSet.Clear();
             this.openList.Clear();

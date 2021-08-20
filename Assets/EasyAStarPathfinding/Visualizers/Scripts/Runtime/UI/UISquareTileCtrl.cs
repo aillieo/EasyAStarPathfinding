@@ -7,16 +7,16 @@ namespace AillieoUtils.Pathfinding.Visualizers
     {
         public enum ColorMode
         {
-            TileCost = 1,
-            OpenOrClose = 2,
-            GValue = 3,
-            GHValue = 4,
+            TileCost = 0,
+            OpenOrClose = 1,
+            GValue = 2,
+            GHValue = 3,
         }
 
         public enum TextMode
         {
-            TileCost = 1,
-            GHValue = 3,
+            TileCost = 0,
+            GHValue = 1,
         }
 
         private static UISquareTileCtrl instance;

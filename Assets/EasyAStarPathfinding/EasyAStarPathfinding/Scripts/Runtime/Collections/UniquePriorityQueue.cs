@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AillieoUtils
 {
@@ -49,7 +50,7 @@ namespace AillieoUtils
             this.comparer = (comparer == null) ? Comparer<T>.Default : comparer;
             this.data = new T[capacity];
 
-            EqualityComparer equalityComparer = new EqualityComparer(comparer);
+            EqualityComparer equalityComparer = new EqualityComparer(this.comparer);
             set = new Dictionary<T, int>(capacity, equalityComparer);
         }
 
@@ -64,21 +65,36 @@ namespace AillieoUtils
 
         public object SyncRoot => throw new NotImplementedException();
 
-        public void Enqueue(T item)
+        public bool Enqueue(T item)
         {
+            if (set.ContainsKey(item))
+            {
+                return false;
+            }
+
             if (Count >= data.Length)
             {
                 Array.Resize(ref data, Count * 2);
             }
 
             data[Count] = item;
+            set[item] = Count;
             SiftUp(Count++);
+
+            return true;
         }
 
         public T Dequeue()
         {
-            var v = Peek();
-            data[0] = data[--Count];
+            T v = Peek();
+            set.Remove(v);
+
+            Count--;
+
+            T last = data[Count];
+            data[0] = last;
+            set[last] = 0;
+
             if (Count > 0)
             {
                 SiftDown(0);
@@ -89,6 +105,7 @@ namespace AillieoUtils
         public void Clear()
         {
             Count = 0;
+            set.Clear();
         }
 
         public T Peek()
@@ -103,21 +120,24 @@ namespace AillieoUtils
 
         private void SiftUp(int n)
         {
-            var v = data[n];
-            for (var n2 = n / 2;
+            T v = data[n];
+            for (int n2 = n / 2;
                 n > 0 && comparer.Compare(v, data[n2]) > 0;
                 n = n2, n2 /= 2)
             {
-                data[n] = data[n2];
+                T v0 = data[n2];
+                data[n] = v0;
+                set[v0] = n;
             }
 
             data[n] = v;
+            set[v] = n;
         }
 
         private void SiftDown(int n)
         {
-            var v = data[n];
-            for (var n2 = n * 2;
+            T v = data[n];
+            for (int n2 = n * 2;
                 n2 < Count;
                 n = n2, n2 *= 2)
             {
@@ -131,9 +151,13 @@ namespace AillieoUtils
                     break;
                 }
 
-                data[n] = data[n2];
+                T v0 = data[n2];
+                data[n] = v0;
+                set[v0] = n;
             }
+
             data[n] = v;
+            set[v] = n;
         }
 
         public void CopyTo(Array array, int index)
@@ -154,33 +178,24 @@ namespace AillieoUtils
             }
         }
 
-        // o(n) + o(log(n)) optimize later
         public bool Remove(T item)
         {
-            int index = -1;
-            for (int i = 0; i < Count; ++i)
+            if (set.TryGetValue(item, out int index))
             {
-                if (object.ReferenceEquals(item, data[i]))
+                for (int i = index; i < Count - 1; ++i)
                 {
-                    index = i;
-                    break;
+                    T v0 = data[i + 1];
+                    data[i] = v0;
+                    set[v0] = i;
                 }
+
+                this.Count--;
+                SiftDown(index);
+
+                return true;
             }
 
-            if (index < 0)
-            {
-                return false;
-            }
-
-            for (int i = index; i < Count - 1; ++i)
-            {
-                data[i] = data[i + 1];
-            }
-
-            this.Count--;
-            SiftDown(index);
-
-            return true;
+            return false;
         }
     }
 }

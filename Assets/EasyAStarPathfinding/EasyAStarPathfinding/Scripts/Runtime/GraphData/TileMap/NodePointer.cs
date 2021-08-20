@@ -10,13 +10,10 @@ namespace AillieoUtils.Pathfinding
         public NodePointer<T> previous;
         public float g;
         public float h;
-        private NodePointer()
+        public NodePointer(T node, NodePointer<T> previous = default)
         {
-        }
-
-        internal static NodePointerPool Pool()
-        {
-            return new NodePointerPool();
+            this.node = node;
+            this.previous = previous;
         }
 
         public int CompareTo(NodePointer<T> other)
@@ -35,39 +32,6 @@ namespace AillieoUtils.Pathfinding
             }
 
             return Comparer<T>.Default.Compare(node, other.node);
-        }
-
-        internal class NodePointerPool
-        {
-            internal NodePointerPool()
-            {
-            }
-
-            private Stack<NodePointer<T>> nodePool = new Stack<NodePointer<T>>();
-
-            internal NodePointer<T> GetPointNode(T grid = default, NodePointer<T> parent = default)
-            {
-                NodePointer<T> newPointer;
-                if (nodePool.Count > 0)
-                {
-                    newPointer = nodePool.Pop();
-                    newPointer.node = grid;
-                    newPointer.previous = parent;
-                }
-                else
-                {
-                    newPointer = new NodePointer<T> { node = grid, previous = parent };
-                }
-                return newPointer;
-            }
-
-            public void Recycle(NodePointer<T> pointer)
-            {
-                pointer.g = 0f;
-                pointer.h = 0f;
-                pointer.previous = null;
-                nodePool.Push(pointer);
-            }
         }
     }
 }

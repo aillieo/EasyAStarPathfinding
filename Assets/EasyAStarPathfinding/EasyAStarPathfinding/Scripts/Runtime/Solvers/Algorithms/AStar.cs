@@ -43,7 +43,7 @@ namespace AillieoUtils.Pathfinding
             if (state == PathfindingState.Initialized)
             {
                 state = PathfindingState.Finding;
-                var startNode = context.GetPointNode(context.startingNode, null);
+                var startNode = context.GetNode(context.startingNode, null);
                 context.openList.Enqueue(startNode);
                 context.openSet.Add(context.startingNode, startNode);
                 return state;
@@ -94,7 +94,7 @@ namespace AillieoUtils.Pathfinding
             }
 
             bool changed = false;
-            NodePointer<T> nodePointer = context.GetPointNode(node, parentNode);
+            NodePointer<T> nodePointer = context.GetNode(node, parentNode);
             nodePointer.g = GetG(nodePointer);
             nodePointer.h = GetH(nodePointer);
 

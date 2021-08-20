@@ -20,8 +20,8 @@ namespace AillieoUtils.Pathfinding
         {
             switch (graphData)
             {
-                case ITileMapData gridData:
-                    return CreateForTileData(gridData, algorithm);
+                case ITileMapData tileMapData:
+                    return CreateForTileData(tileMapData, algorithm);
             }
 
             throw new NotImplementedException();

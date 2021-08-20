@@ -30,19 +30,47 @@ namespace Samples
         [SerializeField]
         private Toggle autoPathfinding;
 
+        [SerializeField]
+        private Dropdown tileColorMode;
+        [SerializeField]
+        private Dropdown tileTextMode;
+
         private SquareTileMapData tileData;
         private IEnumerable<AillieoUtils.Pathfinding.Tile> path;
 
         private void Awake()
         {
-            var enums = typeof(Algorithms).GetEnumNames();
-            var options = enums.Select(s => new Dropdown.OptionData { text = s }).ToList();
-            algorithmSelector.options = options;
+            ConfigDropdowns();
+        }
+
+        private void ConfigDropdowns()
+        {
+            string[] algorithms = typeof(Algorithms).GetEnumNames();
+            var algorithmOptions = algorithms.Select(s => new Dropdown.OptionData { text = s }).ToList();
+            algorithmSelector.options = algorithmOptions;
             algorithmSelector.onValueChanged.AddListener(i =>
             {
-                string enumName = enums[i];
+                string enumName = algorithms[i];
                 Enum.TryParse<Algorithms>(enumName, out this.algorithm);
-                Debug.Log(this.algorithm);
+                //Debug.Log(this.algorithm);
+            });
+
+            string[] colorModes = typeof(UISquareTileCtrl.ColorMode).GetEnumNames();
+            var colorModeOptions = colorModes.Select(s => new Dropdown.OptionData { text = s }).ToList();
+            tileColorMode.options = colorModeOptions;
+            tileColorMode.onValueChanged.AddListener(i =>
+            {
+                string enumName = colorModes[i];
+                Enum.TryParse<UISquareTileCtrl.ColorMode>(enumName, out UISquareTileCtrl.Instance.colorMode);
+            });
+
+            string[] textModes = typeof(UISquareTileCtrl.TextMode).GetEnumNames();
+            var textModeOptions = textModes.Select(s => new Dropdown.OptionData { text = s }).ToList();
+            tileTextMode.options = textModeOptions;
+            tileTextMode.onValueChanged.AddListener(i =>
+            {
+                string enumName = textModes[i];
+                Enum.TryParse<UISquareTileCtrl.TextMode>(enumName, out UISquareTileCtrl.Instance.textMode);
             });
         }
 
