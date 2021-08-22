@@ -1,13 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Graphs;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace AillieoUtils.Pathfinding.Visualizers
 {
-    public class UISquareTileElement : UIBehaviour, IInitializePotentialDragHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
+    public class UISquareTileElement : UIBehaviour, IInitializePotentialDragHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
     {
         public int x { get; private set; }
         public int y { get; private set; }
@@ -17,9 +18,9 @@ namespace AillieoUtils.Pathfinding.Visualizers
         [SerializeField]
         private Text label;
 
-        private PathfindingContext<Tile> cachedInstance;
+        private IPathfindingContext<Tile> cachedInstance;
 
-        public void Init(int x, int y, PathfindingContext<Tile> context)
+        public void Init(int x, int y, IPathfindingContext<Tile> context)
         {
             this.x = x;
             this.y = y;
@@ -42,7 +43,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            SquareTileMapData sData = cachedInstance.graphData as SquareTileMapData;
+            SquareTileMapData sData = cachedInstance.GetGraphData() as SquareTileMapData;
             float cost = sData.GetCost(x, y);
 
             dragBeginValue = cost;
@@ -56,7 +57,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
             cost = Mathf.Clamp01(cost);
 
-            SquareTileMapData sData = cachedInstance.graphData as SquareTileMapData;
+            SquareTileMapData sData = cachedInstance.GetGraphData() as SquareTileMapData;
             sData.SetCost(x, y, cost);
 
             UpdateView();
@@ -66,9 +67,18 @@ namespace AillieoUtils.Pathfinding.Visualizers
         {
         }
 
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            SquareTileMapData sData = cachedInstance.GetGraphData() as SquareTileMapData;
+            float cost = sData.GetCost(x, y);
+            cost = 1 - cost;
+            sData.SetCost(x, y, cost);
+            UpdateView();
+        }
+
         public void UpdateView()
         {
-            SquareTileMapData sData = cachedInstance.graphData as SquareTileMapData;
+            SquareTileMapData sData = cachedInstance.GetGraphData() as SquareTileMapData;
 
             switch (UISquareTileCtrl.Instance.colorMode)
             {
@@ -87,11 +97,11 @@ namespace AillieoUtils.Pathfinding.Visualizers
                     {
                         float c = 0f;
                         Tile tile = sData.GetTile(x, y);
-                        if (cachedInstance.openSet.ContainsKey(tile))
+                        if (cachedInstance.TryGetOpenNode(tile) != null)
                         {
                             c = 0.75f;
                         }
-                        else if (cachedInstance.closedSet.ContainsKey(tile))
+                        else if (cachedInstance.TryGetClosedNode(tile) != null)
                         {
                             c = 1.0f;
                         }
@@ -122,18 +132,24 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
         private void GetGH(int x, int y, out float g, out float h)
         {
-            SquareTileMapData sData = cachedInstance.graphData as SquareTileMapData;
+            SquareTileMapData sData = cachedInstance.GetGraphData() as SquareTileMapData;
             g = 0;
             h = 0;
-            if (cachedInstance.openSet.TryGetValue(sData.GetTile(x, y), out NodePointer<Tile> openNode))
+            Tile tile = sData.GetTile(x, y);
+            NodePointer<Tile> openNode = cachedInstance.TryGetOpenNode(tile);
+            if (openNode != null)
             {
                 g = openNode.g;
                 h = openNode.h;
             }
-            else if (cachedInstance.closedSet.TryGetValue(sData.GetTile(x, y), out NodePointer<Tile> closedNode))
+            else
             {
-                g = closedNode.g;
-                h = closedNode.h;
+                NodePointer<Tile> closedNode = cachedInstance.TryGetClosedNode(tile);
+                if (closedNode != null)
+                {
+                    g = closedNode.g;
+                    h = closedNode.h;
+                }
             }
         }
     }

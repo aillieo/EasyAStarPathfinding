@@ -19,7 +19,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
         private SimpleUILine uiPath;
 
         private UISquareTileElement[,] tiles;
-        private PathfindingContext<Tile> cachedContext;
+        private IPathfindingContext<Tile> cachedContext;
         private Pathfinder cachedPathfinder;
 
         private List<Tile> pathFound = new List<Tile>();
@@ -46,7 +46,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
         public void SetDirty()
         {
-            IGraphData<Tile> data = cachedContext.graphData;
+            IGraphData<Tile> data = cachedContext.GetGraphData();
             SquareTileMapData sData = data as SquareTileMapData;
             for (int i = 0; i < sData.RangeX; ++i)
             {
@@ -82,7 +82,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
         private void UpdateElements()
         {
-            IGraphData<Tile> data = cachedContext.graphData;
+            IGraphData<Tile> data = cachedContext.GetGraphData();
             SquareTileMapData sData = data as SquareTileMapData;
             if (tiles == null || tiles.Length == 0)
             {

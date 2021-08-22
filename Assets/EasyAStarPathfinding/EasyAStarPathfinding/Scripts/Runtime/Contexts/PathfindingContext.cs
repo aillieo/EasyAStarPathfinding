@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace AillieoUtils.Pathfinding
 {
-    public class PathfindingContext<T> where T : IGraphNode
+    public class PathfindingContext<T> : IPathfindingContext<T> where T : IGraphNode
     {
         internal readonly UniquePriorityQueue<NodePointer<T>> openList;
         internal readonly Dictionary<T, NodePointer<T>> closedSet;
@@ -36,9 +36,28 @@ namespace AillieoUtils.Pathfinding
             this.closedSet.Clear();
         }
 
-        internal bool IsEndingNode(T node)
+        public bool IsEndingNode(T node)
         {
             return object.ReferenceEquals(node, endingNode);
+        }
+
+        public NodePointer<T> TryGetOpenNode(T nodeData)
+        {
+            NodePointer<T> node = null;
+            this.openSet.TryGetValue(nodeData, out node);
+            return node;
+        }
+
+        public NodePointer<T> TryGetClosedNode(T nodeData)
+        {
+            NodePointer<T> node = null;
+            this.closedSet.TryGetValue(nodeData, out node);
+            return node;
+        }
+
+        public IGraphData<T> GetGraphData()
+        {
+            return this.graphData;
         }
     }
 }

@@ -19,6 +19,13 @@ namespace AillieoUtils.Pathfinding.Visualizers
             GHValue = 1,
         }
 
+        public enum OperationMode
+        {
+            ModifyCost = 0,
+            ClickToSetStart = 1,
+            ClickToSetTarget = 2,
+        }
+
         private static UISquareTileCtrl instance;
 
         public static UISquareTileCtrl Instance
@@ -35,5 +42,6 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
         public TextMode textMode = TextMode.TileCost;
         public ColorMode colorMode = ColorMode.TileCost;
+        public OperationMode opMode = OperationMode.ModifyCost;
     }
 }
