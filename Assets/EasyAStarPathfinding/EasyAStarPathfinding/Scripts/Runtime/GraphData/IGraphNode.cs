@@ -1,6 +1,8 @@
+using System;
+
 namespace AillieoUtils.Pathfinding
 {
-    public interface IGraphNode
+    public interface IGraphNode //: IEquatable<T>
     {
         int id { get; }
 

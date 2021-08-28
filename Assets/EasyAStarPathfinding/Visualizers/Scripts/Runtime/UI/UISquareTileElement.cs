@@ -136,7 +136,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
             g = 0;
             h = 0;
             Tile tile = sData.GetTile(x, y);
-            NodePointer<Tile> openNode = cachedInstance.TryGetOpenNode(tile);
+            NodeWrapper<Tile> openNode = cachedInstance.TryGetOpenNode(tile);
             if (openNode != null)
             {
                 g = openNode.g;
@@ -144,7 +144,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
             }
             else
             {
-                NodePointer<Tile> closedNode = cachedInstance.TryGetClosedNode(tile);
+                NodeWrapper<Tile> closedNode = cachedInstance.TryGetClosedNode(tile);
                 if (closedNode != null)
                 {
                     g = closedNode.g;

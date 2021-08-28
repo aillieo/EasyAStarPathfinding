@@ -4,19 +4,21 @@ using System.Collections.Generic;
 
 namespace AillieoUtils.Pathfinding
 {
-    public class NodePointer<T> : IComparable<NodePointer<T>> where T : IGraphNode
+    public class NodeWrapper<T> : IComparable<NodeWrapper<T>> where T : IGraphNode
     {
         public T node;
-        public NodePointer<T> previous;
+        public NodeWrapper<T> previous;
         public float g;
         public float h;
-        public NodePointer(T node, NodePointer<T> previous = default)
+        public NodeState state;
+
+        public NodeWrapper(T node, NodeWrapper<T> previous = default)
         {
             this.node = node;
             this.previous = previous;
         }
 
-        public int CompareTo(NodePointer<T> other)
+        public int CompareTo(NodeWrapper<T> other)
         {
             float f1 = h + g;
             float f2 = other.h + other.g;

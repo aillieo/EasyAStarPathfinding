@@ -8,16 +8,16 @@ namespace AillieoUtils.Pathfinding
         {
         }
 
-        protected override float GetG(NodePointer<T> nodePointer)
+        protected override float GetG(NodeWrapper<T> nodeWrapper)
         {
-            if (nodePointer.previous == null)
+            if (nodeWrapper.previous == null)
             {
                 return float.MaxValue;
             }
-            return nodePointer.previous.g - 0.1f;
+            return nodeWrapper.previous.g - 0.1f;
         }
 
-        protected override float GetH(NodePointer<T> nodePointer)
+        protected override float GetH(NodeWrapper<T> nodeWrapper)
         {
             return 0f;
         }

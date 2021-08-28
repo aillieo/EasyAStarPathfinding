@@ -16,28 +16,34 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
         public void Visualize(Pathfinder pathfinder)
         {
-            PathfindingContext<Tile> context = (pathfinder.solver as AStar<Tile>).context;
+            IPathfindingContext<Tile> context = (pathfinder.solver as AStar<Tile>).context;
             Color backup = Gizmos.color;
 
             if (drawOpenList)
             {
                 Gizmos.color = Color.black;
-                foreach (var p in context.openList)
+                foreach (var p in context.GetAllNodes())
                 {
-                    Vector3 position = new Vector3(p.node.x, p.node.y, 0);
+                    if (p.state == NodeState.Closed)
+                    {
+                        Vector3 position = new Vector3(p.node.x, p.node.y, 0);
 #if UNITY_EDITOR
-                    UnityEditor.Handles.Label(position, $"{p.g},{p.h}");
+                        UnityEditor.Handles.Label(position, $"{p.g},{p.h}");
 #endif
-                    Gizmos.DrawWireCube(position, Vector3.one * 0.4f);
+                        Gizmos.DrawWireCube(position, Vector3.one * 0.4f);
+                    }
                 }
             }
 
             if (drawClosedList)
             {
                 Gizmos.color = Color.white;
-                foreach (var p in context.closedSet)
+                foreach (var p in context.GetAllNodes())
                 {
-                    Gizmos.DrawWireCube(new Vector3(p.Key.x, p.Key.y, 0), Vector3.one * 0.4f);
+                    if (p.state == NodeState.Closed)
+                    {
+                        Gizmos.DrawWireCube(new Vector3(p.node.x, p.node.y, 0), Vector3.one * 0.4f);
+                    }
                 }
             }
 

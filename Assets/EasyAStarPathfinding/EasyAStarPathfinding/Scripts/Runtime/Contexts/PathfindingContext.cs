@@ -1,63 +1,117 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AillieoUtils.Pathfinding
 {
     public class PathfindingContext<T> : IPathfindingContext<T> where T : IGraphNode
     {
-        internal readonly UniquePriorityQueue<NodePointer<T>> openList;
-        internal readonly Dictionary<T, NodePointer<T>> closedSet;
-        internal readonly Dictionary<T, NodePointer<T>> openSet;
-        internal NodePointer<T> endingPointer;
-        internal T startingNode;
-        internal T endingNode;
-        internal readonly IGraphData<T> graphData;
-        internal readonly Algorithms algorithm;
+        private readonly UniquePriorityQueue<NodeWrapper<T>> openList;
+        private readonly Dictionary<T, NodeWrapper<T>> nodeMapping;
+        //internal T startingNode;
+        //internal T endingNode;
+        private readonly IGraphData<T> graphData;
+        private readonly Algorithms algorithm;
 
         internal PathfindingContext(IGraphData<T> graphData, Algorithms algorithm)
         {
             this.graphData = graphData;
             this.algorithm = algorithm;
-            this.openList = new UniquePriorityQueue<NodePointer<T>>();
-            this.closedSet = new Dictionary<T, NodePointer<T>>();
-            this.openSet = new Dictionary<T, NodePointer<T>>();
+            this.openList = new UniquePriorityQueue<NodeWrapper<T>>();
+            this.nodeMapping = new Dictionary<T, NodeWrapper<T>>();
         }
 
-        internal NodePointer<T> GetNode(T node, NodePointer<T> previous = default)
+        public NodeWrapper<T> CreateNewNode(T node, NodeWrapper<T> previous)
         {
-            return new NodePointer<T>(node, previous);
+            return new NodeWrapper<T>(node, previous);
         }
 
-        internal void Reset()
+        public void Reset()
         {
-            this.endingPointer = null;
-            this.openSet.Clear();
+            this.nodeMapping.Clear();
             this.openList.Clear();
-            this.closedSet.Clear();
         }
 
-        public bool IsEndingNode(T node)
+        public NodeWrapper<T> TryGetOpenNode(T nodeData)
         {
-            return object.ReferenceEquals(node, endingNode);
+            NodeWrapper<T> node = null;
+            if (this.nodeMapping.TryGetValue(nodeData, out node))
+            {
+                if (node.state == NodeState.Open)
+                {
+                    return node;
+                }
+            }
+
+            return null;
         }
 
-        public NodePointer<T> TryGetOpenNode(T nodeData)
+        public NodeWrapper<T> TryGetClosedNode(T nodeData)
         {
-            NodePointer<T> node = null;
-            this.openSet.TryGetValue(nodeData, out node);
-            return node;
-        }
+            NodeWrapper<T> node = null;
+            if (this.nodeMapping.TryGetValue(nodeData, out node))
+            {
+                if (node.state == NodeState.Closed)
+                {
+                    return node;
+                }
+            }
 
-        public NodePointer<T> TryGetClosedNode(T nodeData)
-        {
-            NodePointer<T> node = null;
-            this.closedSet.TryGetValue(nodeData, out node);
-            return node;
+            return null;
         }
 
         public IGraphData<T> GetGraphData()
         {
             return this.graphData;
+        }
+
+        public bool RemoveFromMapping(T node)
+        {
+            return this.nodeMapping.Remove(node);
+        }
+
+        public void AddToOpen(T nodeData, NodeWrapper<T> nodeWrapper)
+        {
+            nodeWrapper.state = NodeState.Open;
+            openList.Enqueue(nodeWrapper);
+            nodeMapping.Add(nodeData, nodeWrapper);
+        }
+
+        public void AddToClosed(T nodeData, NodeWrapper<T> nodeWrapper)
+        {
+            nodeWrapper.state = NodeState.Closed;
+            nodeMapping.Add(nodeData, nodeWrapper);
+        }
+
+        public IEnumerable<NodeWrapper<T>> GetAllNodes()
+        {
+            foreach (var pair in nodeMapping)
+            {
+                yield return pair.Value;
+            }
+        }
+
+        public NodeWrapper<T> TryGetFrontier()
+        {
+            if (openList.Count > 0)
+            {
+                return openList.Dequeue();
+            }
+
+            return null;
+        }
+
+        public void UpdateFrontier(NodeWrapper<T> nodeWrapper)
+        {
+            if (nodeWrapper == null)
+            {
+                return;
+            }
+
+            if (openList.Remove(nodeWrapper))
+            {
+                openList.Enqueue(nodeWrapper);
+            }
         }
     }
 }

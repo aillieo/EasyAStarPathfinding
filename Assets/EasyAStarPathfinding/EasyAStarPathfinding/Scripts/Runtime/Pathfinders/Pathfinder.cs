@@ -18,9 +18,9 @@ namespace AillieoUtils.Pathfinding
             this.solver = Solvers.Create(graphData, algorithm) as ITileMapSolver;
         }
 
-        public void Init(Tile startPoint, Tile endPoint)
+        public void Init(Tile startTile, Tile endingTile)
         {
-            this.solver.Init(startPoint, endPoint);
+            this.solver.Init(startTile, endingTile);
         }
 
         public Tile[] FindPath(Tile startPoint, Tile endPoint)

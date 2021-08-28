@@ -131,6 +131,8 @@ namespace Samples
 
         public void FindPathInCoroutine()
         {
+            autoPathfinding.isOn = false;
+
             StopAllCoroutines();
 
             EnsureFindingContext();

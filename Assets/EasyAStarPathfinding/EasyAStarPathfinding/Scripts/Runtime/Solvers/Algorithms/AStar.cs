@@ -4,13 +4,16 @@ using UnityEngine;
 
 namespace AillieoUtils.Pathfinding
 {
-    public abstract class AStar<T> : ISolver where T : IGraphNode
+    public abstract class AStar<T> : ISolver<T> where T : IGraphNode
     {
         public PathfindingState state { get; private set; }
 
         private readonly List<T> result = new List<T>();
 
-        internal readonly PathfindingContext<T> context;
+        internal readonly IPathfindingContext<T> context;
+        internal NodeWrapper<T> endingNodeWrapper;
+        internal T startingNode;
+        internal T endingNode;
 
         public AStar(IGraphData<T> graphData, Algorithms algorithm)
         {
@@ -30,11 +33,14 @@ namespace AillieoUtils.Pathfinding
             this.state = PathfindingState.Initialized;
         }
 
-        public void Init(T startPoint, T endPoint)
+        public void Init(T startingNode, T endingNode)
         {
             this.context.Reset();
-            this.context.startingNode = startPoint;
-            this.context.endingNode = endPoint;
+
+            this.startingNode = startingNode;
+            this.endingNode = endingNode;
+            //this.context.startingNode = this.startingNode;
+            //this.context.endingNode = this.endingNode;
             this.Init();
         }
 
@@ -43,9 +49,8 @@ namespace AillieoUtils.Pathfinding
             if (state == PathfindingState.Initialized)
             {
                 state = PathfindingState.Finding;
-                var startNode = context.GetNode(context.startingNode, null);
-                context.openList.Enqueue(startNode);
-                context.openSet.Add(context.startingNode, startNode);
+                var startNode = context.CreateNewNode(this.startingNode, null);
+                context.AddToOpen(this.startingNode, startNode);
                 return state;
             }
 
@@ -54,23 +59,23 @@ namespace AillieoUtils.Pathfinding
                 throw new Exception($"Unexpected state {state}");
             }
 
-            if (context.openList.Count > 0)
+            NodeWrapper<T> first = context.TryGetFrontier();
+            if (first != null)
             {
-                var first = context.openList.Dequeue();
-                context.openSet.Remove(first.node);
+                context.RemoveFromMapping(first.node);
 
                 // 把周围点 加入open
-                var neighbors = context.graphData.CollectNeighbor(first.node);
+                var neighbors = context.GetGraphData().CollectNeighbor(first.node);
                 foreach (T p in neighbors)
                 {
                     Collect(p, first);
                 }
 
-                context.closedSet.Add(first.node, first);
+                context.AddToClosed(first.node, first);
 
-                if (context.IsEndingNode(first.node))
+                if (first.node.Equals(this.endingNode))
                 {
-                    context.endingPointer = first;
+                    this.endingNodeWrapper = first;
                     state = PathfindingState.Found;
                     TraceBackForPath();
                     return state;
@@ -86,55 +91,47 @@ namespace AillieoUtils.Pathfinding
             return state;
         }
 
-        private bool Collect(T node, NodePointer<T> parentNode)
+        private bool Collect(T node, NodeWrapper<T> parentNode)
         {
-            if (this.context.closedSet.ContainsKey(node))
+            if (this.context.TryGetClosedNode(node) != null)
             {
                 return false;
             }
 
             bool changed = false;
-            NodePointer<T> nodePointer = context.GetNode(node, parentNode);
-            nodePointer.g = GetG(nodePointer);
-            nodePointer.h = GetH(nodePointer);
+            NodeWrapper<T> nodeWrapper = context.CreateNewNode(node, parentNode);
+            nodeWrapper.g = GetG(nodeWrapper);
+            nodeWrapper.h = GetH(nodeWrapper);
 
-            if (!this.context.openSet.ContainsKey(node))
+            NodeWrapper<T> oldNodeWrapper = context.TryGetOpenNode(node);
+            if (oldNodeWrapper == null)
             {
                 changed = true;
+                this.context.AddToOpen(node, nodeWrapper);
             }
-            else
+            else if (nodeWrapper.g < oldNodeWrapper.g)
             {
-                NodePointer<T> oldNodePointer = this.context.openSet[node];
-                if (nodePointer.g < oldNodePointer.g)
-                {
-                    this.context.openList.Remove(oldNodePointer);
-                    this.context.openSet.Remove(node);
-                    changed = true;
-                }
-            }
-
-            if (changed)
-            {
-                this.context.openList.Enqueue(nodePointer);
-                this.context.openSet.Add(node, nodePointer);
+                changed = true;
+                oldNodeWrapper.g = nodeWrapper.g;
+                this.context.UpdateFrontier(oldNodeWrapper);
             }
 
             return changed;
         }
 
-        protected virtual float GetG(NodePointer<T> nodePointer)
+        protected virtual float GetG(NodeWrapper<T> nodeWrapper)
         {
-            if (nodePointer.previous == null)
+            if (nodeWrapper.previous == null)
             {
                 return 0f;
             }
 
-            return nodePointer.previous.g + HeuristicFunc(nodePointer.node, nodePointer.previous.node) * nodePointer.node.cost;
+            return nodeWrapper.previous.g + HeuristicFunc(nodeWrapper.node, nodeWrapper.previous.node) * nodeWrapper.node.cost;
         }
 
-        protected virtual float GetH(NodePointer<T> nodePointer)
+        protected virtual float GetH(NodeWrapper<T> nodeWrapper)
         {
-            return HeuristicFunc(nodePointer.node, context.endingNode);
+            return HeuristicFunc(nodeWrapper.node, this.endingNode);
         }
 
         protected abstract float HeuristicFunc(T nodeFrom, T nodeTo);
@@ -142,12 +139,12 @@ namespace AillieoUtils.Pathfinding
         private bool TraceBackForPath()
         {
             result.Clear();
-            if (this.context.endingPointer == null)
+            if (this.endingNodeWrapper == null)
             {
                 return false;
             }
 
-            var node = this.context.endingPointer;
+            NodeWrapper<T> node = this.endingNodeWrapper;
             while (node.previous != null)
             {
                 result.Add(node.node);

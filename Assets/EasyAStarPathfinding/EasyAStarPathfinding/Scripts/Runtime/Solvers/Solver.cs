@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace AillieoUtils.Pathfinding
 {
-    public interface ISolver
+    public interface ISolver<out T> where T : IGraphNode
     {
         PathfindingState state { get; }
 
@@ -16,7 +16,7 @@ namespace AillieoUtils.Pathfinding
 
     public static class Solvers
     {
-        public static ISolver Create(IGraphData graphData, Algorithms algorithm)
+        public static ISolver<IGraphNode> Create(IGraphData graphData, Algorithms algorithm)
         {
             switch (graphData)
             {
@@ -27,7 +27,7 @@ namespace AillieoUtils.Pathfinding
             throw new NotImplementedException();
         }
 
-        private static ITileMapSolver CreateForTileData(ITileMapData tileData, Algorithms algorithm)
+        private static ISolver<Tile> CreateForTileData(ITileMapData tileData, Algorithms algorithm)
         {
             switch (algorithm)
             {
