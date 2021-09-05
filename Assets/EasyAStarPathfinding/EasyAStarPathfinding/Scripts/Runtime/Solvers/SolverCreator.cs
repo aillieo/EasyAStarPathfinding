@@ -1,22 +1,10 @@
 using System;
-using System.Collections.Generic;
 
 namespace AillieoUtils.Pathfinding
 {
-    public interface ISolver<out T> where T : IGraphNode
+    internal static class SolverCreator
     {
-        PathfindingState state { get; }
-
-        void Init();
-
-        PathfindingState Step();
-
-        void CleanUp();
-    }
-
-    public static class Solvers
-    {
-        public static ISolver<IGraphNode> Create(IGraphData graphData, Algorithms algorithm)
+        internal static ISolver<IGraphNode> Create(IGraphData graphData, Algorithms algorithm)
         {
             switch (graphData)
             {

@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace AillieoUtils.Pathfinding
 {
-    public abstract class AStar<T> : ISolver<T> where T : IGraphNode
+    public abstract class LPAStar<T> : AStar<T> where T : IGraphNode
     {
         public PathfindingState state { get; private set; }
 
@@ -15,11 +14,9 @@ namespace AillieoUtils.Pathfinding
         internal T startingNode;
         internal T endingNode;
 
-        public AStar(IGraphData<T> graphData, Algorithms algorithm)
-        {
-            this.context = ContextCreator<T>.CreateContext(graphData, algorithm);
-            this.state = PathfindingState.Uninitialized;
-        }
+        public LPAStar(IGraphData<T> graphData, Algorithms algorithm)
+            : base(graphData, algorithm)
+        { }
 
         public void CleanUp()
         {
@@ -133,8 +130,6 @@ namespace AillieoUtils.Pathfinding
         {
             return HeuristicFunc(nodeWrapper.node, this.endingNode);
         }
-
-        protected abstract float HeuristicFunc(T nodeFrom, T nodeTo);
 
         private bool TraceBackForPath()
         {

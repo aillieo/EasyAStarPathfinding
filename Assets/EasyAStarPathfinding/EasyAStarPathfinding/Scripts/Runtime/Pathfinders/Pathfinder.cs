@@ -15,7 +15,7 @@ namespace AillieoUtils.Pathfinding
         public Pathfinder(IGraphData graphData, Algorithms algorithm = Algorithms.AStar)
         {
             this.algorithm = algorithm;
-            this.solver = Solvers.Create(graphData, algorithm) as ITileMapSolver;
+            this.solver = SolverCreator.Create(graphData, algorithm) as ITileMapSolver;
         }
 
         public void Init(Tile startTile, Tile endingTile)

@@ -149,13 +149,44 @@ namespace Samples
         private IEnumerator InternalFindPathInCoroutine()
         {
             path = null;
-            float timeStepForCoroutine = stepIntervalSlider.value;
-            WaitForSeconds waitForSeconds = new WaitForSeconds(timeStepForCoroutine);
             while (pathfinder.state != PathfindingState.Found && pathfinder.state != PathfindingState.Failed)
             {
                 pathfinder.FindPath();
                 this.view.SetDirty();
-                yield return waitForSeconds;
+                float timeStepForCoroutine = stepIntervalSlider.value;
+                yield return new WaitForSeconds(timeStepForCoroutine);
+            }
+
+            path = pathfinder.GetResult();
+            this.view.SetDirty();
+        }
+
+        public void FindPathByStep()
+        {
+            autoPathfinding.isOn = false;
+
+            StopAllCoroutines();
+
+            EnsureFindingContext();
+
+            if (pathfinder.state == PathfindingState.Found || pathfinder.state == PathfindingState.Failed)
+            {
+                pathfinder.CleanUp();
+            }
+
+            pathfinder.Init(tileData.GetTile(start.x, start.y), tileData.GetTile(end.x, end.y));
+            StartCoroutine(InternalFindPathByStep());
+        }
+
+        private IEnumerator InternalFindPathByStep()
+        {
+            path = null;
+            while (pathfinder.state != PathfindingState.Found && pathfinder.state != PathfindingState.Failed)
+            {
+                pathfinder.FindPath();
+                this.view.SetDirty();
+                float timeStepForCoroutine = stepIntervalSlider.value;
+                yield return new WaitForSeconds(timeStepForCoroutine);
             }
 
             path = pathfinder.GetResult();
