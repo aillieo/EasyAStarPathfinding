@@ -8,24 +8,23 @@ namespace AillieoUtils.Pathfinding
     [Serializable]
     public class SquareTileMapData : ITileMapData
     {
-        private static float blockThreshold = 1.0f;
-        [NonSerialized]
-        private Tile[] tiles = null;
-        private float[] data = Array.Empty<float>();
+        private float costScale = 1.0f;
+        private Tile[] tiles = Array.Empty<Tile>();
         private int rangeX = 0;
         private int rangeY = 0;
 
+        public float CostScale => costScale;
         public int RangeX => rangeX;
         public int RangeY => rangeY;
 
         public float GetCost(int x, int y)
         {
-            return this[x, y];
+            Tile t = GetTile(x, y);
+            return t.cost;
         }
 
         public void SetCost(int x, int y, float cst)
         {
-            this[x, y] = cst;
             Tile t = GetTile(x, y);
             t.cost = cst;
         }
@@ -38,13 +37,16 @@ namespace AillieoUtils.Pathfinding
                 return;
             }
 
-            float[] oldData = data;
-            data = new float[newRangeX * newRangeY];
+            Tile[] oldTiles = tiles;
+            tiles = new Tile[newRangeX * newRangeY];
             for (int i = 0, xMin = Math.Min(newRangeX, rangeX); i < xMin; ++i)
             {
                 for (int j = 0, yMin = Math.Min(newRangeY, rangeY); j < yMin; ++j)
                 {
-                    data[i + newRangeX * j] = oldData[i + rangeX * j];
+                    Tile oldTile = oldTiles[i + rangeX * j];
+                    Tile newTile = new Tile(i, j);
+                    newTile.cost = oldTile.cost;
+                    tiles[i + newRangeX * j] = newTile;
                 }
             }
 
@@ -56,7 +58,7 @@ namespace AillieoUtils.Pathfinding
         {
             if (tiles == null || tiles.Length == 0)
             {
-                tiles = new Tile[data.Length];
+                tiles = new Tile[rangeX * rangeY];
             }
 
             int index = x + y * rangeX;
@@ -64,45 +66,19 @@ namespace AillieoUtils.Pathfinding
             if (tile == null)
             {
                 tile = new Tile(x, y);
-                tile.cost = this[x, y];
+                tile.cost = 0f;
                 tiles[index] = tile;
             }
 
             return tile;
         }
 
-        private float this[int x, int y]
+        public IEnumerable<Tile> CollectNeighbor(Tile current)
         {
-            get
-            {
-                if (x < 0 || x >= rangeX)
-                {
-                    return float.MaxValue;
-                }
-                if (y < 0 || y >= rangeY)
-                {
-                    return float.MaxValue;
-                }
-
-                return data[x + y * rangeX];
-            }
-
-            set
-            {
-                if (x < 0 || x >= rangeX)
-                {
-                    return;
-                }
-                if (y < 0 || y >= rangeY)
-                {
-                    return;
-                }
-
-                data[x + y * rangeX] = value;
-            }
+            return CollectNeighbor(current, false);
         }
 
-        public IEnumerable<Tile> CollectNeighbor(Tile current)
+        public IEnumerable<Tile> CollectNeighbor(Tile current, bool allowDiagonalMove)
         {
             for (int i = -1; i <= 1; ++i)
             {
@@ -113,7 +89,7 @@ namespace AillieoUtils.Pathfinding
                         continue;
                     }
 
-                    if (i != 0 && j != 0)
+                    if (i != 0 && j != 0 && !allowDiagonalMove)
                     {
                         // 禁止斜着走
                         continue;
@@ -122,7 +98,7 @@ namespace AillieoUtils.Pathfinding
                     int x = current.x + i;
                     int y = current.y + j;
 
-                    if (GetCost(x, y) > blockThreshold)
+                    if (x < 0 || x >= rangeX || y < 0 || y >= rangeY)
                     {
                         continue;
                     }

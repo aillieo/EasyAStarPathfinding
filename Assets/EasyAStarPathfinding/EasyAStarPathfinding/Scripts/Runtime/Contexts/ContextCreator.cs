@@ -8,7 +8,14 @@ namespace AillieoUtils.Pathfinding
     {
         internal static IPathfindingContext<T> CreateContext(IGraphData<T> graphData, Algorithms algorithm)
         {
-            return new PathfindingContext<T>(graphData, algorithm);
+            switch (algorithm)
+            {
+                case Algorithms.LPAStar:
+                case Algorithms.DStarLite:
+                    return new PathfindingContextEx<T>(graphData, algorithm);
+                default:
+                    return new PathfindingContext<T>(graphData, algorithm);
+            }
         }
     }
 }

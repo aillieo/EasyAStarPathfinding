@@ -4,15 +4,15 @@ using System.Collections.Generic;
 
 namespace AillieoUtils.Pathfinding
 {
-    public class NodeWrapper<T> : IComparable<NodeWrapper<T>> where T : IGraphNode
+    public class NodeWrapper<T> : INodeWrapper<T>, IComparable<NodeWrapper<T>> where T : IGraphNode
     {
-        public T node;
+        public T node { get; set; }
+        public NodeState state { get; set; }
         public NodeWrapper<T> previous;
         public float g;
         public float h;
-        public NodeState state;
 
-        public NodeWrapper(T node, NodeWrapper<T> previous = default)
+        public NodeWrapper(T node, NodeWrapper<T> previous)
         {
             this.node = node;
             this.previous = previous;

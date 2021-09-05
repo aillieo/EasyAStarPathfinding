@@ -5,20 +5,16 @@ using UnityEditor;
 
 namespace Samples
 {
-    [CustomEditor(typeof(SquareTileSample))]
-    public class SquareTileSampleEditor : Editor
+    [CustomEditor(typeof(SquareTileUISample))]
+    public class SquareTileUISampleEditor : Editor
     {
-        private void OnEnable()
-        {
-        }
-
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
 
             EditorGUILayout.Space(20);
 
-            SquareTileSample targetPathfindingTest = target as SquareTileSample;
+            SquareTileUISample targetSquareTileUISample = target as SquareTileUISample;
 
             EditorGUI.BeginDisabledGroup(Application.isPlaying);
 
@@ -31,21 +27,6 @@ namespace Samples
 
             serializedObject.ApplyModifiedProperties();
             EditorGUI.EndDisabledGroup();
-
-            if (GUILayout.Button("FindPath"))
-            {
-                targetPathfindingTest.FindPath();
-            }
-
-            if (GUILayout.Button("FindPathAsync"))
-            {
-                targetPathfindingTest.FindPathAsync();
-            }
-
-            if (GUILayout.Button("FindPathInCoroutine"))
-            {
-                targetPathfindingTest.FindPathInCoroutine();
-            }
         }
     }
 }

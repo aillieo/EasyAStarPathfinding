@@ -9,7 +9,7 @@ namespace AillieoUtils.Pathfinding
         {
         }
 
-        protected override float GetG(NodeWrapper<T> nodeWrapper)
+        protected override float CalculateG(NodeWrapper<T> nodeWrapper)
         {
             return 0f;
         }

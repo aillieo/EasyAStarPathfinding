@@ -36,8 +36,6 @@ namespace AillieoUtils.Pathfinding
 
             this.startingNode = startingNode;
             this.endingNode = endingNode;
-            //this.context.startingNode = this.startingNode;
-            //this.context.endingNode = this.endingNode;
             this.Init();
         }
 

@@ -100,8 +100,8 @@ namespace AillieoUtils.Pathfinding
 
             bool changed = false;
             NodeWrapper<T> nodeWrapper = context.CreateNewNode(node, parentNode);
-            nodeWrapper.g = GetG(nodeWrapper);
-            nodeWrapper.h = GetH(nodeWrapper);
+            nodeWrapper.g = CalculateG(nodeWrapper);
+            nodeWrapper.h = CalculateH(nodeWrapper);
 
             NodeWrapper<T> oldNodeWrapper = context.TryGetOpenNode(node);
             if (oldNodeWrapper == null)
@@ -119,7 +119,7 @@ namespace AillieoUtils.Pathfinding
             return changed;
         }
 
-        protected virtual float GetG(NodeWrapper<T> nodeWrapper)
+        protected virtual float CalculateG(NodeWrapper<T> nodeWrapper)
         {
             if (nodeWrapper.previous == null)
             {
@@ -129,7 +129,7 @@ namespace AillieoUtils.Pathfinding
             return nodeWrapper.previous.g + HeuristicFunc(nodeWrapper.node, nodeWrapper.previous.node) * nodeWrapper.node.cost;
         }
 
-        protected virtual float GetH(NodeWrapper<T> nodeWrapper)
+        protected virtual float CalculateH(NodeWrapper<T> nodeWrapper)
         {
             return HeuristicFunc(nodeWrapper.node, this.endingNode);
         }

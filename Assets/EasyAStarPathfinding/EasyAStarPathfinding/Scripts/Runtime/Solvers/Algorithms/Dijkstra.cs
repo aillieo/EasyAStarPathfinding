@@ -8,7 +8,7 @@ namespace AillieoUtils.Pathfinding
         {
         }
 
-        protected override float GetH(NodeWrapper<T> nodeWrapper)
+        protected override float CalculateH(NodeWrapper<T> nodeWrapper)
         {
             return 0f;
         }

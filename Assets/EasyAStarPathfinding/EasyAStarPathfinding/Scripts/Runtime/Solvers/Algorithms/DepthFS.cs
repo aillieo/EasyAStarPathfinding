@@ -8,7 +8,7 @@ namespace AillieoUtils.Pathfinding
         {
         }
 
-        protected override float GetG(NodeWrapper<T> nodeWrapper)
+        protected override float CalculateG(NodeWrapper<T> nodeWrapper)
         {
             if (nodeWrapper.previous == null)
             {
@@ -17,7 +17,7 @@ namespace AillieoUtils.Pathfinding
             return nodeWrapper.previous.g - 0.1f;
         }
 
-        protected override float GetH(NodeWrapper<T> nodeWrapper)
+        protected override float CalculateH(NodeWrapper<T> nodeWrapper)
         {
             return 0f;
         }
