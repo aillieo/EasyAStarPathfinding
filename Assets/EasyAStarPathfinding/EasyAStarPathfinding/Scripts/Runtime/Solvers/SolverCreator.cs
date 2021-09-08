@@ -29,6 +29,9 @@ namespace AillieoUtils.Pathfinding
                     return new BestFSTile(tileData, algorithm);
                 case Algorithms.DijkstraAlgorithm:
                     return new DijkstraTile(tileData, algorithm);
+
+                case Algorithms.LPAStar:
+                    return new LPAStarTile(tileData, algorithm);
             }
 
             throw new NotImplementedException();

@@ -18,13 +18,13 @@ namespace AillieoUtils.Pathfinding.Visualizers
         [SerializeField]
         private Text label;
 
-        private IPathfindingContext<Tile> cachedInstance;
+        private IPathfindingContext<Tile, INodeWrapper<Tile>> cachedContext;
 
-        public void Init(int x, int y, IPathfindingContext<Tile> context)
+        public void Init(int x, int y, IPathfindingContext<Tile, INodeWrapper<Tile>> context)
         {
             this.x = x;
             this.y = y;
-            this.cachedInstance = context;
+            this.cachedContext = context;
 
             (this.transform as RectTransform).anchoredPosition = new Vector2((x + 0.5f) * 60f, (y + 0.5f) * 60f);
         }
@@ -43,7 +43,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            SquareTileMapData sData = cachedInstance.GetGraphData() as SquareTileMapData;
+            SquareTileMapData sData = cachedContext.GetGraphData() as SquareTileMapData;
             float cost = sData.GetCost(x, y);
 
             dragBeginValue = cost;
@@ -57,7 +57,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
             cost = Mathf.Clamp01(cost);
 
-            SquareTileMapData sData = cachedInstance.GetGraphData() as SquareTileMapData;
+            SquareTileMapData sData = cachedContext.GetGraphData() as SquareTileMapData;
             sData.SetCost(x, y, cost);
 
             UpdateView();
@@ -69,7 +69,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            SquareTileMapData sData = cachedInstance.GetGraphData() as SquareTileMapData;
+            SquareTileMapData sData = cachedContext.GetGraphData() as SquareTileMapData;
             float cost = sData.GetCost(x, y);
             cost = 1 - cost;
             sData.SetCost(x, y, cost);
@@ -78,7 +78,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
         public void UpdateView()
         {
-            SquareTileMapData sData = cachedInstance.GetGraphData() as SquareTileMapData;
+            SquareTileMapData sData = cachedContext.GetGraphData() as SquareTileMapData;
 
             switch (UISquareTileCtrl.Instance.colorMode)
             {
@@ -97,11 +97,11 @@ namespace AillieoUtils.Pathfinding.Visualizers
                     {
                         float c = 0f;
                         Tile tile = sData.GetTile(x, y);
-                        if (cachedInstance.TryGetOpenNode(tile) != null)
+                        if (cachedContext.TryGetOpenNode(tile) != null)
                         {
                             c = 0.75f;
                         }
-                        else if (cachedInstance.TryGetClosedNode(tile) != null)
+                        else if (cachedContext.TryGetClosedNode(tile) != null)
                         {
                             c = 1.0f;
                         }
@@ -132,11 +132,11 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
         private void GetGH(int x, int y, out float g, out float h)
         {
-            SquareTileMapData sData = cachedInstance.GetGraphData() as SquareTileMapData;
+            SquareTileMapData sData = cachedContext.GetGraphData() as SquareTileMapData;
             g = 0;
             h = 0;
             Tile tile = sData.GetTile(x, y);
-            NodeWrapper<Tile> openNode = cachedInstance.TryGetOpenNode(tile);
+            NodeWrapper<Tile> openNode = cachedContext.TryGetOpenNode(tile) as NodeWrapper<Tile>;
             if (openNode != null)
             {
                 g = openNode.g;
@@ -144,7 +144,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
             }
             else
             {
-                NodeWrapper<Tile> closedNode = cachedInstance.TryGetClosedNode(tile);
+                NodeWrapper<Tile> closedNode = cachedContext.TryGetClosedNode(tile) as NodeWrapper<Tile>;
                 if (closedNode != null)
                 {
                     g = closedNode.g;

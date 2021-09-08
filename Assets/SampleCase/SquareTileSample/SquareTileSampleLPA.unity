@@ -203,7 +203,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 443385084}
+      - m_Target: {fileID: 0}
         m_MethodName: FindPathByStep
         m_Mode: 1
         m_Arguments:
@@ -480,12 +480,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 443385083}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 60b06f9929fb40c4fa946a0f2a892f32, type: 3}
+  m_Script: {fileID: 11500000, guid: 4f05f333fba64ba44aa3db6d07c695be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   view: {fileID: 241876351}
   settingsView: {fileID: 815325814}
-  assetFilePath: /Users/aillieo/PROJECTS/Unity/EasyAStarPathFinding/Assets/SampleCase/data.bytes
+  assetFilePath: /Users/aillieo/PROJECTS/Unity/EasyAStarPathFinding/Assets/SampleCase/data1.bytes
   algorithmSelector: {fileID: 1856966227}
   stepIntervalSlider: {fileID: 1066068068}
   autoPathfinding: {fileID: 801073963}
@@ -1415,7 +1415,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 443385084}
+      - m_Target: {fileID: 0}
         m_MethodName: FindPathInCoroutine
         m_Mode: 1
         m_Arguments:
@@ -2221,7 +2221,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 443385084}
+      - m_Target: {fileID: 0}
         m_MethodName: LoadData
         m_Mode: 1
         m_Arguments:
@@ -2705,7 +2705,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 443385084}
+      - m_Target: {fileID: 0}
         m_MethodName: FindPathAsync
         m_Mode: 1
         m_Arguments:
@@ -3199,7 +3199,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 443385084}
+      - m_Target: {fileID: 0}
         m_MethodName: FindPath
         m_Mode: 1
         m_Arguments:

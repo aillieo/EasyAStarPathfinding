@@ -3,27 +3,27 @@ using System.Collections.Generic;
 
 namespace AillieoUtils.Pathfinding
 {
-    public interface IPathfindingContext<T> where T : IGraphNode
+    public interface IPathfindingContext<T, out R> where T : IGraphNode where R : INodeWrapper<T>
     {
-        NodeWrapper<T> TryGetOpenNode(T nodeData);
+        R TryGetOpenNode(T nodeData);
 
-        NodeWrapper<T> TryGetClosedNode(T nodeData);
+        R TryGetClosedNode(T nodeData);
 
         IGraphData<T> GetGraphData();
 
         bool RemoveFromMapping(T nodeData);
 
-        void AddToOpen(T nodeData, NodeWrapper<T> nodeWrapper);
+        void AddToOpen(T nodeData, INodeWrapper<T> nodeWrapper);
 
-        void AddToClosed(T nodeData, NodeWrapper<T> nodeWrapper);
+        void AddToClosed(T nodeData, INodeWrapper<T> nodeWrapper);
 
-        IEnumerable<NodeWrapper<T>> GetAllNodes();
+        IEnumerable<R> GetAllNodes();
 
-        NodeWrapper<T> TryGetFrontier();
+        R TryGetFrontier();
 
-        void UpdateFrontier(NodeWrapper<T> nodeWrapper);
+        void UpdateFrontier(INodeWrapper<T> nodeWrapper);
 
-        NodeWrapper<T> CreateNewNode(T node, NodeWrapper<T> previous);
+        R GetOrCreateNode(T node, INodeWrapper<T> previous);
 
         void Reset();
     }

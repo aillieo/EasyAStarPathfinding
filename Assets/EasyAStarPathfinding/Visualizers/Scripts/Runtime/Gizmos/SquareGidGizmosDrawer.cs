@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace AillieoUtils.Pathfinding.Visualizers
@@ -16,13 +17,13 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
         public void Visualize(Pathfinder pathfinder)
         {
-            IPathfindingContext<Tile> context = (pathfinder.solver as AStar<Tile>).context;
+            IPathfindingContext<Tile, INodeWrapper<Tile>> context = (pathfinder.solver as AStar<Tile>).context;
             Color backup = Gizmos.color;
 
             if (drawOpenList)
             {
                 Gizmos.color = Color.black;
-                foreach (var p in context.GetAllNodes())
+                foreach (var p in context.GetAllNodes().Select(p => p as NodeWrapper<Tile>))
                 {
                     if (p.state == NodeState.Closed)
                     {
@@ -38,7 +39,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
             if (drawClosedList)
             {
                 Gizmos.color = Color.white;
-                foreach (var p in context.GetAllNodes())
+                foreach (var p in context.GetAllNodes().Select(p => p as NodeWrapper<Tile>))
                 {
                     if (p.state == NodeState.Closed)
                     {

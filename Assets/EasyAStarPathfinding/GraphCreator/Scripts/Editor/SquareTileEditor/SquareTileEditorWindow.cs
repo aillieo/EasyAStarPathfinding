@@ -46,6 +46,11 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
 
             brushValue = EditorGUILayout.Slider("Brush", brushValue, 0, 1);
             brushSize = EditorGUILayout.IntSlider("BrushSize", brushSize, 1, 50);
+
+            float newCostScale = EditorGUILayout.Slider("CostScale", data.CostScale, 0, 10000);
+            data.SetCostScale(newCostScale);
+            bool allowDiagonal = EditorGUILayout.Toggle("AllowDiagonalMove", data.AllowDiagonalMove);
+            data.SetAllowDiagonalMove(allowDiagonal);
         }
 
         protected override void Save()

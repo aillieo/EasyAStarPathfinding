@@ -5,46 +5,16 @@ namespace AillieoUtils.Pathfinding
 {
     public abstract class LPAStar<T> : AStar<T> where T : IGraphNode
     {
-        public PathfindingState state { get; private set; }
-
-        private readonly List<T> result = new List<T>();
-
-        internal readonly IPathfindingContext<T> context;
-        internal NodeWrapper<T> endingNodeWrapper;
-        internal T startingNode;
-        internal T endingNode;
-
         public LPAStar(IGraphData<T> graphData, Algorithms algorithm)
             : base(graphData, algorithm)
         { }
 
-        public void CleanUp()
-        {
-            context.Reset();
-            result.Clear();
-            state = PathfindingState.Uninitialized;
-        }
-
-        public void Init()
-        {
-            this.state = PathfindingState.Initialized;
-        }
-
-        public void Init(T startingNode, T endingNode)
-        {
-            this.context.Reset();
-
-            this.startingNode = startingNode;
-            this.endingNode = endingNode;
-            this.Init();
-        }
-
-        public PathfindingState Step()
+        public override PathfindingState Step()
         {
             if (state == PathfindingState.Initialized)
             {
                 state = PathfindingState.Finding;
-                var startNode = context.CreateNewNode(this.startingNode, null);
+                NodeWrapperEx<T> startNode = context.GetOrCreateNode(this.startingNode, null) as NodeWrapperEx<T>;
                 context.AddToOpen(this.startingNode, startNode);
                 return state;
             }
@@ -54,10 +24,21 @@ namespace AillieoUtils.Pathfinding
                 throw new Exception($"Unexpected state {state}");
             }
 
-            NodeWrapper<T> first = context.TryGetFrontier();
+            NodeWrapperEx<T> first = context.TryGetFrontier() as NodeWrapperEx<T>;
             if (first != null)
             {
-                context.RemoveFromMapping(first.node);
+                //context.RemoveFromMapping(first.node);
+
+                if (first.GetConsistency() == NodeConsistency.LocallyOverconsistent)
+                {
+                    // 障碍被清除 或者cost变低
+                    first.g = first.rhs;
+                }
+                else
+                {
+
+                    first.g = float.MaxValue;
+                }
 
                 // 把周围点 加入open
                 var neighbors = context.GetGraphData().CollectNeighbor(first.node);
@@ -86,7 +67,7 @@ namespace AillieoUtils.Pathfinding
             return state;
         }
 
-        private bool Collect(T node, NodeWrapper<T> parentNode)
+        protected override bool Collect(T node, NodeWrapper<T> parentNode)
         {
             if (this.context.TryGetClosedNode(node) != null)
             {
@@ -94,11 +75,11 @@ namespace AillieoUtils.Pathfinding
             }
 
             bool changed = false;
-            NodeWrapper<T> nodeWrapper = context.CreateNewNode(node, parentNode);
-            nodeWrapper.g = GetG(nodeWrapper);
-            nodeWrapper.h = GetH(nodeWrapper);
+            NodeWrapper<T> nodeWrapper = context.GetOrCreateNode(node, parentNode) as NodeWrapper<T>;
+            nodeWrapper.g = CalculateG(nodeWrapper);
+            nodeWrapper.h = CalculateH(nodeWrapper);
 
-            NodeWrapper<T> oldNodeWrapper = context.TryGetOpenNode(node);
+            NodeWrapper<T> oldNodeWrapper = context.TryGetOpenNode(node) as NodeWrapper<T>;
             if (oldNodeWrapper == null)
             {
                 changed = true;
@@ -114,43 +95,26 @@ namespace AillieoUtils.Pathfinding
             return changed;
         }
 
-        protected virtual float GetG(NodeWrapper<T> nodeWrapper)
+        protected override float CalculateG(NodeWrapper<T> nodeWrapper)
         {
-            if (nodeWrapper.previous == null)
-            {
-                return 0f;
-            }
-
-            return nodeWrapper.previous.g + HeuristicFunc(nodeWrapper.node, nodeWrapper.previous.node) * nodeWrapper.node.cost;
+            return base.CalculateG(nodeWrapper);
         }
 
-        protected virtual float GetH(NodeWrapper<T> nodeWrapper)
+        protected override float CalculateH(NodeWrapper<T> nodeWrapper)
         {
-            return HeuristicFunc(nodeWrapper.node, this.endingNode);
+            return base.CalculateH(nodeWrapper);
         }
 
-        private bool TraceBackForPath()
+        protected virtual float CalculateRHS(NodeWrapper<T> nodeWrapper)
         {
-            result.Clear();
-            if (this.endingNodeWrapper == null)
-            {
-                return false;
-            }
-
-            NodeWrapper<T> node = this.endingNodeWrapper;
-            while (node.previous != null)
-            {
-                result.Add(node.node);
-                node = node.previous;
-            }
-            result.Add(node.node);
-            return true;
+            // (nodeWrapper as NodeWrapperEx<T>).rhs
+            return 0f;
         }
 
-        public void GetResult(List<T> toFill)
+        // 当发生变化后 重新计算之前的 NodeWrapper
+        private void RecalculateNode(NodeWrapperEx<T> nodeWrapper)
         {
-            toFill.Clear();
-            toFill.AddRange(result);
+
         }
     }
 }

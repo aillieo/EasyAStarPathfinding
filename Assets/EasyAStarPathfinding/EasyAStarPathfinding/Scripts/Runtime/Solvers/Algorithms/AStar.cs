@@ -6,11 +6,11 @@ namespace AillieoUtils.Pathfinding
 {
     public abstract class AStar<T> : ISolver<T> where T : IGraphNode
     {
-        public PathfindingState state { get; private set; }
+        public PathfindingState state { get; protected set; }
 
         private readonly List<T> result = new List<T>();
 
-        internal readonly IPathfindingContext<T> context;
+        internal readonly IPathfindingContext<T, INodeWrapper<T>> context;
         internal NodeWrapper<T> endingNodeWrapper;
         internal T startingNode;
         internal T endingNode;
@@ -39,17 +39,15 @@ namespace AillieoUtils.Pathfinding
 
             this.startingNode = startingNode;
             this.endingNode = endingNode;
-            //this.context.startingNode = this.startingNode;
-            //this.context.endingNode = this.endingNode;
             this.Init();
         }
 
-        public PathfindingState Step()
+        public virtual PathfindingState Step()
         {
             if (state == PathfindingState.Initialized)
             {
                 state = PathfindingState.Finding;
-                var startNode = context.CreateNewNode(this.startingNode, null);
+                var startNode = context.GetOrCreateNode(this.startingNode, null);
                 context.AddToOpen(this.startingNode, startNode);
                 return state;
             }
@@ -59,7 +57,7 @@ namespace AillieoUtils.Pathfinding
                 throw new Exception($"Unexpected state {state}");
             }
 
-            NodeWrapper<T> first = context.TryGetFrontier();
+            NodeWrapper<T> first = context.TryGetFrontier() as NodeWrapper<T>;
             if (first != null)
             {
                 context.RemoveFromMapping(first.node);
@@ -91,7 +89,7 @@ namespace AillieoUtils.Pathfinding
             return state;
         }
 
-        private bool Collect(T node, NodeWrapper<T> parentNode)
+        protected virtual bool Collect(T node, NodeWrapper<T> parentNode)
         {
             if (this.context.TryGetClosedNode(node) != null)
             {
@@ -99,11 +97,11 @@ namespace AillieoUtils.Pathfinding
             }
 
             bool changed = false;
-            NodeWrapper<T> nodeWrapper = context.CreateNewNode(node, parentNode);
+            NodeWrapper<T> nodeWrapper = context.GetOrCreateNode(node, parentNode) as NodeWrapper<T>;
             nodeWrapper.g = CalculateG(nodeWrapper);
             nodeWrapper.h = CalculateH(nodeWrapper);
 
-            NodeWrapper<T> oldNodeWrapper = context.TryGetOpenNode(node);
+            NodeWrapper<T> oldNodeWrapper = context.TryGetOpenNode(node) as NodeWrapper<T>;
             if (oldNodeWrapper == null)
             {
                 changed = true;
@@ -136,7 +134,7 @@ namespace AillieoUtils.Pathfinding
 
         protected abstract float HeuristicFunc(T nodeFrom, T nodeTo);
 
-        private bool TraceBackForPath()
+        protected bool TraceBackForPath()
         {
             result.Clear();
             if (this.endingNodeWrapper == null)

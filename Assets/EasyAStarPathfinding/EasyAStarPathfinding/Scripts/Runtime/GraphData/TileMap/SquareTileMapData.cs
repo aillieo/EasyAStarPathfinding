@@ -9,11 +9,13 @@ namespace AillieoUtils.Pathfinding
     public class SquareTileMapData : ITileMapData
     {
         private float costScale = 1.0f;
+        private bool allowDiagonalMove;
         private Tile[] tiles = Array.Empty<Tile>();
         private int rangeX = 0;
         private int rangeY = 0;
 
         public float CostScale => costScale;
+        public bool AllowDiagonalMove => allowDiagonalMove;
         public int RangeX => rangeX;
         public int RangeY => rangeY;
 
@@ -54,6 +56,18 @@ namespace AillieoUtils.Pathfinding
             rangeY = newRangeY;
         }
 
+        [Conditional("UNITY_EDITOR")]
+        public void SetCostScale(float newCostScale)
+        {
+            this.costScale = newCostScale;
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        public void SetAllowDiagonalMove(bool newAllowDiagonalMove)
+        {
+            this.allowDiagonalMove = newAllowDiagonalMove;
+        }
+
         public Tile GetTile(int x, int y)
         {
             if (tiles == null || tiles.Length == 0)
@@ -74,11 +88,6 @@ namespace AillieoUtils.Pathfinding
         }
 
         public IEnumerable<Tile> CollectNeighbor(Tile current)
-        {
-            return CollectNeighbor(current, false);
-        }
-
-        public IEnumerable<Tile> CollectNeighbor(Tile current, bool allowDiagonalMove)
         {
             for (int i = -1; i <= 1; ++i)
             {

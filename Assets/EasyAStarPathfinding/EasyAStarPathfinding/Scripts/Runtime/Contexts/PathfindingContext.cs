@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace AillieoUtils.Pathfinding
 {
-    public class PathfindingContext<T> : IPathfindingContext<T> where T : IGraphNode
+    public class PathfindingContext<T> : IPathfindingContext<T, NodeWrapper<T>> where T : IGraphNode
     {
         private readonly UniquePriorityQueue<NodeWrapper<T>> openList;
         private readonly Dictionary<T, NodeWrapper<T>> nodeMapping;
@@ -21,9 +21,19 @@ namespace AillieoUtils.Pathfinding
             this.nodeMapping = new Dictionary<T, NodeWrapper<T>>();
         }
 
-        public NodeWrapper<T> CreateNewNode(T node, NodeWrapper<T> previous)
+        public NodeWrapper<T> GetOrCreateNode(T node, INodeWrapper<T> previous)
         {
-            return new NodeWrapper<T>(node, previous);
+            if (previous == null)
+            {
+                return new NodeWrapperEx<T>(node, null);
+            }
+
+            if (previous is NodeWrapper<T> previousNodeWrapper)
+            {
+                return new NodeWrapper<T>(node, previousNodeWrapper);
+            }
+
+            throw new InvalidOperationException();
         }
 
         public void Reset()
@@ -70,17 +80,31 @@ namespace AillieoUtils.Pathfinding
             return this.nodeMapping.Remove(node);
         }
 
-        public void AddToOpen(T nodeData, NodeWrapper<T> nodeWrapper)
+        public void AddToOpen(T nodeData, INodeWrapper<T> nodeWrapper)
         {
-            nodeWrapper.state = NodeState.Open;
-            openList.Enqueue(nodeWrapper);
-            nodeMapping.Add(nodeData, nodeWrapper);
+            if (nodeWrapper is NodeWrapper<T> nodeWrapperT)
+            {
+                nodeWrapperT.state = NodeState.Open;
+                openList.Enqueue(nodeWrapperT);
+                nodeMapping.Add(nodeData, nodeWrapperT);
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
         }
 
-        public void AddToClosed(T nodeData, NodeWrapper<T> nodeWrapper)
+        public void AddToClosed(T nodeData, INodeWrapper<T> nodeWrapper)
         {
-            nodeWrapper.state = NodeState.Closed;
-            nodeMapping.Add(nodeData, nodeWrapper);
+            if (nodeWrapper is NodeWrapper<T> nodeWrapperT)
+            {
+                nodeWrapperT.state = NodeState.Closed;
+                nodeMapping.Add(nodeData, nodeWrapperT);
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
         }
 
         public IEnumerable<NodeWrapper<T>> GetAllNodes()
@@ -101,16 +125,18 @@ namespace AillieoUtils.Pathfinding
             return null;
         }
 
-        public void UpdateFrontier(NodeWrapper<T> nodeWrapper)
+        public void UpdateFrontier(INodeWrapper<T> nodeWrapper)
         {
-            if (nodeWrapper == null)
+            if (nodeWrapper is NodeWrapper<T> nodeWrapperT)
             {
-                return;
+                if (openList.Remove(nodeWrapperT))
+                {
+                    openList.Enqueue(nodeWrapperT);
+                }
             }
-
-            if (openList.Remove(nodeWrapper))
+            else
             {
-                openList.Enqueue(nodeWrapper);
+                throw new InvalidOperationException();
             }
         }
     }

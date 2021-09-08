@@ -12,7 +12,7 @@ using Debug = UnityEngine.Debug;
 
 namespace Samples
 {
-    public class SquareTileUISample : MonoBehaviour
+    public class SquareTileUISampleLPA : MonoBehaviour
     {
         [SerializeField]
         private UISquareTileView view;

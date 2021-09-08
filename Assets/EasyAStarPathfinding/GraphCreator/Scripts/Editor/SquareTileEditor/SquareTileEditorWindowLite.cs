@@ -32,6 +32,7 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             EditorGUILayout.Space(10);
 
             DrawTileDataEditor();
+            DrawMiscsInfo();
         }
 
         private void DrawTileDataEditor()
@@ -122,6 +123,14 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
                     Debug.LogError(err);
                 }
             }
+        }
+
+        private void DrawMiscsInfo()
+        {
+            float newCostScale = EditorGUILayout.Slider("CostScale", data.CostScale, 0, 10000);
+            data.SetCostScale(newCostScale);
+            bool allowDiagonal = EditorGUILayout.Toggle("AllowDiagonalMove", data.AllowDiagonalMove);
+            data.SetAllowDiagonalMove(allowDiagonal);
         }
 
         protected override void OnEnable()

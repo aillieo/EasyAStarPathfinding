@@ -19,7 +19,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
         private SimpleUILine uiPath;
 
         private UISquareTileElement[,] tiles;
-        private IPathfindingContext<Tile> cachedContext;
+        private IPathfindingContext<Tile, INodeWrapper<Tile>> cachedContext;
         private Pathfinder cachedPathfinder;
 
         private List<Tile> pathFound = new List<Tile>();
