@@ -5,7 +5,7 @@ using UnityEditor;
 
 namespace Samples
 {
-    [CustomEditor(typeof(SquareTileUISample))]
+    [CustomEditor(typeof(UISquareTileSampleAStar))]
     public class SquareTileUISampleEditor : Editor
     {
         public override void OnInspectorGUI()
@@ -14,7 +14,7 @@ namespace Samples
 
             EditorGUILayout.Space(20);
 
-            SquareTileUISample targetSquareTileUISample = target as SquareTileUISample;
+            UISquareTileSampleAStar targetSquareTileUISample = target as UISquareTileSampleAStar;
 
             EditorGUI.BeginDisabledGroup(Application.isPlaying);
 

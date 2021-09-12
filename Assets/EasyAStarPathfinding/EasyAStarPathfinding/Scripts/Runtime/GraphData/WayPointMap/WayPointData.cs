@@ -9,5 +9,10 @@ namespace AillieoUtils.Pathfinding
         {
             throw new System.NotImplementedException();
         }
+
+        public IEnumerable<Point> GetAllNodes()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

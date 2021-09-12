@@ -38,5 +38,10 @@ namespace AillieoUtils.Pathfinding
         {
             throw new NotImplementedException();
         }
+
+        public IEnumerable<NMFace> GetAllNodes()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

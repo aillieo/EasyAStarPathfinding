@@ -12,60 +12,21 @@ using Debug = UnityEngine.Debug;
 
 namespace Samples
 {
-    public class SquareTileUISampleLPA : MonoBehaviour
+    public class UISquareTileSampleAStar : UISquareTileSampleBase
     {
-        [SerializeField]
-        private UISquareTileView view;
-        [SerializeField]
-        private UISquareTileSettingsView settingsView;
-        [SerializeField]
-        [HideInInspector]
-        private string assetFilePath;
-
-        private Vector2Int start = new Vector2Int(0, 0);
-        private Vector2Int end = new Vector2Int(19, 19);
-        private Algorithms algorithm;
-
-        [SerializeField]
-        private Dropdown algorithmSelector;
-        [SerializeField]
-        private Slider stepIntervalSlider;
-        [SerializeField]
-        private Toggle autoPathfinding;
-        [SerializeField]
-        private Toggle showSettingsView;
-
-        private SquareTileMapData tileData;
-        private IEnumerable<AillieoUtils.Pathfinding.Tile> path;
-
-        private void Awake()
+        protected override void Awake()
         {
-            ConfigDropdowns();
-            ConfigToggles();
+            base.Awake();
         }
 
-        private void ConfigDropdowns()
+        protected override void OnEnable()
         {
-            string[] algorithms = typeof(Algorithms).GetEnumNames();
-            var algorithmOptions = algorithms.Select(s => new Dropdown.OptionData { text = s }).ToList();
-            algorithmSelector.options = algorithmOptions;
-            algorithmSelector.onValueChanged.AddListener(i =>
-            {
-                string enumName = algorithms[i];
-                Enum.TryParse<Algorithms>(enumName, out this.algorithm);
-                //Debug.Log(this.algorithm);
-            });
+            base.OnEnable();
         }
 
-        private void ConfigToggles()
+        protected override void OnDisable()
         {
-            showSettingsView.onValueChanged.AddListener(isOn => settingsView.gameObject.SetActive(isOn));
-            settingsView.gameObject.SetActive(showSettingsView.isOn);
-        }
-
-        public void LoadData()
-        {
-            tileData = SerializeHelper.Load<SquareTileMapData>(assetFilePath);
+            base.OnEnable();
         }
 
         private Pathfinder pathfinder;

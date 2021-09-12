@@ -11,11 +11,7 @@ namespace AillieoUtils.Pathfinding
 
         IGraphData<T> GetGraphData();
 
-        bool RemoveFromMapping(T nodeData);
-
         void AddToOpen(T nodeData, INodeWrapper<T> nodeWrapper);
-
-        void AddToClosed(T nodeData, INodeWrapper<T> nodeWrapper);
 
         IEnumerable<R> GetAllNodes();
 
@@ -23,7 +19,7 @@ namespace AillieoUtils.Pathfinding
 
         void UpdateFrontier(INodeWrapper<T> nodeWrapper);
 
-        R GetOrCreateNode(T node, INodeWrapper<T> previous);
+        R GetOrCreateNode(T node);
 
         void Reset();
     }

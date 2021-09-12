@@ -9,12 +9,25 @@ namespace AillieoUtils.Pathfinding
             : base(graphData, algorithm)
         { }
 
+        public override void Init()
+        {
+            foreach (var node in context.GetGraphData().GetAllNodes())
+            {
+                NodeWrapperEx<T> nodeWrapper = context.GetOrCreateNode(node) as NodeWrapperEx<T>;
+                nodeWrapper.g = float.MaxValue;
+                nodeWrapper.rhs = float.MaxValue;
+                context.AddToOpen(node, nodeWrapper);
+            }
+
+            base.Init();
+        }
+
         public override PathfindingState Step()
         {
             if (state == PathfindingState.Initialized)
             {
                 state = PathfindingState.Finding;
-                NodeWrapperEx<T> startNode = context.GetOrCreateNode(this.startingNode, null) as NodeWrapperEx<T>;
+                NodeWrapperEx<T> startNode = context.GetOrCreateNode(this.startingNode) as NodeWrapperEx<T>;
                 context.AddToOpen(this.startingNode, startNode);
                 return state;
             }
@@ -47,7 +60,7 @@ namespace AillieoUtils.Pathfinding
                     Collect(p, first);
                 }
 
-                context.AddToClosed(first.node, first);
+                first.state = NodeState.Closed;
 
                 if (first.node.Equals(this.endingNode))
                 {
@@ -75,7 +88,8 @@ namespace AillieoUtils.Pathfinding
             }
 
             bool changed = false;
-            NodeWrapper<T> nodeWrapper = context.GetOrCreateNode(node, parentNode) as NodeWrapper<T>;
+            NodeWrapper<T> nodeWrapper = context.GetOrCreateNode(node) as NodeWrapper<T>;
+            nodeWrapper.previous = parentNode;
             nodeWrapper.g = CalculateG(nodeWrapper);
             nodeWrapper.h = CalculateH(nodeWrapper);
 

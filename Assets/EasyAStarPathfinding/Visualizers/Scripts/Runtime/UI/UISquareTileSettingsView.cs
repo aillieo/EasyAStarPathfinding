@@ -14,6 +14,10 @@ namespace AillieoUtils.Pathfinding.Visualizers
         private Dropdown tileColorMode;
         [SerializeField]
         private Dropdown tileTextMode;
+        [SerializeField]
+        private Dropdown tileOpMode;
+        [SerializeField]
+        private Dropdown tileCstMdfMode;
 
         private void Awake()
         {
@@ -22,23 +26,36 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
         private void ConfigDropdowns()
         {
-            string[] colorModes = typeof(UISquareTileCtrl.ColorMode).GetEnumNames();
+            ConfigOneDropDown<UISquareTileCtrl.ColorMode>(tileColorMode, v => UISquareTileCtrl.Instance.colorMode = v);
+            ConfigOneDropDown<UISquareTileCtrl.TextMode>(tileTextMode, v => UISquareTileCtrl.Instance.textMode = v);
+            ConfigOneDropDown<UISquareTileCtrl.OperationMode>(tileOpMode, v => UISquareTileCtrl.Instance.opMode = v);
+            ConfigOneDropDown<UISquareTileCtrl.CostModificationMode>(tileCstMdfMode, v => UISquareTileCtrl.Instance.costMdfMode = v);
+        }
+
+        private static void ConfigOneDropDown<T>(Dropdown dropdownComp, Action<T> onSelected) where T : struct
+        {
+            string[] colorModes = typeof(T).GetEnumNames();
             var colorModeOptions = colorModes.Select(s => new Dropdown.OptionData { text = s }).ToList();
-            tileColorMode.options = colorModeOptions;
-            tileColorMode.onValueChanged.AddListener(i =>
+            dropdownComp.options = colorModeOptions;
+            dropdownComp.onValueChanged.AddListener(i =>
             {
                 string enumName = colorModes[i];
-                Enum.TryParse<UISquareTileCtrl.ColorMode>(enumName, out UISquareTileCtrl.Instance.colorMode);
+                T enumValue = default;
+                if (Enum.TryParse<T>(enumName, out enumValue))
+                {
+                    onSelected(enumValue);
+                }
             });
+        }
 
-            string[] textModes = typeof(UISquareTileCtrl.TextMode).GetEnumNames();
-            var textModeOptions = textModes.Select(s => new Dropdown.OptionData { text = s }).ToList();
-            tileTextMode.options = textModeOptions;
-            tileTextMode.onValueChanged.AddListener(i =>
-            {
-                string enumName = textModes[i];
-                Enum.TryParse<UISquareTileCtrl.TextMode>(enumName, out UISquareTileCtrl.Instance.textMode);
-            });
+        public void ApplyRecordedTileCostModifications()
+        {
+            UISquareTileCtrl.Instance.ApplyRecordedTileCostModifications();
+        }
+
+        public void DiscardRecordedTileCostModifications()
+        {
+            UISquareTileCtrl.Instance.DiscardRecordedTileCostModifications();
         }
     }
 }

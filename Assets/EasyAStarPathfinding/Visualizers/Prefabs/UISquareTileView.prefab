@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  width: 10
+  width: 5
   drawConnection: 1
   drawBody: 1
 --- !u!114 &3832907015611322096
@@ -81,7 +81,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_EffectColor: {r: 0.99215686, g: 1, b: 0.11372549, a: 0.6666667}
-  m_EffectDistance: {x: 10, y: 10}
+  m_EffectDistance: {x: 5, y: 5}
   m_UseGraphicAlpha: 1
 --- !u!1 &5886240382874334194
 GameObject:

@@ -29,12 +29,12 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
         private void OnEnable()
         {
-
+            UISquareTileCtrl.Instance.modifyCostDelegate += this.UpdateTileCost;
         }
 
         private void OnDisable()
         {
-
+            UISquareTileCtrl.Instance.modifyCostDelegate -= this.UpdateTileCost;
         }
 
         public void Visualize(Pathfinder pathfinder)
@@ -124,8 +124,10 @@ namespace AillieoUtils.Pathfinding.Visualizers
                     foreach (var g in pathFound)
                     {
                         UISquareTileElement ele = this.tiles[g.x, g.y];
-                        Vector2 elePos = (ele.transform as RectTransform).anchoredPosition;
-                        Vector2 pos = new Vector2(elePos.x / rectSize.x, elePos.y / rectSize.y);
+                        RectTransform eleRect = ele.transform as RectTransform;
+                        Vector2 elePos = eleRect.anchoredPosition;
+                        Vector2 eleSize = eleRect.rect.size;
+                        Vector2 pos = new Vector2((elePos.x - eleSize.x / 2) / rectSize.x, (elePos.y - eleSize.y / 2) / rectSize.y);
                         uiPath.AddPoint(pos);
                     }
 
@@ -133,6 +135,14 @@ namespace AillieoUtils.Pathfinding.Visualizers
                     //uiPath.rectTransform.Strentch();
                 }
             }
+        }
+
+        private void UpdateTileCost(int x, int y, float cost)
+        {
+            IGraphData<Tile> data = cachedContext.GetGraphData();
+            SquareTileMapData sData = data as SquareTileMapData;
+            sData.SetCost(x, y, cost);
+            SetTileDirty(x, y);
         }
     }
 }

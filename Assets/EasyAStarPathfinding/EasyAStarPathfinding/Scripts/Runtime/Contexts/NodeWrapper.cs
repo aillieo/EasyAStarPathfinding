@@ -12,10 +12,9 @@ namespace AillieoUtils.Pathfinding
         public float g;
         public float h;
 
-        public NodeWrapper(T node, NodeWrapper<T> previous)
+        public NodeWrapper(T node)
         {
             this.node = node;
-            this.previous = previous;
         }
 
         public int CompareTo(NodeWrapper<T> other)

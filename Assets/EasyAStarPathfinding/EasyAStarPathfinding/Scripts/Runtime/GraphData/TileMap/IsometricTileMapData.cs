@@ -10,6 +10,11 @@ namespace AillieoUtils.Pathfinding
             throw new NotImplementedException();
         }
 
+        public IEnumerable<Tile> GetAllNodes()
+        {
+            throw new NotImplementedException();
+        }
+
         public float GetCost(int x, int y)
         {
             throw new NotImplementedException();

@@ -61,7 +61,7 @@ namespace AillieoUtils.Pathfinding
 
         public bool Equals(Tile other)
         {
-            return x.Equals(other.x) && y.Equals(other.y);
+            return x == other.x && y == other.y;
         }
 
         public override int GetHashCode()

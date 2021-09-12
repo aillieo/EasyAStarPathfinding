@@ -10,8 +10,8 @@ namespace AillieoUtils.Pathfinding
         public float rhs;
         public readonly HashSet<NodeWrapperEx<T>> successors = new HashSet<NodeWrapperEx<T>>();
 
-        public NodeWrapperEx(T node, NodeWrapper<T> previous)
-            : base(node, previous)
+        public NodeWrapperEx(T node)
+            : base(node)
         {
         }
 

@@ -44,23 +44,26 @@ namespace AillieoUtils.Pathfinding.Visualizers
         public void OnBeginDrag(PointerEventData eventData)
         {
             SquareTileMapData sData = cachedContext.GetGraphData() as SquareTileMapData;
-            float cost = sData.GetCost(x, y);
-
-            dragBeginValue = cost;
+            dragBeginValue = sData.GetCost(x, y);
         }
 
         public void OnDrag(PointerEventData eventData)
         {
-            Vector2 delta = eventData.position - eventData.pressPosition;
-            float dy = delta.y;
-            float cost = dragBeginValue + dy * 0.01f;
+            switch (UISquareTileCtrl.Instance.opMode)
+            {
+                case UISquareTileCtrl.OperationMode.ModifyCost:
+                    Vector2 delta = eventData.position - eventData.pressPosition;
+                    float dy = delta.y;
+                    float cost = dragBeginValue + dy * 0.01f;
 
-            cost = Mathf.Clamp01(cost);
+                    cost = Mathf.Clamp01(cost);
 
-            SquareTileMapData sData = cachedContext.GetGraphData() as SquareTileMapData;
-            sData.SetCost(x, y, cost);
-
-            UpdateView();
+                    UISquareTileCtrl.Instance.ModifyTileCost(x, y, cost);
+                    break;
+                case UISquareTileCtrl.OperationMode.ClickToSetStart:
+                case UISquareTileCtrl.OperationMode.ClickToSetTarget:
+                    break;
+            }
         }
 
         public void OnEndDrag(PointerEventData eventData)
@@ -69,11 +72,21 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            SquareTileMapData sData = cachedContext.GetGraphData() as SquareTileMapData;
-            float cost = sData.GetCost(x, y);
-            cost = 1 - cost;
-            sData.SetCost(x, y, cost);
-            UpdateView();
+            switch (UISquareTileCtrl.Instance.opMode)
+            {
+                case UISquareTileCtrl.OperationMode.ClickToSetStart:
+                    UISquareTileCtrl.Instance.setStartDelegate?.Invoke(x, y);
+                    break;
+                case UISquareTileCtrl.OperationMode.ClickToSetTarget:
+                    UISquareTileCtrl.Instance.setTargetDelegate?.Invoke(x, y);
+                    break;
+                case UISquareTileCtrl.OperationMode.ModifyCost:
+                    SquareTileMapData sData = cachedContext.GetGraphData() as SquareTileMapData;
+                    float cost = sData.GetCost(x, y);
+                    cost = 1 - cost;
+                    UISquareTileCtrl.Instance.ModifyTileCost(x, y, cost);
+                    break;
+            }
         }
 
         public void UpdateView()

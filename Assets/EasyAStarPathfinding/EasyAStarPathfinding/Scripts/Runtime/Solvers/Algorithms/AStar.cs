@@ -21,14 +21,14 @@ namespace AillieoUtils.Pathfinding
             this.state = PathfindingState.Uninitialized;
         }
 
-        public void CleanUp()
+        public virtual void CleanUp()
         {
             context.Reset();
             result.Clear();
             state = PathfindingState.Uninitialized;
         }
 
-        public void Init()
+        public virtual void Init()
         {
             this.state = PathfindingState.Initialized;
         }
@@ -47,7 +47,7 @@ namespace AillieoUtils.Pathfinding
             if (state == PathfindingState.Initialized)
             {
                 state = PathfindingState.Finding;
-                var startNode = context.GetOrCreateNode(this.startingNode, null);
+                var startNode = context.GetOrCreateNode(this.startingNode);
                 context.AddToOpen(this.startingNode, startNode);
                 return state;
             }
@@ -60,8 +60,6 @@ namespace AillieoUtils.Pathfinding
             NodeWrapper<T> first = context.TryGetFrontier() as NodeWrapper<T>;
             if (first != null)
             {
-                context.RemoveFromMapping(first.node);
-
                 // 把周围点 加入open
                 var neighbors = context.GetGraphData().CollectNeighbor(first.node);
                 foreach (T p in neighbors)
@@ -69,7 +67,7 @@ namespace AillieoUtils.Pathfinding
                     Collect(p, first);
                 }
 
-                context.AddToClosed(first.node, first);
+                first.state = NodeState.Closed;
 
                 if (first.node.Equals(this.endingNode))
                 {
@@ -97,7 +95,8 @@ namespace AillieoUtils.Pathfinding
             }
 
             bool changed = false;
-            NodeWrapper<T> nodeWrapper = context.GetOrCreateNode(node, parentNode) as NodeWrapper<T>;
+            NodeWrapper<T> nodeWrapper = context.GetOrCreateNode(node) as NodeWrapper<T>;
+            nodeWrapper.previous = parentNode;
             nodeWrapper.g = CalculateG(nodeWrapper);
             nodeWrapper.h = CalculateH(nodeWrapper);
 

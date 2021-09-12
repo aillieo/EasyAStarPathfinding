@@ -21,19 +21,15 @@ namespace AillieoUtils.Pathfinding
             this.nodeMapping = new Dictionary<T, NodeWrapper<T>>();
         }
 
-        public NodeWrapper<T> GetOrCreateNode(T node, INodeWrapper<T> previous)
+        public NodeWrapper<T> GetOrCreateNode(T node)
         {
-            if (previous == null)
+            if (!nodeMapping.TryGetValue(node, out NodeWrapper<T> nodeWrapper))
             {
-                return new NodeWrapperEx<T>(node, null);
+                nodeWrapper = new NodeWrapper<T>(node);
+                nodeMapping.Add(node, nodeWrapper);
             }
 
-            if (previous is NodeWrapper<T> previousNodeWrapper)
-            {
-                return new NodeWrapper<T>(node, previousNodeWrapper);
-            }
-
-            throw new InvalidOperationException();
+            return nodeWrapper;
         }
 
         public void Reset()
@@ -75,31 +71,12 @@ namespace AillieoUtils.Pathfinding
             return this.graphData;
         }
 
-        public bool RemoveFromMapping(T node)
-        {
-            return this.nodeMapping.Remove(node);
-        }
-
         public void AddToOpen(T nodeData, INodeWrapper<T> nodeWrapper)
         {
             if (nodeWrapper is NodeWrapper<T> nodeWrapperT)
             {
                 nodeWrapperT.state = NodeState.Open;
                 openList.Enqueue(nodeWrapperT);
-                nodeMapping.Add(nodeData, nodeWrapperT);
-            }
-            else
-            {
-                throw new InvalidOperationException();
-            }
-        }
-
-        public void AddToClosed(T nodeData, INodeWrapper<T> nodeWrapper)
-        {
-            if (nodeWrapper is NodeWrapper<T> nodeWrapperT)
-            {
-                nodeWrapperT.state = NodeState.Closed;
-                nodeMapping.Add(nodeData, nodeWrapperT);
             }
             else
             {

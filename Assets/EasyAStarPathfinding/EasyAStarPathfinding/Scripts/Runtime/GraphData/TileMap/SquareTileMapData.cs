@@ -116,5 +116,16 @@ namespace AillieoUtils.Pathfinding
                 }
             }
         }
+
+        public IEnumerable<Tile> GetAllNodes()
+        {
+            for (int i = 0; i < rangeX; ++i)
+            {
+                for (int j = 0; j < rangeY; ++j)
+                {
+                    yield return GetTile(i, j);
+                }
+            }
+        }
     }
 }
