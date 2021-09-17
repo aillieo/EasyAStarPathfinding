@@ -2,13 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using AillieoUtils;
 using AillieoUtils.Pathfinding;
 using System.Diagnostics;
 using System;
-using AillieoUtils.Pathfinding.Visualizers;
 using UnityEngine.UI;
-using Debug = UnityEngine.Debug;
+using AillieoUtils.Pathfinding.Visualizers;
 
 namespace Samples
 {
@@ -17,16 +15,33 @@ namespace Samples
         protected override void Awake()
         {
             base.Awake();
+            ConfigDropdowns();
         }
 
         protected override void OnEnable()
         {
             base.OnEnable();
+            UISquareTileCtrl.Instance.modifyCostDelegate += OnNodeCostModified;
         }
 
         protected override void OnDisable()
         {
-            base.OnEnable();
+            UISquareTileCtrl.Instance.modifyCostDelegate -= OnNodeCostModified;
+            base.OnDisable();
+        }
+
+        private void ConfigDropdowns()
+        {
+            string[] algorithms = new string[] { typeof(Algorithms).GetEnumName(Algorithms.LPAStar) };
+            var algorithmOptions = algorithms.Select(s => new Dropdown.OptionData { text = s }).ToList();
+            algorithmSelector.options = algorithmOptions;
+            algorithmSelector.onValueChanged.AddListener(i =>
+            {
+                string enumName = algorithms[i];
+                Enum.TryParse<Algorithms>(enumName, out this.algorithm);
+                //Debug.Log(this.algorithm);
+            });
+            Enum.TryParse<Algorithms>(algorithms[0], out this.algorithm);
         }
 
         private Pathfinder pathfinder;
@@ -145,6 +160,15 @@ namespace Samples
             {
                 FindPath();
             }
+        }
+
+        private void OnNodeCostModified(int x, int y, float cost)
+        {
+            Tile tile = tileData.GetTile(x, y);
+            //if (this.pathfinder is LPAStarTile lpat)
+            //{
+
+            //}
         }
     }
 }

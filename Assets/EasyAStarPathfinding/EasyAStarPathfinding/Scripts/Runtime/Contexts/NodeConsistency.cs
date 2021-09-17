@@ -6,8 +6,8 @@ namespace AillieoUtils.Pathfinding
 {
     public enum NodeConsistency
     {
-        LocallyConsistent = 0,
-        LocallyOverconsistent = 1,
-        LocallyUnderconsistent = -1
+        Consistent = 0,
+        Overconsistent = 1,
+        Underconsistent = -1
     }
 }

@@ -5,21 +5,13 @@ namespace AillieoUtils.Pathfinding
 {
     public interface IPathfindingContext<T, out R> where T : IGraphNode where R : INodeWrapper<T>
     {
-        R TryGetOpenNode(T nodeData);
-
-        R TryGetClosedNode(T nodeData);
-
         IGraphData<T> GetGraphData();
 
-        void AddToOpen(T nodeData, INodeWrapper<T> nodeWrapper);
+        R TryGetNode(T nodeData);
+
+        R GetOrCreateNode(T nodeData);
 
         IEnumerable<R> GetAllNodes();
-
-        R TryGetFrontier();
-
-        void UpdateFrontier(INodeWrapper<T> nodeWrapper);
-
-        R GetOrCreateNode(T node);
 
         void Reset();
     }

@@ -46,6 +46,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
                     onSelected(enumValue);
                 }
             });
+            onSelected((T)Enum.Parse(typeof(T), colorModes[0]));
         }
 
         public void ApplyRecordedTileCostModifications()

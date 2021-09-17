@@ -20,6 +20,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
             OpenOrClose = 1,
             GValue = 2,
             GHValue = 3,
+            NodeConsistency = 4,
         }
 
         public enum TextMode

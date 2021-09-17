@@ -77,6 +77,7 @@ namespace Samples
                 Enum.TryParse<Algorithms>(enumName, out this.algorithm);
                 //Debug.Log(this.algorithm);
             });
+            Enum.TryParse<Algorithms>(algorithms[0], out this.algorithm);
         }
 
         private void ConfigToggles()

@@ -12,7 +12,7 @@ namespace AillieoUtils.Pathfinding
         {
             if (nodeWrapper.previous == null)
             {
-                return float.MaxValue;
+                return float.PositiveInfinity;
             }
             return nodeWrapper.previous.g - 0.1f;
         }

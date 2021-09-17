@@ -40,7 +40,15 @@ namespace AillieoUtils.Pathfinding.Visualizers
         public void Visualize(Pathfinder pathfinder)
         {
             cachedPathfinder = pathfinder;
-            cachedContext = (pathfinder.solver as AStar<Tile>).context;
+            if (pathfinder.solver is AStar<Tile> astar)
+            {
+                cachedContext = astar.context;
+            }
+            else if (pathfinder.solver is LPAStar<Tile> lpa)
+            {
+                cachedContext = lpa.context;
+            }
+
             dirty = true;
         }
 

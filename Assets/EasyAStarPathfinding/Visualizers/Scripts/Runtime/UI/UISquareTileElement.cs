@@ -110,14 +110,19 @@ namespace AillieoUtils.Pathfinding.Visualizers
                     {
                         float c = 0f;
                         Tile tile = sData.GetTile(x, y);
-                        if (cachedContext.TryGetOpenNode(tile) != null)
+                        NodeWrapper<Tile> nodeWrapper = cachedContext.TryGetNode(tile) as NodeWrapper<Tile>;
+                        if (nodeWrapper != null)
                         {
-                            c = 0.75f;
+                            if (nodeWrapper.state == NodeState.Open)
+                            {
+                                c = 0.75f;
+                            }
+                            else
+                            {
+                                c = 1.0f;
+                            }
                         }
-                        else if (cachedContext.TryGetClosedNode(tile) != null)
-                        {
-                            c = 1.0f;
-                        }
+
                         SetColor(new Color(c, c, c));
                     }
                     break;
@@ -125,6 +130,26 @@ namespace AillieoUtils.Pathfinding.Visualizers
                     {
                         GetGH(x, y, out float g, out float h);
                         float c = Mathf.Atan(g);
+                        SetColor(new Color(c, c, c));
+                    }
+                    break;
+                case UISquareTileCtrl.ColorMode.NodeConsistency:
+                    {
+                        float c = 0f;
+                        Tile tile = sData.GetTile(x, y);
+                        NodeWrapperEx<Tile> nodeWrapper = cachedContext.TryGetNode(tile) as NodeWrapperEx<Tile>;
+                        if (nodeWrapper != null)
+                        {
+                            if (nodeWrapper.GetConsistency() == NodeConsistency.Consistent)
+                            {
+                                c = 0.75f;
+                            }
+                            else if (nodeWrapper.GetConsistency() == NodeConsistency.Overconsistent)
+                            {
+                                c = 1.0f;
+                            }
+                        }
+
                         SetColor(new Color(c, c, c));
                     }
                     break;
@@ -149,20 +174,17 @@ namespace AillieoUtils.Pathfinding.Visualizers
             g = 0;
             h = 0;
             Tile tile = sData.GetTile(x, y);
-            NodeWrapper<Tile> openNode = cachedContext.TryGetOpenNode(tile) as NodeWrapper<Tile>;
-            if (openNode != null)
+
+            switch (cachedContext.TryGetNode(tile))
             {
-                g = openNode.g;
-                h = openNode.h;
-            }
-            else
-            {
-                NodeWrapper<Tile> closedNode = cachedContext.TryGetClosedNode(tile) as NodeWrapper<Tile>;
-                if (closedNode != null)
-                {
-                    g = closedNode.g;
-                    h = closedNode.h;
-                }
+                case NodeWrapper<Tile> nodeWrapper:
+                    g = nodeWrapper.g;
+                    h = nodeWrapper.h;
+                    break;
+                case NodeWrapperEx<Tile> nodeWrapperEx:
+                    g = nodeWrapperEx.g;
+                    h = nodeWrapperEx.h;
+                    break;
             }
         }
     }

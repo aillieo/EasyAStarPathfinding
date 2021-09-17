@@ -26,7 +26,7 @@ namespace Samples
 
         protected override void OnDisable()
         {
-            base.OnEnable();
+            base.OnDisable();
         }
 
         private Pathfinder pathfinder;

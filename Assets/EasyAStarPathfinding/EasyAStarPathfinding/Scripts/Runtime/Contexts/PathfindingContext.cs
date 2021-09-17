@@ -6,7 +6,7 @@ namespace AillieoUtils.Pathfinding
 {
     public class PathfindingContext<T> : IPathfindingContext<T, NodeWrapper<T>> where T : IGraphNode
     {
-        private readonly UniquePriorityQueue<NodeWrapper<T>> openList;
+        internal readonly UniquePriorityQueue<NodeWrapper<T>> openList;
         private readonly Dictionary<T, NodeWrapper<T>> nodeMapping;
         //internal T startingNode;
         //internal T endingNode;
@@ -21,12 +21,12 @@ namespace AillieoUtils.Pathfinding
             this.nodeMapping = new Dictionary<T, NodeWrapper<T>>();
         }
 
-        public NodeWrapper<T> GetOrCreateNode(T node)
+        public NodeWrapper<T> GetOrCreateNode(T nodeData)
         {
-            if (!nodeMapping.TryGetValue(node, out NodeWrapper<T> nodeWrapper))
+            if (!nodeMapping.TryGetValue(nodeData, out NodeWrapper<T> nodeWrapper))
             {
-                nodeWrapper = new NodeWrapper<T>(node);
-                nodeMapping.Add(node, nodeWrapper);
+                nodeWrapper = new NodeWrapper<T>(nodeData);
+                nodeMapping.Add(nodeData, nodeWrapper);
             }
 
             return nodeWrapper;
@@ -38,29 +38,12 @@ namespace AillieoUtils.Pathfinding
             this.openList.Clear();
         }
 
-        public NodeWrapper<T> TryGetOpenNode(T nodeData)
+        public NodeWrapper<T> TryGetNode(T nodeData)
         {
             NodeWrapper<T> node = null;
             if (this.nodeMapping.TryGetValue(nodeData, out node))
             {
-                if (node.state == NodeState.Open)
-                {
-                    return node;
-                }
-            }
-
-            return null;
-        }
-
-        public NodeWrapper<T> TryGetClosedNode(T nodeData)
-        {
-            NodeWrapper<T> node = null;
-            if (this.nodeMapping.TryGetValue(nodeData, out node))
-            {
-                if (node.state == NodeState.Closed)
-                {
-                    return node;
-                }
+                return node;
             }
 
             return null;
@@ -71,49 +54,11 @@ namespace AillieoUtils.Pathfinding
             return this.graphData;
         }
 
-        public void AddToOpen(T nodeData, INodeWrapper<T> nodeWrapper)
-        {
-            if (nodeWrapper is NodeWrapper<T> nodeWrapperT)
-            {
-                nodeWrapperT.state = NodeState.Open;
-                openList.Enqueue(nodeWrapperT);
-            }
-            else
-            {
-                throw new InvalidOperationException();
-            }
-        }
-
         public IEnumerable<NodeWrapper<T>> GetAllNodes()
         {
             foreach (var pair in nodeMapping)
             {
                 yield return pair.Value;
-            }
-        }
-
-        public NodeWrapper<T> TryGetFrontier()
-        {
-            if (openList.Count > 0)
-            {
-                return openList.Dequeue();
-            }
-
-            return null;
-        }
-
-        public void UpdateFrontier(INodeWrapper<T> nodeWrapper)
-        {
-            if (nodeWrapper is NodeWrapper<T> nodeWrapperT)
-            {
-                if (openList.Remove(nodeWrapperT))
-                {
-                    openList.Enqueue(nodeWrapperT);
-                }
-            }
-            else
-            {
-                throw new InvalidOperationException();
             }
         }
     }

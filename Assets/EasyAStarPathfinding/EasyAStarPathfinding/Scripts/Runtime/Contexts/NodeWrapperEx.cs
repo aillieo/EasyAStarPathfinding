@@ -5,30 +5,32 @@ using UnityEngine;
 
 namespace AillieoUtils.Pathfinding
 {
-    public class NodeWrapperEx<T> : NodeWrapper<T>, IComparable<NodeWrapperEx<T>> where T : IGraphNode
+    public class NodeWrapperEx<T> : INodeWrapper<T>, IComparable<NodeWrapperEx<T>> where T : IGraphNode
     {
-        public float rhs;
-        public readonly HashSet<NodeWrapperEx<T>> successors = new HashSet<NodeWrapperEx<T>>();
+        public T node { get; set; }
+        public NodeState state { get; set; } // remove
+        public NodeWrapperEx<T> previous;
+        public float g = float.PositiveInfinity;
+        public float rhs = float.PositiveInfinity;
+        public float h;
+        public Vector2 key;
 
         public NodeWrapperEx(T node)
-            : base(node)
         {
+            this.node = node;
         }
 
         public int CompareTo(NodeWrapperEx<T> other)
         {
-            float min1 = Mathf.Min(this.g, this.rhs);
-            float min2 = Mathf.Min(other.g, other.rhs);
-            float k11 = min1 + h;
-            float k12 = min2 + other.h;
-            if (k11 != k12)
+            Vector2 ko = other.key;
+            if (key.x != ko.x)
             {
-                return k12.CompareTo(k11);
+                return ko.x.CompareTo(key.x);
             }
 
-            if (min1 != min2)
+            if (key.y != ko.y)
             {
-                return min2.CompareTo(min1);
+                return ko.y.CompareTo(key.y);
             }
 
             return Comparer<T>.Default.Compare(node, other.node);
@@ -38,15 +40,15 @@ namespace AillieoUtils.Pathfinding
         {
             if (g > rhs)
             {
-                return NodeConsistency.LocallyOverconsistent;
+                return NodeConsistency.Overconsistent;
             }
 
             if (g < rhs)
             {
-                return NodeConsistency.LocallyUnderconsistent;
+                return NodeConsistency.Underconsistent;
             }
 
-            return NodeConsistency.LocallyConsistent;
+            return NodeConsistency.Consistent;
         }
     }
 }
