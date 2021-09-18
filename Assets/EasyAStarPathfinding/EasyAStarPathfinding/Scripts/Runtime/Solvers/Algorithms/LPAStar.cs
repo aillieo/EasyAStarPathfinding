@@ -50,8 +50,11 @@ namespace AillieoUtils.Pathfinding
             this.Init();
         }
 
+        int step = 0;
         public PathfindingState Step()
         {
+            Debug.LogError($"step={step++}");
+
             if (state == PathfindingState.Initialized)
             {
                 state = PathfindingState.Finding;
@@ -60,11 +63,15 @@ namespace AillieoUtils.Pathfinding
                 startingNodeWrapper.g = float.PositiveInfinity;
                 startingNodeWrapper.rhs = 0;
                 startingNodeWrapper.h = CalculateH(startingNodeWrapper);
+                startingNodeWrapper.key = CalculateKey(startingNodeWrapper);
 
                 NodeWrapperEx<T> endingNodeWrapper = context.GetOrCreateNode(this.endingNode);
                 endingNodeWrapper.g = float.PositiveInfinity;
                 endingNodeWrapper.rhs = float.PositiveInfinity;
+                endingNodeWrapper.h = 0;
+                endingNodeWrapper.key = CalculateKey(endingNodeWrapper);
 
+                Debug.LogError($"Enqueue:  {startingNodeWrapper.node}");
                 context.openList.Enqueue(startingNodeWrapper);
 
                 return state;
@@ -76,6 +83,7 @@ namespace AillieoUtils.Pathfinding
             }
 
             NodeWrapperEx<T> first = context.openList.TryDequeue();
+            Debug.LogError($"TryDequeue:  {(first != null ? first.node : default)}");
             if (first == null)
             {
                 // 寻路失败
@@ -85,8 +93,12 @@ namespace AillieoUtils.Pathfinding
                 return state;
             }
 
+            Debug.LogError($"first:  {first.node}");
+
             NodeWrapperEx<T> endingNodeWrapper0 = context.GetOrCreateNode(endingNode);
-            if (endingNodeWrapper0.GetConsistency() == NodeConsistency.Consistent && first.CompareTo(endingNodeWrapper0) >= 0)
+            endingNodeWrapper0.key = CalculateKey(endingNodeWrapper0);
+            if (endingNodeWrapper0.GetConsistency() == NodeConsistency.Consistent
+                && first.CompareTo(endingNodeWrapper0) <= 0)
             {
                 // 终点局部一致
                 // 此时有一条有效路径
@@ -100,48 +112,17 @@ namespace AillieoUtils.Pathfinding
             {
                 // 障碍被清除 或者cost变低
                 first.g = first.rhs;
-                var neighbors = context.GetGraphData().CollectNeighbor(first.node);
-                foreach (T p in neighbors)
-                {
-                    float cost = this.HeuristicFunc(first.node, p);
-                    NodeWrapperEx<T> pNodeWrapper = context.GetOrCreateNode(p);
-                    if (pNodeWrapper.rhs > first.g + cost)
-                    {
-                        pNodeWrapper.previous = first;
-                        pNodeWrapper.rhs = first.g + cost;
-                    }
-
-                    if (pNodeWrapper.GetConsistency() == NodeConsistency.Consistent)
-                    {
-                        context.openList.Remove(pNodeWrapper);
-                    }
-                    else
-                    {
-                        context.openList.Enqueue(pNodeWrapper);
-                    }
-                }
             }
             else
             {
                 first.g = float.PositiveInfinity;
-                var neighbors = context.GetGraphData().CollectNeighbor(first.node);
-                foreach (T p in neighbors)
-                {
-                    float cost = this.HeuristicFunc(first.node, p);
-                    NodeWrapperEx<T> pNodeWrapper = context.GetOrCreateNode(p);
-                    SelectAndUpdatePrevious(pNodeWrapper);
+                UpdateNode(first);
+            }
 
-                    if (pNodeWrapper.GetConsistency() == NodeConsistency.Consistent)
-                    {
-                        context.openList.Remove(pNodeWrapper);
-                    }
-                    else
-                    {
-                        context.openList.Enqueue(pNodeWrapper);
-                    }
-                }
-
-                context.openList.Enqueue(first);
+            var neighbors = context.GetGraphData().CollectNeighbor(first.node).Select(n => context.GetOrCreateNode(n));
+            foreach (NodeWrapperEx<T> nei in neighbors)
+            {
+                UpdateNode(nei);
             }
 
             if (first.node.Equals(this.endingNode))
@@ -162,7 +143,9 @@ namespace AillieoUtils.Pathfinding
                 return 0f;
             }
 
-            return nodeWrapper.previous.g + HeuristicFunc(nodeWrapper.node, nodeWrapper.previous.node) * nodeWrapper.node.cost;
+            //return nodeWrapper.previous.g + HeuristicFunc(nodeWrapper.node, nodeWrapper.previous.node) * nodeWrapper.node.cost;
+            // 测试用 增大cost权重
+            return nodeWrapper.previous.g + HeuristicFunc(nodeWrapper.node, nodeWrapper.previous.node) * nodeWrapper.node.cost * 10000f;
         }
 
         protected float CalculateH(NodeWrapperEx<T> nodeWrapper)
@@ -185,25 +168,47 @@ namespace AillieoUtils.Pathfinding
 
         protected abstract float HeuristicFunc(T nodeFrom, T nodeTo);
 
-        private void SelectAndUpdatePrevious(NodeWrapperEx<T> nodeWrapper)
+        private void UpdateNode(NodeWrapperEx<T> nodeWrapper)
         {
-            var neighbors = context.GetGraphData().CollectNeighbor(nodeWrapper.node).Select(n => context.GetOrCreateNode(n));
-            NodeWrapperEx<T> bestPrev = neighbors.First();
-            foreach (var nei in neighbors)
+            if (nodeWrapper.node.Equals(startingNode))
             {
-                nei.g = CalculateG(nei);
-                nei.h = CalculateH(nei);
-                nei.rhs = CalculateRHS(nei);
-                nei.key = CalculateKey(nei);
-
-                if (nei.CompareTo(bestPrev) < 0)
+            }
+            else
+            {
+                // 更新这些节点的 previous
+                var neighbors = context.GetGraphData().CollectNeighbor(nodeWrapper.node).Select(n => context.GetOrCreateNode(n));
+                nodeWrapper.rhs = float.PositiveInfinity;
+                foreach (var p in neighbors)
                 {
-                    bestPrev = nei;
+                    p.g = CalculateG(p);
+                    p.h = CalculateH(p);
+                    float rhs = nodeWrapper.g + HeuristicFunc(p.node, nodeWrapper.node) * nodeWrapper.node.cost * 10000f;
+                    if (rhs < nodeWrapper.rhs)
+                    {
+                        nodeWrapper.rhs = rhs;
+                        nodeWrapper.previous = p;
+                    }
                 }
             }
 
-            nodeWrapper.rhs = bestPrev.rhs;
-            nodeWrapper.previous = bestPrev.previous;
+            if (nodeWrapper.GetConsistency() == NodeConsistency.Consistent)
+            {
+                Debug.LogError($"Remove:  {nodeWrapper.node}");
+                context.openList.Remove(nodeWrapper);
+            }
+            else
+            {
+                nodeWrapper.key = CalculateKey(nodeWrapper);
+                if (context.openList.Contains(nodeWrapper))
+                {
+                    context.openList.Update(nodeWrapper);
+                }
+                else
+                {
+                    Debug.LogError($"Enqueue:  {nodeWrapper.node}");
+                    context.openList.Enqueue(nodeWrapper);
+                }
+            }
         }
 
         protected bool TraceBackForPath(INodeWrapper<T> endingNode)

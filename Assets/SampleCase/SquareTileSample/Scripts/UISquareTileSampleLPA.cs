@@ -14,6 +14,7 @@ namespace Samples
     {
         protected override void Awake()
         {
+            UISquareTileCtrl.Instance.colorMode = UISquareTileCtrl.ColorMode.NodeConsistency;
             base.Awake();
             ConfigDropdowns();
         }

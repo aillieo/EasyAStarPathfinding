@@ -26,13 +26,13 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
         private void ConfigDropdowns()
         {
-            ConfigOneDropDown<UISquareTileCtrl.ColorMode>(tileColorMode, v => UISquareTileCtrl.Instance.colorMode = v);
-            ConfigOneDropDown<UISquareTileCtrl.TextMode>(tileTextMode, v => UISquareTileCtrl.Instance.textMode = v);
-            ConfigOneDropDown<UISquareTileCtrl.OperationMode>(tileOpMode, v => UISquareTileCtrl.Instance.opMode = v);
-            ConfigOneDropDown<UISquareTileCtrl.CostModificationMode>(tileCstMdfMode, v => UISquareTileCtrl.Instance.costMdfMode = v);
+            ConfigOneDropDown<UISquareTileCtrl.ColorMode>(tileColorMode, v => UISquareTileCtrl.Instance.colorMode = v, UISquareTileCtrl.Instance.colorMode);
+            ConfigOneDropDown<UISquareTileCtrl.TextMode>(tileTextMode, v => UISquareTileCtrl.Instance.textMode = v, UISquareTileCtrl.Instance.textMode);
+            ConfigOneDropDown<UISquareTileCtrl.OperationMode>(tileOpMode, v => UISquareTileCtrl.Instance.opMode = v, UISquareTileCtrl.Instance.opMode);
+            ConfigOneDropDown<UISquareTileCtrl.CostModificationMode>(tileCstMdfMode, v => UISquareTileCtrl.Instance.costMdfMode = v, UISquareTileCtrl.Instance.costMdfMode);
         }
 
-        private static void ConfigOneDropDown<T>(Dropdown dropdownComp, Action<T> onSelected) where T : struct
+        private static void ConfigOneDropDown<T>(Dropdown dropdownComp, Action<T> onSelected, T initialValue) where T : struct
         {
             string[] colorModes = typeof(T).GetEnumNames();
             var colorModeOptions = colorModes.Select(s => new Dropdown.OptionData { text = s }).ToList();
@@ -46,7 +46,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
                     onSelected(enumValue);
                 }
             });
-            onSelected((T)Enum.Parse(typeof(T), colorModes[0]));
+            dropdownComp.value = Array.FindIndex(colorModes, s => s == typeof(T).GetEnumName(initialValue));
         }
 
         public void ApplyRecordedTileCostModifications()
