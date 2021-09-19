@@ -43,6 +43,11 @@ namespace AillieoUtils.Pathfinding
 
         public void Init(T startingNode, T endingNode)
         {
+            if (startingNode.Equals(this.startingNode) && endingNode.Equals(this.endingNode))
+            {
+                return;
+            }
+
             this.context.Reset();
 
             this.startingNode = startingNode;
@@ -93,7 +98,7 @@ namespace AillieoUtils.Pathfinding
                 return state;
             }
 
-            Debug.LogError($"first:  {first.node}");
+            Debug.LogError($"first:  {first.node} {first.GetConsistency()}");
 
             NodeWrapperEx<T> endingNodeWrapper0 = context.GetOrCreateNode(endingNode);
             endingNodeWrapper0.key = CalculateKey(endingNodeWrapper0);
@@ -178,15 +183,15 @@ namespace AillieoUtils.Pathfinding
                 // 更新这些节点的 previous
                 var neighbors = context.GetGraphData().CollectNeighbor(nodeWrapper.node).Select(n => context.GetOrCreateNode(n));
                 nodeWrapper.rhs = float.PositiveInfinity;
-                foreach (var p in neighbors)
+                foreach (var nei in neighbors)
                 {
-                    p.g = CalculateG(p);
-                    p.h = CalculateH(p);
-                    float rhs = nodeWrapper.g + HeuristicFunc(p.node, nodeWrapper.node) * nodeWrapper.node.cost * 10000f;
+                    // p.g = CalculateG(p);
+                    // p.h = CalculateH(p);
+                    float rhs = nei.g + HeuristicFunc(nei.node, nodeWrapper.node) * nodeWrapper.node.cost * 10000f;
                     if (rhs < nodeWrapper.rhs)
                     {
                         nodeWrapper.rhs = rhs;
-                        nodeWrapper.previous = p;
+                        nodeWrapper.previous = nei;
                     }
                 }
             }
@@ -198,6 +203,7 @@ namespace AillieoUtils.Pathfinding
             }
             else
             {
+
                 nodeWrapper.key = CalculateKey(nodeWrapper);
                 if (context.openList.Contains(nodeWrapper))
                 {
@@ -237,8 +243,18 @@ namespace AillieoUtils.Pathfinding
 
         public void NotifyNodeDataModified(T nodeData)
         {
-            NodeWrapperEx<T> nodeWrapper = this.context.TryGetNode(nodeData);
-            context.openList.Update(nodeWrapper);
+            if (state == PathfindingState.Found || state == PathfindingState.Failed)
+            {
+                state = PathfindingState.Finding;
+            }
+
+            NodeWrapperEx<T> nodeWrapper = this.context.GetOrCreateNode(nodeData);
+            UpdateNode(nodeWrapper);
+            var neighbors = context.GetGraphData().CollectNeighbor(nodeData).Select(n => context.GetOrCreateNode(n));
+            foreach (var nei in neighbors)
+            {
+                UpdateNode(nei);
+            }
         }
     }
 }

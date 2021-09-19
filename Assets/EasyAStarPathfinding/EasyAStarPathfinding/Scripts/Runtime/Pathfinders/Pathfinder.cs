@@ -83,5 +83,13 @@ namespace AillieoUtils.Pathfinding
             GetResult(result);
             return result.ToArray();
         }
+
+        public void NotifyNodeDataModified<T>(T nodeData) where T : IGraphNode
+        {
+            if (solver is LPAStar<T> lpa)
+            {
+                lpa.NotifyNodeDataModified(nodeData);
+            }
+        }
     }
 }

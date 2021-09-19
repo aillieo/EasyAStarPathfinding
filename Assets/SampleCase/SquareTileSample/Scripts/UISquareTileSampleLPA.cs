@@ -166,10 +166,7 @@ namespace Samples
         private void OnNodeCostModified(int x, int y, float cost)
         {
             Tile tile = tileData.GetTile(x, y);
-            //if (this.pathfinder is LPAStarTile lpat)
-            //{
-
-            //}
+            pathfinder.NotifyNodeDataModified(tile);
         }
     }
 }
