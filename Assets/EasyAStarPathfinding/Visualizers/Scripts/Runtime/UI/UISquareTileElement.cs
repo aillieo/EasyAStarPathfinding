@@ -162,8 +162,16 @@ namespace AillieoUtils.Pathfinding.Visualizers
                     this.label.text = $"{cost:f2}";
                     break;
                 case UISquareTileCtrl.TextMode.GHValue:
-                    GetGH(x, y, out float g, out float h);
-                    this.label.text = $"{g:f2}\n{h:f2}";
+                    {
+                        GetGH(x, y, out float g, out float h);
+                        this.label.text = $"{g:f2}\n{h:f2}";
+                    }
+                    break;
+                case UISquareTileCtrl.TextMode.GHRhsValue:
+                    {
+                        GetGHRhs(x, y, out float g, out float h, out float rhs);
+                        this.label.text = $"{g:f2}\n{rhs:f2}";
+                    }
                     break;
             }
         }
@@ -183,6 +191,24 @@ namespace AillieoUtils.Pathfinding.Visualizers
                     break;
                 case NodeWrapperEx<Tile> nodeWrapperEx:
                     g = nodeWrapperEx.g;
+                    h = nodeWrapperEx.h;
+                    break;
+            }
+        }
+
+        private void GetGHRhs(int x, int y, out float g, out float h, out float rhs)
+        {
+            SquareTileMapData sData = cachedContext.GetGraphData() as SquareTileMapData;
+            g = 0;
+            h = 0;
+            rhs = 0;
+            Tile tile = sData.GetTile(x, y);
+
+            switch (cachedContext.TryGetNode(tile))
+            {
+                case NodeWrapperEx<Tile> nodeWrapperEx:
+                    g = nodeWrapperEx.g;
+                    rhs = nodeWrapperEx.rhs;
                     h = nodeWrapperEx.h;
                     break;
             }

@@ -24,12 +24,12 @@ namespace AillieoUtils.Pathfinding
 
             if (f1 != f2)
             {
-                return f2.CompareTo(f1);
+                return f1.CompareTo(f2);
             }
 
             if (h != other.h)
             {
-                return other.h.CompareTo(h);
+                return h.CompareTo(other.h);
             }
 
             return Comparer<T>.Default.Compare(node, other.node);

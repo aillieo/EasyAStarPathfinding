@@ -17,7 +17,7 @@ namespace AillieoUtils.Pathfinding
         {
             this.graphData = graphData;
             this.algorithm = algorithm;
-            this.openList = new UniquePriorityQueue<NodeWrapperEx<T>>();
+            this.openList = new UniquePriorityQueue<NodeWrapperEx<T>>(Comparer<NodeWrapperEx<T>>.Create((o1, o2) => o2.CompareTo(o1)));
             this.nodeMapping = new Dictionary<T, NodeWrapperEx<T>>();
         }
 

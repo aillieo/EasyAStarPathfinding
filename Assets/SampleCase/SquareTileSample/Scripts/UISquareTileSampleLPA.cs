@@ -15,6 +15,7 @@ namespace Samples
         protected override void Awake()
         {
             UISquareTileCtrl.Instance.colorMode = UISquareTileCtrl.ColorMode.NodeConsistency;
+            UISquareTileCtrl.Instance.textMode = UISquareTileCtrl.TextMode.GHRhsValue;
             base.Awake();
             ConfigDropdowns();
         }
@@ -22,12 +23,12 @@ namespace Samples
         protected override void OnEnable()
         {
             base.OnEnable();
-            UISquareTileCtrl.Instance.modifyCostDelegate += OnNodeCostModified;
+            UISquareTileCtrl.Instance.onTileCostModified += OnNodeCostModified;
         }
 
         protected override void OnDisable()
         {
-            UISquareTileCtrl.Instance.modifyCostDelegate -= OnNodeCostModified;
+            UISquareTileCtrl.Instance.onTileCostModified -= OnNodeCostModified;
             base.OnDisable();
         }
 

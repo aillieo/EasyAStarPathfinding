@@ -123,7 +123,7 @@ namespace AillieoUtils.Pathfinding
                 return 0f;
             }
 
-            return nodeWrapper.previous.g + HeuristicFunc(nodeWrapper.node, nodeWrapper.previous.node) * nodeWrapper.node.cost;
+            return nodeWrapper.previous.g + HeuristicFunc(nodeWrapper.node, nodeWrapper.previous.node) * (1 + nodeWrapper.node.cost);
         }
 
         protected virtual float CalculateH(NodeWrapper<T> nodeWrapper)

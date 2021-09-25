@@ -14,6 +14,8 @@ namespace AillieoUtils.Pathfinding.Visualizers
         public TileAssignDelegate setStartDelegate;
         public TileAssignDelegate setTargetDelegate;
 
+        public event ModifyCostDelegate onTileCostModified;
+
         public enum ColorMode
         {
             TileCost = 0,
@@ -27,6 +29,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
         {
             TileCost = 0,
             GHValue = 1,
+            GHRhsValue = 2,
         }
 
         public enum OperationMode
@@ -71,7 +74,12 @@ namespace AillieoUtils.Pathfinding.Visualizers
                 case CostModificationMode.DontAllow:
                     break;
                 case CostModificationMode.RealTime:
-                    modifyCostDelegate?.Invoke(x, y, newCost);
+                    if (modifyCostDelegate != null)
+                    {
+                        modifyCostDelegate.Invoke(x, y, newCost);
+                        onTileCostModified?.Invoke(x, y, newCost);
+                    }
+
                     break;
                 case CostModificationMode.Record:
                     modificationsCache[new Vector2Int(x, y)] = newCost;
@@ -86,6 +94,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
                 foreach (var pair in modificationsCache)
                 {
                     modifyCostDelegate.Invoke(pair.Key.x, pair.Key.y, pair.Value);
+                    onTileCostModified?.Invoke(pair.Key.x, pair.Key.y, pair.Value);
                 }
             }
 
