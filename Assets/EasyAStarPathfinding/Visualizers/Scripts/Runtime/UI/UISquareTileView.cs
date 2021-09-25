@@ -54,6 +54,11 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
         public void SetDirty()
         {
+            if (cachedContext == null)
+            {
+                return;
+            }
+
             IGraphData<Tile> data = cachedContext.GetGraphData();
             SquareTileMapData sData = data as SquareTileMapData;
             for (int i = 0; i < sData.RangeX; ++i)

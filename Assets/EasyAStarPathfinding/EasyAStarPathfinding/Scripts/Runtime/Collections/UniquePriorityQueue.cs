@@ -48,14 +48,14 @@ namespace AillieoUtils
         public UniquePriorityQueue(int capacity, IComparer<T> comparer)
         {
             this.comparer = (comparer == null) ? Comparer<T>.Default : comparer;
-            this.data = new T[capacity];
+            this.data = new List<T>(capacity);
 
             EqualityComparer equalityComparer = new EqualityComparer(this.comparer);
             set = new Dictionary<T, int>(capacity, equalityComparer);
         }
 
         private readonly IComparer<T> comparer;
-        private T[] data;
+        private List<T> data;
         private const int defaultCapacity = 16;
         private Dictionary<T, int> set;
 
@@ -72,9 +72,9 @@ namespace AillieoUtils
                 return false;
             }
 
-            if (Count >= data.Length)
+            while (Count >= data.Count)
             {
-                Array.Resize(ref data, Count * 2);
+                data.Add(default);
             }
 
             data[Count] = item;
@@ -92,13 +92,18 @@ namespace AillieoUtils
             Count--;
 
             T last = data[Count];
-            data[0] = last;
-            set[last] = 0;
+            data[Count] = default;
+            if (Count > 0)
+            {
+                data[0] = last;
+                set[last] = 0;
+            }
 
             if (Count > 0)
             {
                 SiftDown(0);
             }
+
             return v;
         }
 
@@ -182,6 +187,9 @@ namespace AillieoUtils
         {
             if (set.TryGetValue(item, out int index))
             {
+                data[index] = default;
+                set.Remove(item);
+
                 for (int i = index; i < Count - 1; ++i)
                 {
                     T v0 = data[i + 1];
@@ -190,7 +198,11 @@ namespace AillieoUtils
                 }
 
                 this.Count--;
-                SiftDown(index);
+
+                if (index > 0)
+                {
+                    SiftDown(index - 1);
+                }
 
                 return true;
             }

@@ -22,7 +22,9 @@ namespace Samples
         [HideInInspector]
         protected string assetFilePath;
 
+        [SerializeField]
         protected Vector2Int start = new Vector2Int(0, 0);
+        [SerializeField]
         protected Vector2Int end = new Vector2Int(19, 19);
         protected Algorithms algorithm;
 
@@ -48,10 +50,12 @@ namespace Samples
         {
             UISquareTileCtrl.Instance.setStartDelegate += SetStartPoint;
             UISquareTileCtrl.Instance.setTargetDelegate += SetTargetPoint;
+            settingsView.onTileDisplayModeChanged += this.view.SetDirty;
         }
 
         protected virtual void OnDisable()
         {
+            settingsView.onTileDisplayModeChanged -= this.view.SetDirty;
             UISquareTileCtrl.Instance.setStartDelegate -= SetStartPoint;
             UISquareTileCtrl.Instance.setTargetDelegate -= SetTargetPoint;
         }

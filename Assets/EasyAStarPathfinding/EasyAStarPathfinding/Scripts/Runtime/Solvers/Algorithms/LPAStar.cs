@@ -30,14 +30,6 @@ namespace AillieoUtils.Pathfinding
 
         public void Init()
         {
-            //foreach (var node in context.GetGraphData().GetAllNodes())
-            //{
-            //    NodeWrapperEx<T> nodeWrapper = context.GetOrCreateNode(node) as NodeWrapperEx<T>;
-            //    nodeWrapper.g = float.MaxValue;
-            //    nodeWrapper.rhs = float.MaxValue;
-            //    context.AddToOpen(node, nodeWrapper);
-            //}
-
             this.state = PathfindingState.Initialized;
         }
 
@@ -55,12 +47,8 @@ namespace AillieoUtils.Pathfinding
             this.Init();
         }
 
-        int step = 0;
         public PathfindingState Step()
         {
-            step++;
-            Debug.LogError($"step={step}");
-
             if (state == PathfindingState.Initialized)
             {
                 state = PathfindingState.Finding;
@@ -77,7 +65,6 @@ namespace AillieoUtils.Pathfinding
                 endingNodeWrapper.h = 0;
                 endingNodeWrapper.key = CalculateKey(endingNodeWrapper);
 
-                Debug.LogError($"Enqueue:  {startingNodeWrapper.node}");
                 context.openList.Enqueue(startingNodeWrapper);
 
                 return state;
@@ -89,17 +76,13 @@ namespace AillieoUtils.Pathfinding
             }
 
             NodeWrapperEx<T> first = context.openList.TryDequeue();
-            Debug.LogError($"TryDequeue:  {(first != null ? first.node : default)}");
             if (first == null)
             {
                 // 寻路失败
-                Debug.LogError("case 2");
                 state = PathfindingState.Failed;
                 TraceBackForPath(null);
                 return state;
             }
-
-            Debug.LogError($"first:  {first.node} {first.GetConsistency()}");
 
             NodeWrapperEx<T> endingNodeWrapper0 = context.GetOrCreateNode(endingNode);
             endingNodeWrapper0.key = CalculateKey(endingNodeWrapper0);
@@ -108,7 +91,6 @@ namespace AillieoUtils.Pathfinding
             {
                 // 终点局部一致
                 // 此时有一条有效路径
-                Debug.LogError("case 1");
                 state = PathfindingState.Found;
                 TraceBackForPath(endingNodeWrapper0);
                 return state;
@@ -136,8 +118,7 @@ namespace AillieoUtils.Pathfinding
 
         protected float CalculateG(NodeWrapperEx<T> nodeWrapper)
         {
-            var neighbors = context.GetGraphData().CollectNeighbor(nodeWrapper.node).Select(n => context.GetOrCreateNode(n));
-            return neighbors.Select(nei => nei.g + HeuristicFunc(nei.node, nodeWrapper.node) * (1 + nodeWrapper.node.cost * 100f)).Min();
+            throw new NotImplementedException();
         }
 
         protected float CalculateH(NodeWrapperEx<T> nodeWrapper)
@@ -147,8 +128,8 @@ namespace AillieoUtils.Pathfinding
 
         protected float CalculateRHS(NodeWrapperEx<T> nodeWrapper)
         {
-            // (nodeWrapper as NodeWrapperEx<T>).rhs
-            return 0f;
+            var neighbors = context.GetGraphData().CollectNeighbor(nodeWrapper.node).Select(n => context.GetOrCreateNode(n));
+            return neighbors.Select(nei => nei.g + HeuristicFunc(nei.node, nodeWrapper.node) * (1 + nodeWrapper.node.cost * 100f)).Min();
         }
 
         protected Vector2 CalculateKey(NodeWrapperEx<T> nodeWrapper)
@@ -169,38 +150,24 @@ namespace AillieoUtils.Pathfinding
             {
                 // 更新这些节点的 previous
                 var neighbors = context.GetGraphData().CollectNeighbor(nodeWrapper.node).Select(n => context.GetOrCreateNode(n));
-                nodeWrapper.rhs = float.PositiveInfinity;
-                foreach (var nei in neighbors)
-                {
-                    //if (nei.h == 0 && !nei.node.Equals(endingNode))
-                    //{
-                    //    nei.h = CalculateH(nei);
-                    //}
-
-                    float rhs = nei.g + HeuristicFunc(nei.node, nodeWrapper.node) * (1 + nodeWrapper.node.cost * 100f);
-                    if (rhs < nodeWrapper.rhs)
-                    {
-                        nodeWrapper.rhs = rhs;
-                    }
-                }
+                nodeWrapper.rhs = CalculateRHS(nodeWrapper);
             }
 
             if (nodeWrapper.GetConsistency() == NodeConsistency.Consistent)
             {
-                Debug.LogError($"Remove:  {nodeWrapper.node}");
                 context.openList.Remove(nodeWrapper);
             }
             else
             {
                 nodeWrapper.h = CalculateH(nodeWrapper);
                 nodeWrapper.key = CalculateKey(nodeWrapper);
+
                 if (context.openList.Contains(nodeWrapper))
                 {
                     context.openList.Update(nodeWrapper);
                 }
                 else
                 {
-                    Debug.LogError($"Enqueue:  {nodeWrapper.node}");
                     context.openList.Enqueue(nodeWrapper);
                 }
             }
@@ -212,22 +179,15 @@ namespace AillieoUtils.Pathfinding
             NodeWrapperEx<T> nodeWrapper = endingNode as NodeWrapperEx<T>;
             if (nodeWrapper == null || nodeWrapper.g == float.PositiveInfinity)
             {
-                Debug.LogError("node.g = " + nodeWrapper.g);
                 return false;
             }
 
             while (!nodeWrapper.node.Equals(startingNode))
             {
-                //protect:
-                if (result.Count > 100)
-                {
-                    break;
-                }
-
                 NodeWrapperEx<T> previous = default;
                 foreach (var nei in context.GetGraphData().CollectNeighbor(nodeWrapper.node).Select(n => context.GetOrCreateNode(n)))
                 {
-                    if (previous == null || nei.CompareTo(previous) < 0)
+                    if (previous == null || nei.g < previous.g)
                     {
                         previous = nei;
                     }
@@ -255,21 +215,16 @@ namespace AillieoUtils.Pathfinding
             }
 
             NodeWrapperEx<T> nodeWrapper = this.context.GetOrCreateNode(nodeData);
-            float oldG = nodeWrapper.g;
+            nodeWrapper.rhs = CalculateRHS(nodeWrapper);
 
-            nodeWrapper.g = CalculateG(nodeWrapper);
-
-            float newG = nodeWrapper.g;
-            Debug.LogError($"modify >> {nodeData}     G{oldG}->{newG}");
-
-
-            switch (nodeWrapper.GetConsistency())
+            if (nodeWrapper.GetConsistency() == NodeConsistency.Overconsistent)
             {
-                case NodeConsistency.Overconsistent:
-                    break;
-                case NodeConsistency.Underconsistent:
-                    UpdateNode(nodeWrapper);
-                    break;
+                nodeWrapper.g = nodeWrapper.rhs;
+            }
+            else
+            {
+                nodeWrapper.g = float.PositiveInfinity;
+                UpdateNode(nodeWrapper);
             }
 
             var neighbors = context.GetGraphData().CollectNeighbor(nodeData).Select(n => context.GetOrCreateNode(n));

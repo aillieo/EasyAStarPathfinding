@@ -23,6 +23,8 @@ namespace AillieoUtils.Pathfinding.Visualizers
             GValue = 2,
             GHValue = 3,
             NodeConsistency = 4,
+
+            SolidWhite = 99,
         }
 
         public enum TextMode
@@ -30,6 +32,8 @@ namespace AillieoUtils.Pathfinding.Visualizers
             TileCost = 0,
             GHValue = 1,
             GHRhsValue = 2,
+
+            NoText = 99,
         }
 
         public enum OperationMode
