@@ -5,8 +5,8 @@ using UnityEditor;
 
 namespace Samples
 {
-    [CustomEditor(typeof(UISquareTileSampleLPA))]
-    public class SquareTileUISampleLPAEditor : Editor
+    [CustomEditor(typeof(UISquareTileSampleBase), true)]
+    public class UISquareTileSampleEditor : Editor
     {
         public override void OnInspectorGUI()
         {

@@ -13,10 +13,13 @@ namespace AillieoUtils.Pathfinding.Visualizers
         private UISquareTileElement template;
 
         [SerializeField]
-        private Transform tilesRoot;
+        private RectTransform tilesRoot;
 
         [SerializeField]
         private SimpleUILine uiPath;
+
+        [SerializeField]
+        private RectTransform uiAgent;
 
         private UISquareTileElement[,] tiles;
         private IPathfindingContext<Tile, INodeWrapper<Tile>> cachedContext;
@@ -47,6 +50,10 @@ namespace AillieoUtils.Pathfinding.Visualizers
             else if (pathfinder.solver is LPAStar<Tile> lpa)
             {
                 cachedContext = lpa.context;
+            }
+            else if (pathfinder.solver is DStarLite<Tile> dsl)
+            {
+                cachedContext = dsl.context;
             }
 
             dirty = true;
@@ -156,6 +163,11 @@ namespace AillieoUtils.Pathfinding.Visualizers
             SquareTileMapData sData = data as SquareTileMapData;
             sData.SetCost(x, y, cost);
             SetTileDirty(x, y);
+        }
+
+        public RectTransform GetUIAgent()
+        {
+            return uiAgent;
         }
     }
 }

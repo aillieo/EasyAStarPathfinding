@@ -3303,6 +3303,8 @@ MonoBehaviour:
   view: {fileID: 6127337410266332007}
   settingsView: {fileID: 6072769644496486072}
   assetFilePath: 
+  start: {x: 0, y: 0}
+  end: {x: 19, y: 19}
   algorithmSelector: {fileID: 8863091497107818547}
   stepIntervalSlider: {fileID: 8863091498464341508}
   autoPathfinding: {fileID: 8863091498199412043}
@@ -3590,6 +3592,11 @@ PrefabInstance:
     - target: {fileID: 2479285921605624205, guid: dda79f0da79d6994e9f8a186865dd1ec,
         type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3072312866429004179, guid: dda79f0da79d6994e9f8a186865dd1ec,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3433480955665078579, guid: dda79f0da79d6994e9f8a186865dd1ec,

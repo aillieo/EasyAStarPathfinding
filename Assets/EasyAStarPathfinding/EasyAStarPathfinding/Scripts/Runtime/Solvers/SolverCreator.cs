@@ -32,6 +32,8 @@ namespace AillieoUtils.Pathfinding
 
                 case Algorithms.LPAStar:
                     return new LPAStarTile(tileData, algorithm);
+                case Algorithms.DStarLite:
+                    return new DStarLiteTile(tileData, algorithm);
             }
 
             throw new NotImplementedException();

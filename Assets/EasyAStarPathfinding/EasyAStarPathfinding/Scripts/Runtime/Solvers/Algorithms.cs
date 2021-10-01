@@ -14,5 +14,7 @@ namespace AillieoUtils.Pathfinding
         DStar,
         LPAStar,
         DStarLite,
+
+        ThetaStar,
     }
 }
