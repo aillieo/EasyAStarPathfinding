@@ -5,15 +5,17 @@ using UnityEngine;
 
 namespace AillieoUtils.Pathfinding
 {
-    public abstract class DStarLite<T> : ISolver<T> where T : IGraphNode
+    public abstract class DStarLite<T> : IIncrementalSolver<T> where T : IGraphNode
     {
         public PathfindingState state { get; protected set; }
 
         private readonly List<T> result = new List<T>();
 
         internal readonly PathfindingContextEx<T> context;
+        internal T oldStartingNode;
         internal T startingNode;
         internal T endingNode;
+        internal T currentNode;
 
         private float km;
 
@@ -37,14 +39,11 @@ namespace AillieoUtils.Pathfinding
 
         public void Init(T startingNode, T endingNode)
         {
-            if (startingNode.Equals(this.startingNode) && endingNode.Equals(this.endingNode))
-            {
-                return;
-            }
-
             this.context.Reset();
 
             this.startingNode = startingNode;
+            this.oldStartingNode = startingNode;
+            this.currentNode = startingNode;
             this.endingNode = endingNode;
             this.Init();
         }
@@ -93,8 +92,13 @@ namespace AillieoUtils.Pathfinding
             {
                 // 终点局部一致
                 // 此时有一条有效路径
-                state = PathfindingState.Found;
-                TraceBackForPath(startingNodeWrapper0);
+                // state = PathfindingState.Found;
+                // TraceBackForPath(startingNodeWrapper0);
+                if (MoveAgent())
+                {
+                    state = PathfindingState.Found;
+                }
+
                 return state;
             }
 
@@ -213,10 +217,13 @@ namespace AillieoUtils.Pathfinding
 
         public void NotifyNodeDataModified(T nodeData)
         {
-            if (state == PathfindingState.Found || state == PathfindingState.Failed)
+            if (state != PathfindingState.Finding)
             {
-                state = PathfindingState.Finding;
+                throw new InvalidOperationException();
             }
+
+            km = km + HeuristicFunc(oldStartingNode, currentNode);
+            oldStartingNode = currentNode;
 
             NodeWrapperEx<T> nodeWrapper = this.context.GetOrCreateNode(nodeData);
             nodeWrapper.rhs = CalculateRHS(nodeWrapper);
@@ -236,6 +243,24 @@ namespace AillieoUtils.Pathfinding
             {
                 UpdateNode(nei);
             }
+        }
+
+        private bool MoveAgent()
+        {
+            Debug.LogError($"Move Agent  {currentNode}");
+
+
+            var neighbors = context.GetGraphData().CollectNeighbor(currentNode).Select(n => context.GetOrCreateNode(n));
+            currentNode = neighbors.MinFor<NodeWrapperEx<T>>(nei => nei.g + HeuristicFunc(nei.node, currentNode) * (1 + currentNode.cost * 100f)).node;
+
+            if (currentNode.Equals(endingNode))
+            {
+                // 到达
+                return true;
+            }
+
+
+            return false;
         }
     }
 }

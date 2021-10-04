@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace AillieoUtils.Pathfinding
 {
-    public abstract class LPAStar<T> : ISolver<T> where T : IGraphNode
+    public abstract class LPAStar<T> : IIncrementalSolver<T> where T : IGraphNode
     {
         public PathfindingState state { get; protected set; }
 
@@ -212,6 +212,16 @@ namespace AillieoUtils.Pathfinding
             if (state == PathfindingState.Found || state == PathfindingState.Failed)
             {
                 state = PathfindingState.Finding;
+
+                NodeWrapperEx<T> endingNodeWrapper = context.GetOrCreateNode(this.endingNode);
+                endingNodeWrapper.g = float.PositiveInfinity;
+                endingNodeWrapper.rhs = float.PositiveInfinity;
+                endingNodeWrapper.h = 0;
+                endingNodeWrapper.key = CalculateKey(endingNodeWrapper);
+                if (context.openList.Contains(endingNodeWrapper))
+                {
+                    context.openList.Remove(endingNodeWrapper);
+                }
             }
 
             NodeWrapperEx<T> nodeWrapper = this.context.GetOrCreateNode(nodeData);

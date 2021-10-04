@@ -86,9 +86,9 @@ namespace AillieoUtils.Pathfinding
 
         public void NotifyNodeDataModified<T>(T nodeData) where T : IGraphNode
         {
-            if (solver is LPAStar<T> lpa)
+            if (solver is IIncrementalSolver<T> incrementalSolver)
             {
-                lpa.NotifyNodeDataModified(nodeData);
+                incrementalSolver.NotifyNodeDataModified(nodeData);
             }
         }
     }

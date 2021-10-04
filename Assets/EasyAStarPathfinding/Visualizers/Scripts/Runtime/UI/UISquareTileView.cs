@@ -42,18 +42,21 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
         public void Visualize(Pathfinder pathfinder)
         {
-            cachedPathfinder = pathfinder;
-            if (pathfinder.solver is AStar<Tile> astar)
+            if (cachedPathfinder != pathfinder || cachedContext == null)
             {
-                cachedContext = astar.context;
-            }
-            else if (pathfinder.solver is LPAStar<Tile> lpa)
-            {
-                cachedContext = lpa.context;
-            }
-            else if (pathfinder.solver is DStarLite<Tile> dsl)
-            {
-                cachedContext = dsl.context;
+                cachedPathfinder = pathfinder;
+                if (pathfinder.solver is AStar<Tile> astar)
+                {
+                    cachedContext = astar.context;
+                }
+                else if (pathfinder.solver is LPAStar<Tile> lpa)
+                {
+                    cachedContext = lpa.context;
+                }
+                else if (pathfinder.solver is DStarLite<Tile> dsl)
+                {
+                    cachedContext = dsl.context;
+                }
             }
 
             dirty = true;
