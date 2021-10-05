@@ -99,6 +99,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
             {
                 UpdateElements();
                 UpdatePath();
+                UpdateAgent();
                 dirty = false;
             }
         }
@@ -116,6 +117,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
                     {
                         UISquareTileElement tile = Instantiate<UISquareTileElement>(template, this.tilesRoot);
                         tile.Init(i, j, cachedContext);
+                        (tile.transform as RectTransform).anchoredPosition = new Vector2((i + 0.5f) * 60f, (j + 0.5f) * 60f);
                         tiles[i, j] = tile;
                         tile.UpdateView();
                     }
@@ -156,6 +158,21 @@ namespace AillieoUtils.Pathfinding.Visualizers
 
                     uiPath.rectTransform.anchoredPosition = (tiles[0, 0].transform as RectTransform).anchoredPosition;
                     //uiPath.rectTransform.Strentch();
+                }
+            }
+        }
+
+        private void UpdateAgent()
+        {
+            if (cachedPathfinder.solver is DStarLite<Tile> dStarLite)
+            {
+                Tile curPos = dStarLite.currentNode;
+                if (curPos != null)
+                {
+                    float x = curPos.x;
+                    float y = curPos.y;
+                    var bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(this.transform, tiles[curPos.x, curPos.y].transform);
+                    (this.uiAgent.transform as RectTransform).anchoredPosition = new Vector2(bounds.center.x, bounds.center.y);
                 }
             }
         }

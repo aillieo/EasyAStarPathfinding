@@ -25,8 +25,6 @@ namespace AillieoUtils.Pathfinding.Visualizers
             this.x = x;
             this.y = y;
             this.cachedContext = context;
-
-            (this.transform as RectTransform).anchoredPosition = new Vector2((x + 0.5f) * 60f, (y + 0.5f) * 60f);
         }
 
         private void SetColor(Color clr)
