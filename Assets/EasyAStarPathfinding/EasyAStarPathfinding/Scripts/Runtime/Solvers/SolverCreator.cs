@@ -21,12 +21,6 @@ namespace AillieoUtils.Pathfinding
             {
                 case Algorithms.AStar:
                     return new AStarTile(tileData, algorithm);
-                case Algorithms.DepthFirstSearch:
-                    return new DepthFSTile(tileData, algorithm);
-                case Algorithms.BreadthFirstSearch:
-                    return new BreadthFSTile(tileData, algorithm);
-                case Algorithms.BestFirstSearch:
-                    return new BestFSTile(tileData, algorithm);
                 case Algorithms.DijkstraAlgorithm:
                     return new DijkstraTile(tileData, algorithm);
 

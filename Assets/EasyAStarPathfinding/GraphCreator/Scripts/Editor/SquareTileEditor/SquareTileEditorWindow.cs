@@ -47,7 +47,7 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
             brushValue = EditorGUILayout.Slider("Brush", brushValue, 0, 1);
             brushSize = EditorGUILayout.IntSlider("BrushSize", brushSize, 1, 50);
 
-            float newCostScale = EditorGUILayout.Slider("CostScale", data.CostScale, 0, 10000);
+            float newCostScale = EditorGUILayout.Slider("CostScale", data.CostScale, 0.01f, 100);
             data.SetCostScale(newCostScale);
             bool allowDiagonal = EditorGUILayout.Toggle("AllowDiagonalMove", data.AllowDiagonalMove);
             data.SetAllowDiagonalMove(allowDiagonal);
@@ -60,7 +60,7 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
                 for (int j = 0; j < data.RangeX; ++j)
                 {
                     Color c = texture.GetPixel(i, j);
-                    data.SetCost(i, j, c.r);
+                    data.SetCost(i, j, ColorToValue(c));
                 }
             }
             base.Save();
@@ -134,12 +134,13 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
 
         private Color ValueToColor(float value)
         {
-            return new Color(value, value, value, 1f);
+            float r = value / data.CostScale;
+            return new Color(r, r, r, 1f);
         }
 
         private float ColorToValue(Color color)
         {
-            return color.r;
+            return color.r * data.CostScale;
         }
 
         protected override void SceneCleanUp()

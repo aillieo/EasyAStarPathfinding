@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace AillieoUtils.Pathfinding
 {
-    public abstract class DStarLite<T> : IIncrementalSolver<T> where T : IGraphNode
+    public class DStarLite<T> : IIncrementalSolver<T> where T : IGraphNode
     {
         public PathfindingState state { get; protected set; }
 
@@ -132,11 +132,6 @@ namespace AillieoUtils.Pathfinding
             return state;
         }
 
-        protected float CalculateG(NodeWrapperEx<T> nodeWrapper)
-        {
-            throw new NotImplementedException();
-        }
-
         protected float CalculateH(NodeWrapperEx<T> nodeWrapper)
         {
             return HeuristicFunc(nodeWrapper.node, this.startingNode);
@@ -145,7 +140,7 @@ namespace AillieoUtils.Pathfinding
         protected float CalculateRHS(NodeWrapperEx<T> nodeWrapper)
         {
             var neighbors = context.GetGraphData().CollectNeighbor(nodeWrapper.node).Select(n => context.GetOrCreateNode(n));
-            return neighbors.Select(nei => nei.g + HeuristicFunc(nei.node, nodeWrapper.node) * (1 + nodeWrapper.node.cost * 100f)).Min();
+            return neighbors.Select(nei => nei.g + HeuristicFunc(nei.node, nodeWrapper.node) * (1 + nodeWrapper.node.cost)).Min();
         }
 
         protected Vector2 CalculateKey(NodeWrapperEx<T> nodeWrapper)
@@ -155,7 +150,10 @@ namespace AillieoUtils.Pathfinding
             return new Vector2(k1, k2);
         }
 
-        protected abstract float HeuristicFunc(T nodeFrom, T nodeTo);
+        protected virtual float HeuristicFunc(T nodeFrom, T nodeTo)
+        {
+            return context.GetGraphData().DefaultHeuristicFunc(nodeFrom, nodeTo);
+        }
 
         private void UpdateNode(NodeWrapperEx<T> nodeWrapper)
         {
@@ -217,10 +215,12 @@ namespace AillieoUtils.Pathfinding
             return true;
         }
 
-        public void GetResult(List<T> toFill)
+        public IEnumerable<T> GetResult()
         {
-            toFill.Clear();
-            toFill.AddRange(result);
+            foreach (var t in result)
+            {
+                yield return t;
+            }
         }
 
         public void NotifyNodeDataModified(T nodeData)
@@ -248,7 +248,7 @@ namespace AillieoUtils.Pathfinding
         private bool MoveAgent()
         {
             var neighbors = context.GetGraphData().CollectNeighbor(currentNode).Select(n => context.GetOrCreateNode(n));
-            currentNode = neighbors.MinFor<NodeWrapperEx<T>>(nei => nei.g + HeuristicFunc(nei.node, currentNode) * (1 + currentNode.cost * 100f)).node;
+            currentNode = neighbors.MinFor<NodeWrapperEx<T>>(nei => nei.g + HeuristicFunc(nei.node, currentNode) * (1 + currentNode.cost)).node;
 
             if (currentNode.Equals(endingNode))
             {

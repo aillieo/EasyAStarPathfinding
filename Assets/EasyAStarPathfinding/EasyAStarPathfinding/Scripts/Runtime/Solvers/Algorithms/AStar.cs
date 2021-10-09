@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace AillieoUtils.Pathfinding
 {
-    public abstract class AStar<T> : ISolver<T> where T : IGraphNode
+    public class AStar<T> : ISolver<T> where T : IGraphNode
     {
         public PathfindingState state { get; protected set; }
 
@@ -131,7 +131,10 @@ namespace AillieoUtils.Pathfinding
             return HeuristicFunc(nodeWrapper.node, this.endingNode);
         }
 
-        protected abstract float HeuristicFunc(T nodeFrom, T nodeTo);
+        protected virtual float HeuristicFunc(T nodeFrom, T nodeTo)
+        {
+            return context.GetGraphData().DefaultHeuristicFunc(nodeFrom, nodeTo);
+        }
 
         protected bool TraceBackForPath(INodeWrapper<T> endingNode)
         {
@@ -151,10 +154,12 @@ namespace AillieoUtils.Pathfinding
             return true;
         }
 
-        public void GetResult(List<T> toFill)
+        public IEnumerable<T> GetResult()
         {
-            toFill.Clear();
-            toFill.AddRange(result);
+            foreach (var t in result)
+            {
+                yield return t;
+            }
         }
     }
 }

@@ -43,5 +43,10 @@ namespace AillieoUtils.Pathfinding
         {
             throw new NotImplementedException();
         }
+
+        public float DefaultHeuristicFunc(NMFace node1, NMFace node2)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

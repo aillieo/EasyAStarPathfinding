@@ -9,10 +9,5 @@ namespace AillieoUtils.Pathfinding
         public DijkstraTile(IGraphData<Tile> graphData, Algorithms algorithm) : base(graphData, algorithm)
         {
         }
-
-        protected override float HeuristicFunc(Tile nodeFrom, Tile nodeTo)
-        {
-            return HeuristicFuncPreset.ManhattanDist((Vector2)nodeFrom, (Vector2)nodeTo);
-        }
     }
 }

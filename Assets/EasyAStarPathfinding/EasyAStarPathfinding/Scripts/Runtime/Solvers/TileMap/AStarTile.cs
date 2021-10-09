@@ -10,10 +10,5 @@ namespace AillieoUtils.Pathfinding
             : base(tileData, algorithm)
         {
         }
-
-        protected override float HeuristicFunc(Tile nodeFrom, Tile nodeTo)
-        {
-            return HeuristicFuncPreset.ManhattanDist((Vector2)nodeFrom, (Vector2)nodeTo);
-        }
     }
 }

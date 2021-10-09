@@ -11,5 +11,7 @@ namespace AillieoUtils.Pathfinding
         PathfindingState Step();
 
         void CleanUp();
+
+        IEnumerable<T> GetResult();
     }
 }

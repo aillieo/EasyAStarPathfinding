@@ -10,6 +10,11 @@ namespace AillieoUtils.Pathfinding
             throw new NotImplementedException();
         }
 
+        public float DefaultHeuristicFunc(Tile node1, Tile node2)
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<Tile> GetAllNodes()
         {
             throw new NotImplementedException();

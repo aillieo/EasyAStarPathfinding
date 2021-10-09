@@ -127,7 +127,7 @@ namespace AillieoUtils.Pathfinding.GraphCreator.Editor
 
         private void DrawMiscsInfo()
         {
-            float newCostScale = EditorGUILayout.Slider("CostScale", data.CostScale, 0, 10000);
+            float newCostScale = EditorGUILayout.Slider("CostScale", data.CostScale, 0.01f, 100);
             data.SetCostScale(newCostScale);
             bool allowDiagonal = EditorGUILayout.Toggle("AllowDiagonalMove", data.AllowDiagonalMove);
             data.SetAllowDiagonalMove(allowDiagonal);

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using UnityEngine;
 
 namespace AillieoUtils.Pathfinding
 {
@@ -59,6 +60,11 @@ namespace AillieoUtils.Pathfinding
         [Conditional("UNITY_EDITOR")]
         public void SetCostScale(float newCostScale)
         {
+            if (newCostScale <= 0)
+            {
+                return;
+            }
+
             this.costScale = newCostScale;
         }
 
@@ -126,6 +132,11 @@ namespace AillieoUtils.Pathfinding
                     yield return GetTile(i, j);
                 }
             }
+        }
+
+        public float DefaultHeuristicFunc(Tile node1, Tile node2)
+        {
+            return HeuristicFuncPreset.ManhattanDist((Vector2)node1, (Vector2)node2);
         }
     }
 }

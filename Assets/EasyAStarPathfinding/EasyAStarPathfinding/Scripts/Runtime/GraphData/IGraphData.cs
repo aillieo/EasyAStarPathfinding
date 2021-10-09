@@ -9,5 +9,7 @@ namespace AillieoUtils.Pathfinding
         IEnumerable<T> CollectNeighbor(T current);
 
         IEnumerable<T> GetAllNodes();
+
+        float DefaultHeuristicFunc(T node1, T node2);
     }
 }

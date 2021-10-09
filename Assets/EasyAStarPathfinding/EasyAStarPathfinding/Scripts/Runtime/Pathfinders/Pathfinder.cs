@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -74,14 +75,13 @@ namespace AillieoUtils.Pathfinding
 
         public void GetResult(List<Tile> toFill)
         {
-            solver.GetResult(toFill);
+            toFill.Clear();
+            toFill.AddRange(solver.GetResult());
         }
 
         public Tile[] GetResult()
         {
-            List<Tile> result = new List<Tile>();
-            GetResult(result);
-            return result.ToArray();
+            return solver.GetResult().ToArray();
         }
 
         public void NotifyNodeDataModified<T>(T nodeData) where T : IGraphNode

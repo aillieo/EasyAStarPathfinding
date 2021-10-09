@@ -10,6 +10,11 @@ namespace AillieoUtils.Pathfinding
             throw new System.NotImplementedException();
         }
 
+        public float DefaultHeuristicFunc(Point node1, Point node2)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public IEnumerable<Point> GetAllNodes()
         {
             throw new System.NotImplementedException();
