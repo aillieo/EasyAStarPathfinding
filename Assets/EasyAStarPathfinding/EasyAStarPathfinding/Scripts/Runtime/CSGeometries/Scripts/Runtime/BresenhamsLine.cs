@@ -15,8 +15,6 @@ namespace AillieoUtils.Geometries
             int outX = outPointGlobal.x;
             int outY = outPointGlobal.y;
 
-            List<Vector2Int> result = new List<Vector2Int>();
-
             //Debug.LogError($"inX={inX} inY={inY} outX={outX} outY={outY}");
 
             float deltaX = outX - inX;
@@ -33,8 +31,7 @@ namespace AillieoUtils.Geometries
             int y = inY;
             float error = 0f;
 
-            result.Add(new Vector2Int(inX, inY));
-            //Debug.LogError($"起点 ({inX},{inY})");
+            yield return new Vector2Int(inX, inY);
 
             if (isHorizontal)
             {
@@ -50,8 +47,7 @@ namespace AillieoUtils.Geometries
                     stepX > 0 ? (x <= outX) : (x >= outX);
                     x += stepX)
                 {
-                    //Debug.LogError($"交点 ({x},{y})");
-                    result.Add(new Vector2Int(x, y));
+                    yield return new Vector2Int(x, y);
 
                     error += deltaErr;
                     if (error >= 0.5f)
@@ -76,7 +72,7 @@ namespace AillieoUtils.Geometries
                     y += stepY)
                 {
                     //Debug.LogError($"交点 ({x},{y})");
-                    result.Add(new Vector2Int(x, y));
+                    yield return new Vector2Int(x, y);
 
                     error += deltaErr;
                     if (error >= 0.5f)
@@ -87,10 +83,7 @@ namespace AillieoUtils.Geometries
                 }
             }
 
-            result.Add(new Vector2Int(outX, outY));
-            //Debug.LogError($"终点 ({outX},{outY})");
-
-            return result;
+            yield return new Vector2Int(outX, outY);
         }
     }
 }
