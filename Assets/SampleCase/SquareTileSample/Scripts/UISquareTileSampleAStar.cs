@@ -6,9 +6,7 @@ using AillieoUtils;
 using AillieoUtils.Pathfinding;
 using System.Diagnostics;
 using System;
-using AillieoUtils.Pathfinding.Visualizers;
 using UnityEngine.UI;
-using Debug = UnityEngine.Debug;
 
 namespace Samples
 {
@@ -17,6 +15,7 @@ namespace Samples
         protected override void Awake()
         {
             base.Awake();
+            ConfigDropdowns();
         }
 
         protected override void OnEnable()
@@ -27,6 +26,25 @@ namespace Samples
         protected override void OnDisable()
         {
             base.OnDisable();
+        }
+
+        private void ConfigDropdowns()
+        {
+            string[] algorithms = new string[]
+            {
+                typeof(Algorithms).GetEnumName(Algorithms.AStar),
+                typeof(Algorithms).GetEnumName(Algorithms.DijkstraAlgorithm),
+                typeof(Algorithms).GetEnumName(Algorithms.ThetaStar),
+            };
+            var algorithmOptions = algorithms.Select(s => new Dropdown.OptionData { text = s }).ToList();
+            algorithmSelector.options = algorithmOptions;
+            algorithmSelector.onValueChanged.AddListener(i =>
+            {
+                string enumName = algorithms[i];
+                Enum.TryParse<Algorithms>(enumName, out this.algorithm);
+                //Debug.Log(this.algorithm);
+            });
+            Enum.TryParse<Algorithms>(algorithms[2], out this.algorithm);
         }
 
         private Pathfinder pathfinder;

@@ -24,5 +24,10 @@ namespace AillieoUtils.Pathfinding
         {
             throw new NotImplementedException();
         }
+
+        public bool LineOfSight(Tile node1, Tile node2)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

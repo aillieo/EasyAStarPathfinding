@@ -42,7 +42,7 @@ namespace AillieoUtils.Pathfinding.Visualizers
         public void OnBeginDrag(PointerEventData eventData)
         {
             SquareTileMapData sData = cachedContext.GetGraphData() as SquareTileMapData;
-            dragBeginValue = sData.GetCost(x, y);
+            dragBeginValue = sData.GetCost(x, y) / sData.CostScale;
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -52,9 +52,10 @@ namespace AillieoUtils.Pathfinding.Visualizers
                 case UISquareTileCtrl.OperationMode.ModifyCost:
                     Vector2 delta = eventData.position - eventData.pressPosition;
                     float dy = delta.y;
-                    float cost = dragBeginValue + dy * 0.01f;
-
-                    cost = Mathf.Clamp01(cost);
+                    SquareTileMapData sData = cachedContext.GetGraphData() as SquareTileMapData;
+                    float newValue = dragBeginValue + dy * 0.01f;
+                    newValue = Mathf.Clamp01(newValue);
+                    float cost = newValue * sData.CostScale;
 
                     UISquareTileCtrl.Instance.ModifyTileCost(x, y, cost);
                     break;
@@ -81,7 +82,8 @@ namespace AillieoUtils.Pathfinding.Visualizers
                 case UISquareTileCtrl.OperationMode.ModifyCost:
                     SquareTileMapData sData = cachedContext.GetGraphData() as SquareTileMapData;
                     float cost = sData.GetCost(x, y);
-                    cost = 1 - cost;
+                    // 0 <-> 1 flip
+                    cost = sData.CostScale - cost;
                     UISquareTileCtrl.Instance.ModifyTileCost(x, y, cost);
                     break;
             }
@@ -95,7 +97,8 @@ namespace AillieoUtils.Pathfinding.Visualizers
             {
                 case UISquareTileCtrl.ColorMode.TileCost:
                     float cost = sData.GetCost(x, y);
-                    SetColor(new Color(cost, cost, cost));
+                    float color = cost / sData.CostScale;
+                    SetColor(new Color(color, color, color));
                     break;
                 case UISquareTileCtrl.ColorMode.GHValue:
                     {

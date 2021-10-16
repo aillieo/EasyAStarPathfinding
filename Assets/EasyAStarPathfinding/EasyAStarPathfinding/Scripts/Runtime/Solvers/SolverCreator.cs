@@ -23,6 +23,8 @@ namespace AillieoUtils.Pathfinding
                     return new AStarTile(tileData, algorithm);
                 case Algorithms.DijkstraAlgorithm:
                     return new DijkstraTile(tileData, algorithm);
+                case Algorithms.ThetaStar:
+                    return new ThetaStarTile(tileData, algorithm);
 
                 case Algorithms.LPAStar:
                     return new LPAStarTile(tileData, algorithm);

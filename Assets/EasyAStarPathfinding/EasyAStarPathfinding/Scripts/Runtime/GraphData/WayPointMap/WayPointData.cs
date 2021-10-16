@@ -19,5 +19,10 @@ namespace AillieoUtils.Pathfinding
         {
             throw new System.NotImplementedException();
         }
+
+        public bool LineOfSight(Point node1, Point node2)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -26,6 +26,11 @@ namespace AillieoUtils.Pathfinding
             return new Vector2(tile.x, tile.y);
         }
 
+        public static explicit operator Vector2Int(Tile tile)
+        {
+            return new Vector2Int(tile.x, tile.y);
+        }
+
         public static bool operator ==(Tile lhs, Tile rhs)
         {
             bool lNull = (object)lhs == null;

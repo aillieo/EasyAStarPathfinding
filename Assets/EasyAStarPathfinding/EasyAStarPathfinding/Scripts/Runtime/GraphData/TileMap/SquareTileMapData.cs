@@ -1,3 +1,4 @@
+using AillieoUtils.Geometries;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -137,6 +138,20 @@ namespace AillieoUtils.Pathfinding
         public float DefaultHeuristicFunc(Tile node1, Tile node2)
         {
             return HeuristicFuncPreset.ManhattanDist((Vector2)node1, (Vector2)node2);
+        }
+
+        public bool LineOfSight(Tile node1, Tile node2)
+        {
+            var nodes = BresenhamsLine.Intersect((Vector2Int)node1, (Vector2Int)node2);
+            foreach (var n in nodes)
+            {
+                if (GetTile(n.x, n.y).cost > CostScale * 0.5f)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

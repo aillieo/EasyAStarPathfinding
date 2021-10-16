@@ -48,5 +48,10 @@ namespace AillieoUtils.Pathfinding
         {
             throw new NotImplementedException();
         }
+
+        public bool LineOfSight(NMFace node1, NMFace node2)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

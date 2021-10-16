@@ -57,6 +57,10 @@ namespace AillieoUtils.Pathfinding.Visualizers
                 {
                     cachedContext = dsl.context;
                 }
+                else if (pathfinder.solver is ThetaStar<Tile> theta)
+                {
+                    cachedContext = theta.context;
+                }
             }
 
             dirty = true;

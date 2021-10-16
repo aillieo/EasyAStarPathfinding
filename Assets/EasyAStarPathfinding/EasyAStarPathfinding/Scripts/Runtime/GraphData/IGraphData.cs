@@ -11,5 +11,7 @@ namespace AillieoUtils.Pathfinding
         IEnumerable<T> GetAllNodes();
 
         float DefaultHeuristicFunc(T node1, T node2);
+
+        bool LineOfSight(T node1, T node2);
     }
 }
