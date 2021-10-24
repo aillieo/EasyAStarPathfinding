@@ -4,11 +4,9 @@ using System.Linq;
 using UnityEngine;
 using AillieoUtils;
 using AillieoUtils.Pathfinding;
-using System.Diagnostics;
 using System;
 using AillieoUtils.Pathfinding.Visualizers;
 using UnityEngine.UI;
-using Debug = UnityEngine.Debug;
 
 namespace Samples
 {

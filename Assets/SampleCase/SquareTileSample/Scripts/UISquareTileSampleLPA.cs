@@ -162,6 +162,10 @@ namespace Samples
             {
                 FindPath();
             }
+            else if (Input.GetKey(KeyCode.F) || Input.GetKeyDown(KeyCode.S))
+            {
+                FindPathByStep();
+            }
         }
 
         private void OnNodeCostModified(int x, int y, float cost)

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace AillieoUtils.Pathfinding
 {
-    public class DijkstraTile : Dijkstra<Tile>, ITileMapSolver
+    public class DijkstraTile : Dijkstra<Tile>
     {
         public DijkstraTile(IGraphData<Tile> graphData, Algorithms algorithm) : base(graphData, algorithm)
         {

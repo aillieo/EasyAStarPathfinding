@@ -8,15 +8,15 @@ namespace AillieoUtils.Pathfinding
 {
     public class Pathfinder
     {
-        internal readonly ITileMapSolver solver;
+        internal readonly ISolver<Tile> solver;
 
         public PathfindingState state => solver.state;
         public readonly Algorithms algorithm;
 
-        public Pathfinder(IGraphData graphData, Algorithms algorithm = Algorithms.AStar)
+        public Pathfinder(IGraphData<Tile> graphData, Algorithms algorithm = Algorithms.AStar)
         {
             this.algorithm = algorithm;
-            this.solver = SolverCreator.Create(graphData, algorithm) as ITileMapSolver;
+            this.solver = SolverCreator.Create(graphData, algorithm);
         }
 
         public void Init(Tile startTile, Tile endingTile)

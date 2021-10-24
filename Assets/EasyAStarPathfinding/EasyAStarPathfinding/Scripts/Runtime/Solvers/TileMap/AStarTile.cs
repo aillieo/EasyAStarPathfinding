@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace AillieoUtils.Pathfinding
 {
-    public class AStarTile : AStar<Tile>, ITileMapSolver
+    public class AStarTile : AStar<Tile>
     {
         public AStarTile(ITileMapData tileData, Algorithms algorithm)
             : base(tileData, algorithm)

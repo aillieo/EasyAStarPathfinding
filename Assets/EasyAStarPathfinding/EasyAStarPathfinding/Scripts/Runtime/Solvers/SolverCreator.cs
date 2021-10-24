@@ -4,12 +4,12 @@ namespace AillieoUtils.Pathfinding
 {
     internal static class SolverCreator
     {
-        internal static ISolver<IGraphNode> Create(IGraphData graphData, Algorithms algorithm)
+        internal static ISolver<T> Create<T>(IGraphData<T> graphData, Algorithms algorithm) where T : IGraphNode
         {
             switch (graphData)
             {
                 case ITileMapData tileMapData:
-                    return CreateForTileData(tileMapData, algorithm);
+                    return CreateForTileData(tileMapData, algorithm) as ISolver<T>;
             }
 
             throw new NotImplementedException();

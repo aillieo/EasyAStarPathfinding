@@ -2,11 +2,11 @@ using System.Collections.Generic;
 
 namespace AillieoUtils.Pathfinding
 {
-    public interface ISolver<out T> where T : IGraphNode
+    public interface ISolver<T> where T : IGraphNode
     {
         PathfindingState state { get; }
 
-        void Init();
+        void Init(T startingNode, T endingNode);
 
         PathfindingState Step();
 
