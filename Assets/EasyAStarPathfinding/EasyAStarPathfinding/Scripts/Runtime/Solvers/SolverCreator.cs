@@ -20,16 +20,16 @@ namespace AillieoUtils.Pathfinding
             switch (algorithm)
             {
                 case Algorithms.AStar:
-                    return new AStarTile(tileData, algorithm);
+                    return new AStar<Tile>(tileData, algorithm);
                 case Algorithms.DijkstraAlgorithm:
-                    return new DijkstraTile(tileData, algorithm);
+                    return new Dijkstra<Tile>(tileData, algorithm);
                 case Algorithms.ThetaStar:
-                    return new ThetaStarTile(tileData, algorithm);
+                    return new ThetaStar<Tile>(tileData, algorithm);
 
                 case Algorithms.LPAStar:
-                    return new LPAStarTile(tileData, algorithm);
+                    return new LPAStar<Tile>(tileData, algorithm);
                 case Algorithms.DStarLite:
-                    return new DStarLiteTile(tileData, algorithm);
+                    return new DStarLite<Tile>(tileData, algorithm);
             }
 
             throw new NotImplementedException();
