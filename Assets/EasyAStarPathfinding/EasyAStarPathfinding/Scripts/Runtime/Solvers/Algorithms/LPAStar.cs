@@ -213,15 +213,15 @@ namespace AillieoUtils.Pathfinding
             {
                 state = PathfindingState.Finding;
 
-                NodeWrapperEx<T> endingNodeWrapper = context.GetOrCreateNode(this.endingNode);
-                endingNodeWrapper.g = float.PositiveInfinity;
-                endingNodeWrapper.rhs = float.PositiveInfinity;
-                endingNodeWrapper.h = 0;
-                endingNodeWrapper.key = CalculateKey(endingNodeWrapper);
-                if (context.openList.Contains(endingNodeWrapper))
-                {
-                    context.openList.Remove(endingNodeWrapper);
-                }
+                //NodeWrapperEx<T> endingNodeWrapper = context.GetOrCreateNode(this.endingNode);
+                //endingNodeWrapper.g = float.PositiveInfinity;
+                //endingNodeWrapper.rhs = float.PositiveInfinity;
+                //endingNodeWrapper.h = 0;
+                //endingNodeWrapper.key = CalculateKey(endingNodeWrapper);
+                //if (context.openList.Contains(endingNodeWrapper))
+                //{
+                //    context.openList.Remove(endingNodeWrapper);
+                //}
             }
 
             NodeWrapperEx<T> nodeWrapper = this.context.GetOrCreateNode(nodeData);

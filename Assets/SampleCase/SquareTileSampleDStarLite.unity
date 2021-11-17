@@ -188,22 +188,62 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1626265090221473133, guid: bf026ec52659e6e4eb3c5a36302ab264,
+    - target: {fileID: 3413035782154390352, guid: bf026ec52659e6e4eb3c5a36302ab264,
         type: 3}
       propertyPath: m_AnchorMin.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1626265090221473133, guid: bf026ec52659e6e4eb3c5a36302ab264,
+    - target: {fileID: 3413035782154390352, guid: bf026ec52659e6e4eb3c5a36302ab264,
         type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1626265090221473133, guid: bf026ec52659e6e4eb3c5a36302ab264,
+    - target: {fileID: 3413035782154390352, guid: bf026ec52659e6e4eb3c5a36302ab264,
         type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1626265090221473133, guid: bf026ec52659e6e4eb3c5a36302ab264,
+    - target: {fileID: 3413035782154390352, guid: bf026ec52659e6e4eb3c5a36302ab264,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3730951630116982588, guid: bf026ec52659e6e4eb3c5a36302ab264,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3730951630116982588, guid: bf026ec52659e6e4eb3c5a36302ab264,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3730951630116982588, guid: bf026ec52659e6e4eb3c5a36302ab264,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3730951630116982588, guid: bf026ec52659e6e4eb3c5a36302ab264,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4145427541306559940, guid: bf026ec52659e6e4eb3c5a36302ab264,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4145427541306559940, guid: bf026ec52659e6e4eb3c5a36302ab264,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4145427541306559940, guid: bf026ec52659e6e4eb3c5a36302ab264,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4145427541306559940, guid: bf026ec52659e6e4eb3c5a36302ab264,
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
@@ -257,6 +297,26 @@ PrefabInstance:
         type: 3}
       propertyPath: assetFilePath
       value: /Users/aillieo/PROJECTS/Unity/EasyAStarPathFinding/Assets/SampleCase/SquareTileSample/data.bytes
+      objectReference: {fileID: 0}
+    - target: {fileID: 7199354860449982883, guid: bf026ec52659e6e4eb3c5a36302ab264,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7199354860449982883, guid: bf026ec52659e6e4eb3c5a36302ab264,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7199354860449982883, guid: bf026ec52659e6e4eb3c5a36302ab264,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7199354860449982883, guid: bf026ec52659e6e4eb3c5a36302ab264,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8863091497107818546, guid: bf026ec52659e6e4eb3c5a36302ab264,
         type: 3}
