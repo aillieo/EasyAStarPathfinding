@@ -1,5 +1,19 @@
 {
   "dependencies": {
+    "com.aillieo.collections": {
+      "version": "https://github.com/aillieo/CSCollections.git#upm",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "5ddf49bcc72ac3e5d291c75be88af0e17b7d49c9"
+    },
+    "com.aillieo.geometries": {
+      "version": "https://github.com/aillieo/CSGeometries.git#upm",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "b6376b4d83129f9bdfd62fb68a51304ab656ef91"
+    },
     "com.unity.ext.nunit": {
       "version": "1.0.0",
       "depth": 1,

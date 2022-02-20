@@ -1,6 +1,9 @@
 {
     "name": "AillieoUtils.Pathfinding",
-    "references": [],
+    "references": [
+        "AillieoUtils.CSGeometries",
+        "AillieoUtils.Collections"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

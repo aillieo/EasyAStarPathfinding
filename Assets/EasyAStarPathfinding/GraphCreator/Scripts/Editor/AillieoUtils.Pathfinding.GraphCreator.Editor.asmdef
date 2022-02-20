@@ -2,7 +2,8 @@
     "name": "AillieoUtils.Pathfinding.GraphCreator.Editor",
     "references": [
         "AillieoUtils.Pathfinding",
-        "AillieoUtils.Pathfinding.GraphCreator"
+        "AillieoUtils.Pathfinding.GraphCreator",
+        "AillieoUtils.CSGeometries"
     ],
     "includePlatforms": [
         "Editor"

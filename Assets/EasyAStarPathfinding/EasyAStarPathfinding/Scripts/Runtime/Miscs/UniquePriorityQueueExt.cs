@@ -1,3 +1,5 @@
+using AillieoUtils.Collections;
+
 namespace AillieoUtils
 {
     public static class UniquePriorityQueueExt
