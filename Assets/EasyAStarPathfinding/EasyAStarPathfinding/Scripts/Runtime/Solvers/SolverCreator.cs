@@ -30,6 +30,8 @@ namespace AillieoUtils.Pathfinding
                     return new LPAStar<Tile>(tileData, algorithm);
                 case Algorithms.DStarLite:
                     return new DStarLite<Tile>(tileData, algorithm);
+                case Algorithms.HierarchicalAStar:
+                    return new HPAStar<Tile>(tileData as IHierarchicalGraphData<Tile>, algorithm);
             }
 
             throw new NotImplementedException();

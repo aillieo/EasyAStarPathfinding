@@ -14,6 +14,8 @@ namespace AillieoUtils.Pathfinding
                 case Algorithms.LPAStar:
                 case Algorithms.DStarLite:
                     return new PathfindingContextEx<T>(graphData, algorithm);
+                case Algorithms.HierarchicalAStar:
+                    return new PathfindingContextEx<T>(default, default);
                 default:
                     return new PathfindingContext<T>(graphData, algorithm);
             }
