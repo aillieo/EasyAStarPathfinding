@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace AillieoUtils.Pathfinding
 {
-    public class LPAStar<T> : IIncrementalSolver<T> where T : IGraphNode
+    public class LPAStar<T> : IIncrementalSolver<T>
     {
         public PathfindingState state { get; protected set; }
 
@@ -124,7 +124,7 @@ namespace AillieoUtils.Pathfinding
         protected float CalculateRHS(NodeWrapperEx<T> nodeWrapper)
         {
             var neighbors = context.GetGraphData().CollectNeighbor(nodeWrapper.node).Select(n => context.GetOrCreateNode(n));
-            return neighbors.Select(nei => nei.g + HeuristicFunc(nei.node, nodeWrapper.node) * (1 + nodeWrapper.node.cost)).Min();
+            return neighbors.Select(nei => nei.g + HeuristicFunc(nei.node, nodeWrapper.node)).Min();
         }
 
         protected Vector2 CalculateKey(NodeWrapperEx<T> nodeWrapper)

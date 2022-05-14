@@ -84,7 +84,7 @@ namespace AillieoUtils.Pathfinding
             return solver.GetResult().ToArray();
         }
 
-        public void NotifyNodeDataModified<T>(T nodeData) where T : IGraphNode
+        public void NotifyNodeDataModified<T>(T nodeData)
         {
             if (solver is IIncrementalSolver<T> incrementalSolver)
             {

@@ -1,6 +1,6 @@
 namespace AillieoUtils.Pathfinding
 {
-    public interface IHierarchicalGraphData<T> : IGraphData where T : IGraphNode
+    public interface IHierarchicalGraphData<T> : IGraphData
     {
         int GetLevelCount();
 

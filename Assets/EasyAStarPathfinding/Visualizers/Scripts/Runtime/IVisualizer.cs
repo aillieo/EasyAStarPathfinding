@@ -1,6 +1,6 @@
 namespace AillieoUtils.Pathfinding.Visualizers
 {
-    public interface IVisualizer<T> where T : IGraphNode
+    public interface IVisualizer
     {
         void Visualize(Pathfinder pathfinder);
     }

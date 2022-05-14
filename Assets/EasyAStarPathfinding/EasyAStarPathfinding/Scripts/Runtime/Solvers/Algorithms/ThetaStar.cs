@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace AillieoUtils.Pathfinding
 {
-    public class ThetaStar<T> : ISolver<T> where T : IGraphNode
+    public class ThetaStar<T> : ISolver<T>
     {
         public PathfindingState state { get; protected set; }
 
@@ -128,7 +128,7 @@ namespace AillieoUtils.Pathfinding
                 return 0f;
             }
 
-            return nodeWrapper.previous.g + HeuristicFunc(nodeWrapper.node, nodeWrapper.previous.node) * (1 + nodeWrapper.node.cost);
+            return nodeWrapper.previous.g + HeuristicFunc(nodeWrapper.node, nodeWrapper.previous.node);
         }
 
         protected virtual float CalculateH(NodeWrapper<T> nodeWrapper)

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace AillieoUtils.Pathfinding
 {
-    public class NodeWrapper<T> : INodeWrapper<T>, IComparable<NodeWrapper<T>> where T : IGraphNode
+    public class NodeWrapper<T> : INodeWrapper<T>, IComparable<NodeWrapper<T>>
     {
         public T node { get; set; }
         public NodeState state { get; set; }

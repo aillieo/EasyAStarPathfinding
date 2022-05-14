@@ -1,6 +1,6 @@
 namespace AillieoUtils.Pathfinding
 {
-    public class Point : IGraphNode
+    public class Point
     {
         public int id { get; private set; }
 

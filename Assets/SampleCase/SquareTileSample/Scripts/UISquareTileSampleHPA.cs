@@ -31,7 +31,7 @@ namespace Samples
         {
             string[] algorithms = new string[]
             {
-                typeof(Algorithms).GetEnumName(Algorithms.HierarchicalAStar),
+                typeof(Algorithms).GetEnumName(Algorithms.HPA),
             };
             var algorithmOptions = algorithms.Select(s => new Dropdown.OptionData { text = s }).ToList();
             algorithmSelector.options = algorithmOptions;

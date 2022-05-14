@@ -2,7 +2,7 @@ using System;
 
 namespace AillieoUtils.Pathfinding
 {
-    public class Dijkstra<T> : AStar<T> where T : IGraphNode
+    public class Dijkstra<T> : AStar<T>
     {
         public Dijkstra(IGraphData<T> graphData, Algorithms algorithm) : base(graphData, algorithm)
         {

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace AillieoUtils.Pathfinding
 {
     [Serializable]
-    public class Tile : IGraphNode, IEquatable<Tile>, IComparable<Tile>
+    public class Tile : IEquatable<Tile>, IComparable<Tile>
     {
         public readonly int x;
         public readonly int y;

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace AillieoUtils.Pathfinding.Visualizers
 {
-    public class UISquareTileView : MonoBehaviour, IVisualizer<Tile>
+    public class UISquareTileView : MonoBehaviour, IVisualizer
     {
         [SerializeField]
         private UISquareTileElement template;

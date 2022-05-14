@@ -4,7 +4,7 @@ namespace AillieoUtils.Pathfinding
 {
     public interface IGraphData { }
 
-    public interface IGraphData<T> : IGraphData where T : IGraphNode
+    public interface IGraphData<T> : IGraphData
     {
         IEnumerable<T> CollectNeighbor(T current);
 

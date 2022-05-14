@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace AillieoUtils.Pathfinding
 {
-    public class DStarLite<T> : IIncrementalSolver<T> where T : IGraphNode
+    public class DStarLite<T> : IIncrementalSolver<T>
     {
         public PathfindingState state { get; protected set; }
 
@@ -140,7 +140,7 @@ namespace AillieoUtils.Pathfinding
         protected float CalculateRHS(NodeWrapperEx<T> nodeWrapper)
         {
             var neighbors = context.GetGraphData().CollectNeighbor(nodeWrapper.node).Select(n => context.GetOrCreateNode(n));
-            return neighbors.Select(nei => nei.g + HeuristicFunc(nei.node, nodeWrapper.node) * (1 + nodeWrapper.node.cost)).Min();
+            return neighbors.Select(nei => nei.g + HeuristicFunc(nei.node, nodeWrapper.node)).Min();
         }
 
         protected Vector2 CalculateKey(NodeWrapperEx<T> nodeWrapper)
@@ -248,7 +248,7 @@ namespace AillieoUtils.Pathfinding
         private bool MoveAgent()
         {
             var neighbors = context.GetGraphData().CollectNeighbor(currentNode).Select(n => context.GetOrCreateNode(n));
-            currentNode = neighbors.MinFor<NodeWrapperEx<T>>(nei => nei.g + HeuristicFunc(nei.node, currentNode) * (1 + currentNode.cost)).node;
+            currentNode = neighbors.MinFor<NodeWrapperEx<T>>(nei => nei.g + HeuristicFunc(nei.node, currentNode)).node;
 
             if (currentNode.Equals(endingNode))
             {

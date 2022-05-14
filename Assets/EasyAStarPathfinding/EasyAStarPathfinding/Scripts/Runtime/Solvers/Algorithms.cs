@@ -7,6 +7,7 @@ namespace AillieoUtils.Pathfinding
         LPAStar,
         DStarLite,
         ThetaStar,
-        HierarchicalAStar,
+        HPA,
+        IDAstar,
     }
 }

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace AillieoUtils.Pathfinding
 {
-    public interface ISolver<T> where T : IGraphNode
+    public interface ISolver<T>
     {
         PathfindingState state { get; }
 

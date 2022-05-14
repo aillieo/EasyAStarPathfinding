@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace AillieoUtils.Pathfinding
 {
-    public class NodeWrapperEx<T> : INodeWrapper<T>, IComparable<NodeWrapperEx<T>> where T : IGraphNode
+    public class NodeWrapperEx<T> : INodeWrapper<T>, IComparable<NodeWrapperEx<T>>
     {
         public T node { get; set; }
         public NodeState state { get; set; } // remove

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace AillieoUtils.Pathfinding
 {
-    internal static class ContextCreator<T> where T : IGraphNode
+    internal static class ContextCreator<T>
     {
         internal static IPathfindingContext<T, INodeWrapper<T>> CreateContext(IGraphData<T> graphData, Algorithms algorithm)
         {
@@ -14,8 +14,6 @@ namespace AillieoUtils.Pathfinding
                 case Algorithms.LPAStar:
                 case Algorithms.DStarLite:
                     return new PathfindingContextEx<T>(graphData, algorithm);
-                case Algorithms.HierarchicalAStar:
-                    return new PathfindingContextEx<T>(default, default);
                 default:
                     return new PathfindingContext<T>(graphData, algorithm);
             }

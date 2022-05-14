@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace AillieoUtils.Pathfinding
 {
-    public class PathfindingContextEx<T> : IPathfindingContext<T, NodeWrapperEx<T>> where T : IGraphNode
+    public class PathfindingContextEx<T> : IPathfindingContext<T, NodeWrapperEx<T>>
     {
         internal readonly UniquePriorityQueue<NodeWrapperEx<T>> openList;
         private readonly Dictionary<T, NodeWrapperEx<T>> nodeMapping;

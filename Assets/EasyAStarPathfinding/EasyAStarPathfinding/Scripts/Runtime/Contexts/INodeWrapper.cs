@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace AillieoUtils.Pathfinding
 {
-    public interface INodeWrapper<out T> where T : IGraphNode
+    public interface INodeWrapper<out T>
     {
         T node { get; }
 

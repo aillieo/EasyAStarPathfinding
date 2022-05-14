@@ -119,7 +119,11 @@ namespace AillieoUtils.Pathfinding
                         continue;
                     }
 
-                    yield return GetTile(x, y);
+                    Tile tile = GetTile(x, y);
+                    if (tile.cost < 0.5f)
+                    {
+                        yield return tile;
+                    }
                 }
             }
         }

@@ -4,7 +4,7 @@ namespace AillieoUtils.Pathfinding
 {
     internal static class SolverCreator
     {
-        internal static ISolver<T> Create<T>(IGraphData<T> graphData, Algorithms algorithm) where T : IGraphNode
+        internal static ISolver<T> Create<T>(IGraphData<T> graphData, Algorithms algorithm)
         {
             switch (graphData)
             {
@@ -25,13 +25,13 @@ namespace AillieoUtils.Pathfinding
                     return new Dijkstra<Tile>(tileData, algorithm);
                 case Algorithms.ThetaStar:
                     return new ThetaStar<Tile>(tileData, algorithm);
+                case Algorithms.HPA:
+                    return new HPA<Tile>(tileData, algorithm);
 
                 case Algorithms.LPAStar:
                     return new LPAStar<Tile>(tileData, algorithm);
                 case Algorithms.DStarLite:
                     return new DStarLite<Tile>(tileData, algorithm);
-                case Algorithms.HierarchicalAStar:
-                    return new HPAStar<Tile>(tileData as IHierarchicalGraphData<Tile>, algorithm);
             }
 
             throw new NotImplementedException();

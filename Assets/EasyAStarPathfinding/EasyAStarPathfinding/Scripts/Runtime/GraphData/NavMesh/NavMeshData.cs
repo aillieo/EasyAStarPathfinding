@@ -7,7 +7,7 @@ namespace AillieoUtils.Pathfinding
     [Serializable]
     public class NavMeshData : INavMeshData
     {
-        public class NMFace : IGraphNode
+        public class NMFace
         {
             public Vector2 center;
             public int[] verts;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace AillieoUtils.Pathfinding
 {
-    public interface IPathfindingContext<T, out R> where T : IGraphNode where R : INodeWrapper<T>
+    public interface IPathfindingContext<T, out R> where R : INodeWrapper<T>
     {
         IGraphData<T> GetGraphData();
 
