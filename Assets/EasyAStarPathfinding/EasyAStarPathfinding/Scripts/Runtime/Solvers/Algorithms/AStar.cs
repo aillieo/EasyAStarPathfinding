@@ -156,9 +156,9 @@ namespace AillieoUtils.Pathfinding
 
         public IEnumerable<T> GetResult()
         {
-            foreach (var t in result)
+            for (int i = result.Count - 1; i >= 0; --i)
             {
-                yield return t;
+                yield return result[i];
             }
         }
     }

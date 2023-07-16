@@ -5,7 +5,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "5ddf49bcc72ac3e5d291c75be88af0e17b7d49c9"
+      "hash": "5764a8bcd310fdcc4777964601516ec9899281d8"
     },
     "com.aillieo.geometries": {
       "version": "https://github.com/aillieo/CSGeometries.git#upm",
@@ -15,27 +15,36 @@
       "hash": "b6376b4d83129f9bdfd62fb68a51304ab656ef91"
     },
     "com.unity.ext.nunit": {
-      "version": "1.0.0",
+      "version": "1.0.6",
       "depth": 1,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.rider": {
-      "version": "1.1.4",
+      "version": "3.0.15",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.test-framework": "1.1.1"
+        "com.unity.ext.nunit": "1.0.6"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.ide.visualstudio": {
+      "version": "2.0.16",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.test-framework": "1.1.9"
       },
       "url": "https://packages.unity.com"
     },
     "com.unity.test-framework": {
-      "version": "1.1.18",
+      "version": "1.1.33",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.ext.nunit": "1.0.0",
+        "com.unity.ext.nunit": "1.0.6",
         "com.unity.modules.imgui": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0"
       },
@@ -112,6 +121,18 @@
       "depth": 0,
       "source": "builtin",
       "dependencies": {
+        "com.unity.modules.ui": "1.0.0",
+        "com.unity.modules.imgui": "1.0.0",
+        "com.unity.modules.jsonserialize": "1.0.0",
+        "com.unity.modules.uielementsnative": "1.0.0"
+      }
+    },
+    "com.unity.modules.uielementsnative": {
+      "version": "1.0.0",
+      "depth": 1,
+      "source": "builtin",
+      "dependencies": {
+        "com.unity.modules.ui": "1.0.0",
         "com.unity.modules.imgui": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0"
       }

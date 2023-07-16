@@ -32,7 +32,7 @@ namespace AillieoUtils.Pathfinding
                 return h.CompareTo(other.h);
             }
 
-            return Comparer<T>.Default.Compare(node, other.node);
+            return 0;
         }
     }
 }
